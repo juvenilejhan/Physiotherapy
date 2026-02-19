@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -488,23 +489,50 @@ export default function Home() {
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
-              {[1, 2, 3].map((i) => (
-                <Card key={i} className="hover:shadow-lg transition-shadow">
-                  <div className="aspect-video bg-muted rounded-t-lg" />
+              {[
+                {
+                  title: "5 Common Sports Injuries and How to Prevent Them",
+                  category: "Sports Injuries",
+                  image: "/images/blog-sports-injuries.jpg",
+                  date: "Jan 10, 2025",
+                  readTime: "5 min read",
+                },
+                {
+                  title: "Recovery After Injury: A Complete Guide",
+                  category: "Recovery",
+                  image: "/images/blog-recovery.jpg",
+                  date: "Jan 11, 2025",
+                  readTime: "7 min read",
+                },
+                {
+                  title: "Physiotherapy Techniques for Better Health",
+                  category: "Wellness",
+                  image: "/images/blog-treatment.jpg",
+                  date: "Jan 12, 2025",
+                  readTime: "6 min read",
+                },
+              ].map((article, i) => (
+                <Card
+                  key={i}
+                  className="hover:shadow-lg transition-shadow overflow-hidden"
+                >
+                  <div className="relative aspect-video bg-muted">
+                    <Image
+                      src={article.image}
+                      alt={article.title}
+                      fill
+                      className="object-cover"
+                      priority={i < 3}
+                    />
+                  </div>
                   <CardHeader>
-                    <Badge className="w-fit mb-2">Wellness</Badge>
-                    <CardTitle className="text-lg">
-                      5 Common Sports Injuries and How to Prevent Them
-                    </CardTitle>
-                    <CardDescription>
-                      Learn about the most frequent sports injuries and
-                      practical tips to keep yourself safe while staying active.
-                    </CardDescription>
+                    <Badge className="w-fit mb-2">{article.category}</Badge>
+                    <CardTitle className="text-lg">{article.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <span>Jan {10 + i}, 2025</span>
-                      <span>5 min read</span>
+                      <span>{article.date}</span>
+                      <span>{article.readTime}</span>
                     </div>
                   </CardContent>
                 </Card>

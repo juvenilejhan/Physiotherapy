@@ -1,13 +1,33 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Search, Clock, DollarSign, Calendar, ArrowRight, Filter, Bone, Activity, Zap, Users, Heart, Baby } from 'lucide-react';
-import Link from 'next/link';
-import { toast } from 'sonner';
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  Search,
+  Clock,
+  DollarSign,
+  Calendar,
+  ArrowRight,
+  Filter,
+  Bone,
+  Activity,
+  Zap,
+  Users,
+  Heart,
+  Baby,
+} from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import { toast } from "sonner";
 
 interface Service {
   id: string;
@@ -24,28 +44,37 @@ interface Service {
 }
 
 const categoryIcons: Record<string, any> = {
-  'ORTHOPEDIC': Bone,
-  'NEUROLOGICAL': Activity,
-  'SPORTS': Zap,
-  'PEDIATRIC': Baby,
-  'CARDIOPULMONARY': Heart,
-  'GERIATRIC': Users,
+  ORTHOPEDIC: Bone,
+  NEUROLOGICAL: Activity,
+  SPORTS: Zap,
+  PEDIATRIC: Baby,
+  CARDIOPULMONARY: Heart,
+  GERIATRIC: Users,
 };
 
 const categoryColors: Record<string, string> = {
-  'ORTHOPEDIC': 'bg-blue-500/10 text-blue-600 border-blue-500/20',
-  'NEUROLOGICAL': 'bg-purple-500/10 text-purple-600 border-purple-500/20',
-  'SPORTS': 'bg-green-500/10 text-green-600 border-green-500/20',
-  'PEDIATRIC': 'bg-pink-500/10 text-pink-600 border-pink-500/20',
-  'CARDIOPULMONARY': 'bg-red-500/10 text-red-600 border-red-500/20',
-  'GERIATRIC': 'bg-orange-500/10 text-orange-600 border-orange-500/20',
+  ORTHOPEDIC: "bg-blue-500/10 text-blue-600 border-blue-500/20",
+  NEUROLOGICAL: "bg-purple-500/10 text-purple-600 border-purple-500/20",
+  SPORTS: "bg-green-500/10 text-green-600 border-green-500/20",
+  PEDIATRIC: "bg-pink-500/10 text-pink-600 border-pink-500/20",
+  CARDIOPULMONARY: "bg-red-500/10 text-red-600 border-red-500/20",
+  GERIATRIC: "bg-orange-500/10 text-orange-600 border-orange-500/20",
+};
+
+const categoryImages: Record<string, string> = {
+  ORTHOPEDIC: "/images/service-orthopedic.jpg",
+  NEUROLOGICAL: "/images/service-neurological.jpg",
+  SPORTS: "/images/service-sports.jpg",
+  PEDIATRIC: "/images/service-pediatric.jpg",
+  CARDIOPULMONARY: "/images/service-cardiopulmonary.jpg",
+  GERIATRIC: "/images/service-geriatric.jpg",
 };
 
 export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [filteredServices, setFilteredServices] = useState<Service[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -58,16 +87,16 @@ export default function ServicesPage() {
 
   const fetchServices = async () => {
     try {
-      const response = await fetch('/api/services');
+      const response = await fetch("/api/services");
       const data = await response.json();
       if (response.ok) {
         setServices(data.services || []);
         setFilteredServices(data.services || []);
       } else {
-        toast.error('Failed to load services');
+        toast.error("Failed to load services");
       }
     } catch (error) {
-      toast.error('An error occurred while loading services');
+      toast.error("An error occurred while loading services");
     } finally {
       setIsLoading(false);
     }
@@ -83,19 +112,24 @@ export default function ServicesPage() {
         (service) =>
           service.name.toLowerCase().includes(query) ||
           service.description.toLowerCase().includes(query) ||
-          service.category.toLowerCase().includes(query)
+          service.category.toLowerCase().includes(query),
       );
     }
 
     // Filter by category
-    if (selectedCategory !== 'ALL') {
-      filtered = filtered.filter((service) => service.category === selectedCategory);
+    if (selectedCategory !== "ALL") {
+      filtered = filtered.filter(
+        (service) => service.category === selectedCategory,
+      );
     }
 
     setFilteredServices(filtered);
   };
 
-  const categories = ['ALL', ...Array.from(new Set(services.map((s) => s.category)))];
+  const categories = [
+    "ALL",
+    ...Array.from(new Set(services.map((s) => s.category))),
+  ];
 
   return (
     <div className="min-h-screen bg-muted/50">
@@ -103,10 +137,13 @@ export default function ServicesPage() {
       <section className="bg-primary text-primary-foreground py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Our Services</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Our Services
+            </h1>
             <p className="text-lg opacity-90">
-              Comprehensive physiotherapy services tailored to your unique needs. 
-              Our expert team provides specialized care to help you achieve optimal health.
+              Comprehensive physiotherapy services tailored to your unique
+              needs. Our expert team provides specialized care to help you
+              achieve optimal health.
             </p>
           </div>
         </div>
@@ -137,11 +174,13 @@ export default function ServicesPage() {
                   onClick={() => setSelectedCategory(category)}
                   className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
                     selectedCategory === category
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-secondary hover:bg-secondary/80'
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-secondary hover:bg-secondary/80"
                   }`}
                 >
-                  {category === 'ALL' ? 'All Services' : category.replace('_', ' ')}
+                  {category === "ALL"
+                    ? "All Services"
+                    : category.replace("_", " ")}
                 </button>
               ))}
             </div>
@@ -172,12 +211,14 @@ export default function ServicesPage() {
             </div>
           ) : filteredServices.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">No services found matching your criteria.</p>
+              <p className="text-muted-foreground">
+                No services found matching your criteria.
+              </p>
               <Button
                 variant="outline"
                 onClick={() => {
-                  setSearchQuery('');
-                  setSelectedCategory('ALL');
+                  setSearchQuery("");
+                  setSelectedCategory("ALL");
                 }}
                 className="mt-4"
               >
@@ -188,16 +229,37 @@ export default function ServicesPage() {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredServices.map((service) => {
                 const Icon = categoryIcons[service.category] || Activity;
-                const colorClass = categoryColors[service.category] || 'bg-gray-500/10 text-gray-600 border-gray-500/20';
+                const colorClass =
+                  categoryColors[service.category] ||
+                  "bg-gray-500/10 text-gray-600 border-gray-500/20";
+                const imageUrl =
+                  categoryImages[service.category] ||
+                  "/images/service-orthopedic.jpg";
 
                 return (
-                  <Card key={service.id} className="hover:shadow-lg transition-shadow group">
+                  <Card
+                    key={service.id}
+                    className="hover:shadow-lg transition-shadow group overflow-hidden"
+                  >
+                    <div className="relative aspect-video bg-muted overflow-hidden">
+                      <Image
+                        src={imageUrl}
+                        alt={service.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        priority
+                      />
+                    </div>
                     <CardHeader>
                       <div className="flex items-start justify-between mb-4">
-                        <div className={`w-14 h-14 rounded-lg flex items-center justify-center border ${colorClass}`}>
+                        <div
+                          className={`w-14 h-14 rounded-lg flex items-center justify-center border ${colorClass}`}
+                        >
                           <Icon className="w-7 h-7" />
                         </div>
-                        <Badge variant="outline">{service.category.replace('_', ' ')}</Badge>
+                        <Badge variant="outline">
+                          {service.category.replace("_", " ")}
+                        </Badge>
                       </div>
                       <CardTitle className="text-xl group-hover:text-primary transition-colors">
                         {service.name}
@@ -242,7 +304,8 @@ export default function ServicesPage() {
               Ready to Start Your Treatment?
             </h2>
             <p className="text-lg opacity-90">
-              Book an appointment today and take the first step towards your recovery journey.
+              Book an appointment today and take the first step towards your
+              recovery journey.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" variant="secondary" asChild>
@@ -251,7 +314,12 @@ export default function ServicesPage() {
                   Book Appointment
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary" asChild>
+              <Button
+                size="lg"
+                variant="outline"
+                className="bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+                asChild
+              >
                 <Link href="/specialists">
                   View Our Specialists
                   <ArrowRight className="ml-2 w-5 h-5" />
