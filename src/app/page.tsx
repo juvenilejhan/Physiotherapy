@@ -1,9 +1,15 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import {
   Calendar,
   Clock,
@@ -25,9 +31,9 @@ import {
   ArrowRight,
   Menu,
   X,
-} from 'lucide-react';
-import { useState } from 'react';
-import Link from 'next/link';
+} from "lucide-react";
+import { useState } from "react";
+import Link from "next/link";
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -35,75 +41,81 @@ export default function Home() {
   const services = [
     {
       icon: <Bone className="w-8 h-8" />,
-      title: 'Orthopedic Physiotherapy',
-      description: 'Specialized treatment for musculoskeletal conditions, sports injuries, and post-operative rehabilitation.',
-      conditions: ['Sports Injuries', 'Joint Pain', 'Post-Surgery Recovery'],
+      title: "Orthopedic Physiotherapy",
+      description:
+        "Specialized treatment for musculoskeletal conditions, sports injuries, and post-operative rehabilitation.",
+      conditions: ["Sports Injuries", "Joint Pain", "Post-Surgery Recovery"],
     },
     {
       icon: <Activity className="w-8 h-8" />,
-      title: 'Neurological Physiotherapy',
-      description: 'Comprehensive care for neurological conditions to improve mobility and quality of life.',
-      conditions: ['Stroke Recovery', 'Parkinson\'s', 'Spinal Cord Injury'],
+      title: "Neurological Physiotherapy",
+      description:
+        "Comprehensive care for neurological conditions to improve mobility and quality of life.",
+      conditions: ["Stroke Recovery", "Parkinson's", "Spinal Cord Injury"],
     },
     {
       icon: <Zap className="w-8 h-8" />,
-      title: 'Sports Injury Rehabilitation',
-      description: 'Expert care for athletes at all levels, from injury prevention to return-to-sport programs.',
-      conditions: ['ACL Tears', 'Tennis Elbow', 'Rotator Cuff'],
+      title: "Sports Injury Rehabilitation",
+      description:
+        "Expert care for athletes at all levels, from injury prevention to return-to-sport programs.",
+      conditions: ["ACL Tears", "Tennis Elbow", "Rotator Cuff"],
     },
     {
       icon: <Users className="w-8 h-8" />,
-      title: 'Pediatric Physiotherapy',
-      description: 'Specialized treatment for children, helping them achieve developmental milestones and optimal function.',
-      conditions: ['Developmental Delays', 'Cerebral Palsy', 'Scoliosis'],
+      title: "Pediatric Physiotherapy",
+      description:
+        "Specialized treatment for children, helping them achieve developmental milestones and optimal function.",
+      conditions: ["Developmental Delays", "Cerebral Palsy", "Scoliosis"],
     },
     {
       icon: <Heart className="w-8 h-8" />,
-      title: 'Cardiopulmonary Rehabilitation',
-      description: 'Comprehensive programs for heart and lung conditions to improve endurance and breathing.',
-      conditions: ['Heart Disease', 'COPD', 'Asthma'],
+      title: "Cardiopulmonary Rehabilitation",
+      description:
+        "Comprehensive programs for heart and lung conditions to improve endurance and breathing.",
+      conditions: ["Heart Disease", "COPD", "Asthma"],
     },
     {
       icon: <Baby className="w-8 h-8" />,
-      title: 'Geriatric Physiotherapy',
-      description: 'Specialized care for older adults to maintain mobility, independence, and prevent falls.',
-      conditions: ['Balance Issues', 'Arthritis', 'Osteoporosis'],
+      title: "Geriatric Physiotherapy",
+      description:
+        "Specialized care for older adults to maintain mobility, independence, and prevent falls.",
+      conditions: ["Balance Issues", "Arthritis", "Osteoporosis"],
     },
   ];
 
   const specialists = [
     {
-      name: 'Dr. Emily Carter',
-      role: 'Senior Physiotherapist',
-      specialization: 'Sports Medicine',
-      experience: '12 years',
+      name: "Dr. Emily Carter",
+      role: "Senior Physiotherapist",
+      specialization: "Sports Medicine",
+      experience: "12 years",
       image: null,
       rating: 4.9,
       reviews: 127,
     },
     {
-      name: 'Dr. Michael Chen',
-      role: 'Neurological Specialist',
-      specialization: 'Neurological Rehabilitation',
-      experience: '10 years',
+      name: "Dr. Michael Chen",
+      role: "Neurological Specialist",
+      specialization: "Neurological Rehabilitation",
+      experience: "10 years",
       image: null,
       rating: 4.8,
       reviews: 98,
     },
     {
-      name: 'Dr. Sarah Johnson',
-      role: 'Orthopedic Therapist',
-      specialization: 'Musculoskeletal Therapy',
-      experience: '8 years',
+      name: "Dr. Sarah Johnson",
+      role: "Orthopedic Therapist",
+      specialization: "Musculoskeletal Therapy",
+      experience: "8 years",
       image: null,
       rating: 4.9,
       reviews: 156,
     },
     {
-      name: 'Dr. James Wilson',
-      role: 'Pediatric Physiotherapist',
-      specialization: 'Child Development',
-      experience: '7 years',
+      name: "Dr. James Wilson",
+      role: "Pediatric Physiotherapist",
+      specialization: "Child Development",
+      experience: "7 years",
       image: null,
       rating: 4.7,
       reviews: 73,
@@ -111,21 +123,21 @@ export default function Home() {
   ];
 
   const features = [
-    'Expert Licensed Physiotherapists',
-    'Modern Equipment & Techniques',
-    'Personalized Treatment Plans',
-    'Telehealth Consultations Available',
-    'Direct Insurance Billing',
-    'Flexible Scheduling',
+    "Expert Licensed Physiotherapists",
+    "Modern Equipment & Techniques",
+    "Personalized Treatment Plans",
+    "Telehealth Consultations Available",
+    "Direct Insurance Billing",
+    "Flexible Scheduling",
   ];
 
   const navLinks = [
-    { name: 'Home', href: '#home' },
-    { name: 'Services', href: '#services' },
-    { name: 'Specialists', href: '#specialists' },
-    { name: 'About Us', href: '#about' },
-    { name: 'Blog', href: '#blog' },
-    { name: 'Contact', href: '#contact' },
+    { name: "Home", href: "#home" },
+    { name: "Services", href: "#services" },
+    { name: "Specialists", href: "#specialists" },
+    { name: "About Us", href: "#about" },
+    { name: "Blog", href: "#blog" },
+    { name: "Contact", href: "#contact" },
   ];
 
   return (
@@ -191,7 +203,9 @@ export default function Home() {
               ))}
               <div className="flex flex-col gap-2 pt-4 border-t">
                 <Link href="/auth/login">
-                  <Button variant="outline" className="w-full">Login</Button>
+                  <Button variant="outline" className="w-full">
+                    Login
+                  </Button>
                 </Link>
                 <Link href="/auth/register">
                   <Button className="w-full">Book Appointment</Button>
@@ -205,20 +219,23 @@ export default function Home() {
       {/* Main Content */}
       <main className="flex-1">
         {/* Hero Section */}
-        <section id="home" className="relative py-20 md:py-32 bg-gradient-to-br from-primary/5 via-background to-primary/5">
+        <section
+          id="home"
+          className="relative py-20 md:py-32 bg-gradient-to-br from-primary/5 via-background to-primary/5"
+        >
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
                 <Badge className="w-fit">Trusted by 10,000+ Patients</Badge>
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                  Your Journey to{' '}
-                  <span className="text-primary">Recovery</span>{' '}
+                  Your Journey to <span className="text-primary">Recovery</span>{" "}
                   Starts Here
                 </h1>
                 <p className="text-lg text-muted-foreground">
-                  Expert physiotherapy care tailored to your unique needs. Our team of licensed specialists
-                  provides comprehensive treatment to help you regain mobility, reduce pain, and improve
-                  your quality of life.
+                  Expert physiotherapy care tailored to your unique needs. Our
+                  team of licensed specialists provides comprehensive treatment
+                  to help you regain mobility, reduce pain, and improve your
+                  quality of life.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Link href="/book">
@@ -227,10 +244,12 @@ export default function Home() {
                       <ArrowRight className="ml-2 w-5 h-5" />
                     </Button>
                   </Link>
-                  <Button size="lg" variant="outline" className="text-lg">
-                    <Phone className="mr-2 w-5 h-5" />
-                    Call Us Now
-                  </Button>
+                  <a href="tel:5551234567">
+                    <Button size="lg" variant="outline" className="text-lg">
+                      <Phone className="mr-2 w-5 h-5" />
+                      Call Us Now
+                    </Button>
+                  </a>
                 </div>
                 <div className="flex items-center gap-6 pt-4">
                   <div className="flex items-center gap-2">
@@ -249,7 +268,9 @@ export default function Home() {
                     <Activity className="w-32 h-32 text-primary mx-auto" />
                     <p className="text-2xl font-semibold">Expert Care</p>
                     <p className="text-muted-foreground">Modern Technology</p>
-                    <p className="text-muted-foreground">Personalized Treatment</p>
+                    <p className="text-muted-foreground">
+                      Personalized Treatment
+                    </p>
                   </div>
                 </div>
               </div>
@@ -266,8 +287,8 @@ export default function Home() {
                 Comprehensive Physiotherapy Services
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                We offer a wide range of specialized physiotherapy services to address your specific needs
-                and help you achieve optimal health.
+                We offer a wide range of specialized physiotherapy services to
+                address your specific needs and help you achieve optimal health.
               </p>
             </div>
 
@@ -302,10 +323,12 @@ export default function Home() {
             </div>
 
             <div className="text-center mt-12">
-              <Button size="lg" variant="outline">
-                View All Services
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
+              <Link href="/services">
+                <Button size="lg" variant="outline">
+                  View All Services
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
@@ -319,8 +342,9 @@ export default function Home() {
                 Meet Our Specialists
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Our team of experienced and licensed physiotherapists is dedicated to providing
-                the highest quality care to help you achieve your health goals.
+                Our team of experienced and licensed physiotherapists is
+                dedicated to providing the highest quality care to help you
+                achieve your health goals.
               </p>
             </div>
 
@@ -365,9 +389,10 @@ export default function Home() {
                   Experience the PhysioConnect Difference
                 </h2>
                 <p className="text-lg text-muted-foreground">
-                  We combine cutting-edge technology with compassionate care to provide you with
-                  the best possible treatment experience. Our patient-centered approach ensures
-                  that you receive personalized care tailored to your unique needs.
+                  We combine cutting-edge technology with compassionate care to
+                  provide you with the best possible treatment experience. Our
+                  patient-centered approach ensures that you receive
+                  personalized care tailored to your unique needs.
                 </p>
                 <div className="space-y-3">
                   {features.map((feature, index) => (
@@ -422,8 +447,9 @@ export default function Home() {
                 Ready to Start Your Recovery Journey?
               </h2>
               <p className="text-lg opacity-90">
-                Book your appointment today and take the first step towards a pain-free, active life.
-                Our team is ready to help you achieve your health goals.
+                Book your appointment today and take the first step towards a
+                pain-free, active life. Our team is ready to help you achieve
+                your health goals.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/book">
@@ -432,10 +458,16 @@ export default function Home() {
                     Book Appointment Now
                   </Button>
                 </Link>
-                <Button size="lg" variant="outline" className="text-lg bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
-                  <Phone className="mr-2 w-5 h-5" />
-                  Call: +8801XXXXXXXXX
-                </Button>
+                <a href="tel:+8801XXXXXXXXX">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="text-lg bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+                  >
+                    <Phone className="mr-2 w-5 h-5" />
+                    Call: +8801XXXXXXXXX
+                  </Button>
+                </a>
               </div>
             </div>
           </div>
@@ -450,7 +482,8 @@ export default function Home() {
                 Health Tips & Resources
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Stay informed with our latest articles on physiotherapy, wellness, and healthy living.
+                Stay informed with our latest articles on physiotherapy,
+                wellness, and healthy living.
               </p>
             </div>
 
@@ -464,8 +497,8 @@ export default function Home() {
                       5 Common Sports Injuries and How to Prevent Them
                     </CardTitle>
                     <CardDescription>
-                      Learn about the most frequent sports injuries and practical tips to keep yourself
-                      safe while staying active.
+                      Learn about the most frequent sports injuries and
+                      practical tips to keep yourself safe while staying active.
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -500,8 +533,8 @@ export default function Home() {
                 <span className="text-xl font-bold">PhysioConnect</span>
               </div>
               <p className="text-sm text-muted-foreground">
-                Your trusted partner in physiotherapy care. We're dedicated to helping you
-                achieve optimal health and wellness.
+                Your trusted partner in physiotherapy care. We're dedicated to
+                helping you achieve optimal health and wellness.
               </p>
               <div className="flex items-center gap-4">
                 <Facebook className="w-5 h-5 text-muted-foreground hover:text-primary cursor-pointer" />
@@ -545,7 +578,8 @@ export default function Home() {
                 <li className="flex items-start gap-3">
                   <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-muted-foreground">
-                    123 Healthcare Street<br />
+                    123 Healthcare Street
+                    <br />
                     Medical District, MD 12345
                   </span>
                 </li>
@@ -555,12 +589,15 @@ export default function Home() {
                 </li>
                 <li className="flex items-center gap-3">
                   <Mail className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-muted-foreground">info@physioconnect.com</span>
+                  <span className="text-muted-foreground">
+                    info@physioconnect.com
+                  </span>
                 </li>
                 <li className="flex items-center gap-3">
                   <Clock className="w-5 h-5 text-primary flex-shrink-0" />
                   <span className="text-muted-foreground">
-                    Mon-Fri: 8:00 AM - 8:00 PM<br />
+                    Mon-Fri: 8:00 AM - 8:00 PM
+                    <br />
                     Sat: 9:00 AM - 5:00 PM
                   </span>
                 </li>
@@ -573,9 +610,15 @@ export default function Home() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
             <p>© 2025 PhysioConnect. All rights reserved.</p>
             <div className="flex items-center gap-6">
-              <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
-              <a href="#" className="hover:text-primary transition-colors">Cookie Policy</a>
+              <a href="#" className="hover:text-primary transition-colors">
+                Privacy Policy
+              </a>
+              <a href="#" className="hover:text-primary transition-colors">
+                Terms of Service
+              </a>
+              <a href="#" className="hover:text-primary transition-colors">
+                Cookie Policy
+              </a>
             </div>
           </div>
         </div>

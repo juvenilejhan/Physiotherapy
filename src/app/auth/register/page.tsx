@@ -1,26 +1,34 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Activity, Loader2, Check } from 'lucide-react';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Activity, Loader2, Check } from "lucide-react";
+import { toast } from "sonner";
 
 export default function RegisterPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    phone: '',
-    dateOfBirth: '',
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    phone: "",
+    dateOfBirth: "",
     acceptTerms: false,
     acceptMarketing: false,
   });
@@ -30,35 +38,35 @@ export default function RegisterPage() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Full name is required';
+      newErrors.name = "Full name is required";
     } else if (formData.name.trim().length < 2) {
-      newErrors.name = 'Name must be at least 2 characters';
+      newErrors.name = "Name must be at least 2 characters";
     }
 
     if (!formData.email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = "Please enter a valid email address";
     }
 
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = "Password is required";
     } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
+      newErrors.password = "Password must be at least 8 characters";
     }
 
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
+      newErrors.confirmPassword = "Please confirm your password";
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = "Passwords do not match";
     }
 
     if (formData.phone && !/^\+?[\d\s-()]+$/.test(formData.phone)) {
-      newErrors.phone = 'Please enter a valid phone number';
+      newErrors.phone = "Please enter a valid phone number";
     }
 
     if (!formData.acceptTerms) {
-      newErrors.acceptTerms = 'You must accept the terms and conditions';
+      newErrors.acceptTerms = "You must accept the terms and conditions";
     }
 
     setErrors(newErrors);
@@ -75,10 +83,10 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           name: formData.name.trim(),
@@ -92,16 +100,16 @@ export default function RegisterPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        toast.error(data.error || 'Registration failed');
+        toast.error(data.error || "Registration failed");
         setIsLoading(false);
         return;
       }
 
-      toast.success('Registration successful! Please sign in to continue.');
-      router.push('/auth/login');
+      toast.success("Registration successful! Please sign in to continue.");
+      router.push("/auth/login");
     } catch (error) {
-      console.error('Registration error:', error);
-      toast.error('An error occurred. Please try again.');
+      console.error("Registration error:", error);
+      toast.error("An error occurred. Please try again.");
       setIsLoading(false);
     }
   };
@@ -110,9 +118,22 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-muted/50 p-4 py-8">
       <div className="w-full max-w-2xl">
         {/* Back to Home Button */}
-        <Link href="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6 transition-colors">
-          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        <Link
+          href="/"
+          className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6 transition-colors"
+        >
+          <svg
+            className="w-4 h-4 mr-1"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
           </svg>
           Back to Home
         </Link>
@@ -125,7 +146,9 @@ export default function RegisterPage() {
 
         <Card>
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold">Create your account</CardTitle>
+            <CardTitle className="text-2xl font-bold">
+              Create your account
+            </CardTitle>
             <CardDescription>
               Join PhysioConnect and start your journey to better health
             </CardDescription>
@@ -140,8 +163,10 @@ export default function RegisterPage() {
                     type="text"
                     placeholder="John Doe"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className={errors.name ? 'border-destructive' : ''}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
+                    className={errors.name ? "border-destructive" : ""}
                     disabled={isLoading}
                   />
                   {errors.name && (
@@ -156,8 +181,10 @@ export default function RegisterPage() {
                     type="email"
                     placeholder="john@example.com"
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className={errors.email ? 'border-destructive' : ''}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
+                    className={errors.email ? "border-destructive" : ""}
                     disabled={isLoading}
                   />
                   {errors.email && (
@@ -172,12 +199,16 @@ export default function RegisterPage() {
                     type="password"
                     placeholder="••••••••"
                     value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className={errors.password ? 'border-destructive' : ''}
+                    onChange={(e) =>
+                      setFormData({ ...formData, password: e.target.value })
+                    }
+                    className={errors.password ? "border-destructive" : ""}
                     disabled={isLoading}
                   />
                   {errors.password && (
-                    <p className="text-sm text-destructive">{errors.password}</p>
+                    <p className="text-sm text-destructive">
+                      {errors.password}
+                    </p>
                   )}
                 </div>
 
@@ -188,12 +219,21 @@ export default function RegisterPage() {
                     type="password"
                     placeholder="••••••••"
                     value={formData.confirmPassword}
-                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    className={errors.confirmPassword ? 'border-destructive' : ''}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        confirmPassword: e.target.value,
+                      })
+                    }
+                    className={
+                      errors.confirmPassword ? "border-destructive" : ""
+                    }
                     disabled={isLoading}
                   />
                   {errors.confirmPassword && (
-                    <p className="text-sm text-destructive">{errors.confirmPassword}</p>
+                    <p className="text-sm text-destructive">
+                      {errors.confirmPassword}
+                    </p>
                   )}
                 </div>
 
@@ -204,8 +244,10 @@ export default function RegisterPage() {
                     type="tel"
                     placeholder="+8801XXXXXXXXX"
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className={errors.phone ? 'border-destructive' : ''}
+                    onChange={(e) =>
+                      setFormData({ ...formData, phone: e.target.value })
+                    }
+                    className={errors.phone ? "border-destructive" : ""}
                     disabled={isLoading}
                   />
                   {errors.phone && (
@@ -219,9 +261,11 @@ export default function RegisterPage() {
                     id="dateOfBirth"
                     type="date"
                     value={formData.dateOfBirth}
-                    onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, dateOfBirth: e.target.value })
+                    }
                     disabled={isLoading}
-                    max={new Date().toISOString().split('T')[0]}
+                    max={new Date().toISOString().split("T")[0]}
                   />
                 </div>
               </div>
@@ -232,7 +276,10 @@ export default function RegisterPage() {
                     id="terms"
                     checked={formData.acceptTerms}
                     onCheckedChange={(checked) =>
-                      setFormData({ ...formData, acceptTerms: checked as boolean })
+                      setFormData({
+                        ...formData,
+                        acceptTerms: checked as boolean,
+                      })
                     }
                     disabled={isLoading}
                   />
@@ -240,11 +287,11 @@ export default function RegisterPage() {
                     htmlFor="terms"
                     className="text-sm font-normal leading-tight cursor-pointer"
                   >
-                    I accept the{' '}
+                    I accept the{" "}
                     <Link href="#" className="text-primary hover:underline">
                       Terms of Service
-                    </Link>{' '}
-                    and{' '}
+                    </Link>{" "}
+                    and{" "}
                     <Link href="#" className="text-primary hover:underline">
                       Privacy Policy
                     </Link>
@@ -252,7 +299,9 @@ export default function RegisterPage() {
                   </Label>
                 </div>
                 {errors.acceptTerms && (
-                  <p className="text-sm text-destructive -mt-1">{errors.acceptTerms}</p>
+                  <p className="text-sm text-destructive -mt-1">
+                    {errors.acceptTerms}
+                  </p>
                 )}
 
                 <div className="flex items-center space-x-3">
@@ -260,7 +309,10 @@ export default function RegisterPage() {
                     id="marketing"
                     checked={formData.acceptMarketing}
                     onCheckedChange={(checked) =>
-                      setFormData({ ...formData, acceptMarketing: checked as boolean })
+                      setFormData({
+                        ...formData,
+                        acceptMarketing: checked as boolean,
+                      })
                     }
                     disabled={isLoading}
                   />
@@ -268,19 +320,25 @@ export default function RegisterPage() {
                     htmlFor="marketing"
                     className="text-sm font-normal cursor-pointer"
                   >
-                    I would like to receive health tips and promotional offers via email
+                    I would like to receive health tips and promotional offers
+                    via email
                   </Label>
                 </div>
               </div>
 
-              <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="w-full"
+                size="lg"
+                disabled={isLoading}
+              >
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Creating account...
                   </>
                 ) : (
-                  'Create Account'
+                  "Create Account"
                 )}
               </Button>
             </form>
@@ -300,10 +358,7 @@ export default function RegisterPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={(e) => {
-                  e.preventDefault();
-                  toast.info('Google sign up will be available soon');
-                }}
+                onClick={() => signIn("google")}
                 disabled={isLoading}
               >
                 <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -329,13 +384,14 @@ export default function RegisterPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={(e) => {
-                  e.preventDefault();
-                  toast.info('Facebook sign up will be available soon');
-                }}
+                onClick={() => signIn("facebook")}
                 disabled={isLoading}
               >
-                <svg className="mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="mr-2 h-4 w-4"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                 </svg>
                 Facebook
@@ -344,8 +400,11 @@ export default function RegisterPage() {
           </CardContent>
           <CardFooter className="flex justify-center">
             <p className="text-sm text-muted-foreground">
-              Already have an account?{' '}
-              <Link href="/auth/login" className="text-primary hover:underline font-medium">
+              Already have an account?{" "}
+              <Link
+                href="/auth/login"
+                className="text-primary hover:underline font-medium"
+              >
                 Sign in
               </Link>
             </p>
@@ -364,7 +423,13 @@ export default function RegisterPage() {
                   ) : (
                     <div className="w-4 h-4 rounded-full border-2 border-muted" />
                   )}
-                  <span className={formData.password.length >= 8 ? 'text-green-600' : 'text-muted-foreground'}>
+                  <span
+                    className={
+                      formData.password.length >= 8
+                        ? "text-green-600"
+                        : "text-muted-foreground"
+                    }
+                  >
                     At least 8 characters
                   </span>
                 </div>
