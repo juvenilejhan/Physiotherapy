@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { AuthProvider } from "@/components/providers/session-provider";
+import { FloatingWhatsApp } from "@/components/floating-whatsapp";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,21 +17,32 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "PhysioConnect - Modern Physiotherapy Center Management",
-  description: "Comprehensive physiotherapy center management platform. Book appointments online, access expert care, and manage your health journey with PhysioConnect.",
-  keywords: ["PhysioConnect", "physiotherapy", "physical therapy", "healthcare", "appointment booking", "patient care", "rehabilitation"],
+  description:
+    "Comprehensive physiotherapy center management platform. Book appointments online, access expert care, and manage your health journey with PhysioConnect.",
+  keywords: [
+    "PhysioConnect",
+    "physiotherapy",
+    "physical therapy",
+    "healthcare",
+    "appointment booking",
+    "patient care",
+    "rehabilitation",
+  ],
   authors: [{ name: "PhysioConnect Team" }],
   icons: {
     icon: "/logo.svg",
   },
   openGraph: {
     title: "PhysioConnect - Modern Physiotherapy Care",
-    description: "Expert physiotherapy care with modern technology. Book appointments online and start your recovery journey today.",
+    description:
+      "Expert physiotherapy care with modern technology. Book appointments online and start your recovery journey today.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "PhysioConnect - Modern Physiotherapy Care",
-    description: "Expert physiotherapy care with modern technology. Book appointments online and start your recovery journey today.",
+    description:
+      "Expert physiotherapy care with modern technology. Book appointments online and start your recovery journey today.",
   },
 };
 
@@ -46,6 +58,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           {children}
+          <FloatingWhatsApp />
           <Toaster />
         </AuthProvider>
       </body>
