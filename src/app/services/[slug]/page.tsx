@@ -1,27 +1,33 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { 
-  Calendar, 
-  Clock, 
-  DollarSign, 
-  ArrowLeft, 
-  ArrowRight, 
-  CheckCircle, 
-  Phone, 
-  Mail, 
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  Calendar,
+  Clock,
+  DollarSign,
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle,
+  Phone,
+  Mail,
   MapPin,
   User,
   Star,
-  Loader2
-} from 'lucide-react';
-import Link from 'next/link';
-import { toast } from 'sonner';
+  Loader2,
+} from "lucide-react";
+import Link from "next/link";
+import { toast } from "sonner";
 
 interface Service {
   id: string;
@@ -54,7 +60,7 @@ export default function ServiceDetailPage() {
   const params = useParams();
   const router = useRouter();
   const slug = params.slug as string;
-  
+
   const [service, setService] = useState<Service | null>(null);
   const [staff, setStaff] = useState<StaffMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -72,8 +78,8 @@ export default function ServiceDetailPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        toast.error('Service not found');
-        router.push('/services');
+        toast.error("Service not found");
+        router.push("/services");
         return;
       }
 
@@ -85,7 +91,7 @@ export default function ServiceDetailPage() {
         setStaff(staffList);
       }
     } catch (error) {
-      toast.error('Failed to load service details');
+      toast.error("Failed to load service details");
     } finally {
       setIsLoading(false);
     }
@@ -103,23 +109,54 @@ export default function ServiceDetailPage() {
     return null;
   }
 
-  const conditionsArray = service.conditions ? service.conditions.split(',').map(c => c.trim()) : [];
-  const benefitsArray = service.benefits ? service.benefits.split('.').filter(b => b.trim()).map(b => b.trim()) : [];
+  const conditionsArray = service.conditions
+    ? service.conditions.split(",").map((c) => c.trim())
+    : [];
+  const benefitsArray = service.benefits
+    ? service.benefits
+        .split(".")
+        .filter((b) => b.trim())
+        .map((b) => b.trim())
+    : [];
 
   return (
     <div className="min-h-screen bg-muted/50">
       {/* Header */}
       <section className="bg-primary text-primary-foreground py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <Link 
-            href="/services" 
-            className="inline-flex items-center text-sm text-primary-foreground/80 hover:text-primary-foreground mb-6"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            Back to Services
-          </Link>
-          <Badge className="mb-4">{service.category.replace('_', ' ')}</Badge>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">{service.name}</h1>
+          <div className="flex gap-4 mb-6">
+            <Link
+              href="/"
+              className="inline-flex items-center text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+            >
+              <svg
+                className="w-4 h-4 mr-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+              Back to Home
+            </Link>
+            <span className="text-primary-foreground/50">•</span>
+            <Link
+              href="/services"
+              className="inline-flex items-center text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              Back to Services
+            </Link>
+          </div>
+          <Badge className="mb-4">{service.category.replace("_", " ")}</Badge>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            {service.name}
+          </h1>
           <p className="text-lg opacity-90 max-w-3xl">{service.description}</p>
         </div>
       </section>
@@ -144,7 +181,8 @@ export default function ServiceDetailPage() {
                 <CardHeader>
                   <CardTitle>Conditions We Treat</CardTitle>
                   <CardDescription>
-                    This service is designed to help with the following conditions
+                    This service is designed to help with the following
+                    conditions
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -194,7 +232,7 @@ export default function ServiceDetailPage() {
                 <CardContent>
                   <div className="grid md:grid-cols-2 gap-4">
                     {staff.map((member) => (
-                      <div 
+                      <div
                         key={member.id}
                         className="flex items-start gap-4 p-4 border rounded-lg hover:border-primary transition-colors"
                       >
@@ -202,7 +240,9 @@ export default function ServiceDetailPage() {
                           <User className="w-8 h-8 text-primary" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-base">{member.user.name}</h4>
+                          <h4 className="font-semibold text-base">
+                            {member.user.name}
+                          </h4>
                           <p className="text-sm text-muted-foreground mb-2">
                             {member.specialization}
                           </p>
@@ -259,8 +299,12 @@ export default function ServiceDetailPage() {
                   <span>Appointment Type</span>
                 </div>
                 <div className="flex gap-2 mt-2">
-                  <Badge variant="outline" className="flex-1 justify-center">In-Person</Badge>
-                  <Badge variant="outline" className="flex-1 justify-center">Telehealth</Badge>
+                  <Badge variant="outline" className="flex-1 justify-center">
+                    In-Person
+                  </Badge>
+                  <Badge variant="outline" className="flex-1 justify-center">
+                    Telehealth
+                  </Badge>
                 </div>
               </CardContent>
               <Separator />
@@ -282,14 +326,18 @@ export default function ServiceDetailPage() {
                   <Phone className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="text-sm font-medium">Call Us</p>
-                    <p className="text-sm text-muted-foreground">(555) 123-4567</p>
+                    <p className="text-sm text-muted-foreground">
+                      (555) 123-4567
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Mail className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="text-sm font-medium">Email Us</p>
-                    <p className="text-sm text-muted-foreground">info@physioconnect.com</p>
+                    <p className="text-sm text-muted-foreground">
+                      info@physioconnect.com
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -297,7 +345,8 @@ export default function ServiceDetailPage() {
                   <div>
                     <p className="text-sm font-medium">Visit Us</p>
                     <p className="text-sm text-muted-foreground">
-                      123 Healthcare Street<br />
+                      123 Healthcare Street
+                      <br />
                       Medical District, MD 12345
                     </p>
                   </div>

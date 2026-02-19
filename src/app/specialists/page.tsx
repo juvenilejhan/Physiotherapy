@@ -1,13 +1,29 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Search, Star, User, Calendar, Award, ArrowRight, Filter, Clock, DollarSign } from 'lucide-react';
-import Link from 'next/link';
-import { toast } from 'sonner';
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  Search,
+  Star,
+  User,
+  Calendar,
+  Award,
+  ArrowRight,
+  Filter,
+  Clock,
+  DollarSign,
+} from "lucide-react";
+import Link from "next/link";
+import { toast } from "sonner";
 
 interface Specialist {
   id: string;
@@ -34,9 +50,12 @@ interface Specialist {
 
 export default function SpecialistsPage() {
   const [specialists, setSpecialists] = useState<Specialist[]>([]);
-  const [filteredSpecialists, setFilteredSpecialists] = useState<Specialist[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedSpecialization, setSelectedSpecialization] = useState<string>('ALL');
+  const [filteredSpecialists, setFilteredSpecialists] = useState<Specialist[]>(
+    [],
+  );
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedSpecialization, setSelectedSpecialization] =
+    useState<string>("ALL");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -49,16 +68,16 @@ export default function SpecialistsPage() {
 
   const fetchSpecialists = async () => {
     try {
-      const response = await fetch('/api/specialists');
+      const response = await fetch("/api/specialists");
       const data = await response.json();
       if (response.ok) {
         setSpecialists(data.specialists || []);
         setFilteredSpecialists(data.specialists || []);
       } else {
-        toast.error('Failed to load specialists');
+        toast.error("Failed to load specialists");
       }
     } catch (error) {
-      toast.error('An error occurred while loading specialists');
+      toast.error("An error occurred while loading specialists");
     } finally {
       setIsLoading(false);
     }
@@ -74,14 +93,14 @@ export default function SpecialistsPage() {
         (specialist) =>
           specialist.user.name.toLowerCase().includes(query) ||
           specialist.specialization.toLowerCase().includes(query) ||
-          specialist.qualifications?.toLowerCase().includes(query)
+          specialist.qualifications?.toLowerCase().includes(query),
       );
     }
 
     // Filter by specialization
-    if (selectedSpecialization !== 'ALL') {
+    if (selectedSpecialization !== "ALL") {
       filtered = filtered.filter(
-        (specialist) => specialist.specialization === selectedSpecialization
+        (specialist) => specialist.specialization === selectedSpecialization,
       );
     }
 
@@ -89,7 +108,7 @@ export default function SpecialistsPage() {
   };
 
   const specializations = [
-    'ALL',
+    "ALL",
     ...Array.from(new Set(specialists.map((s) => s.specialization))),
   ];
 
@@ -98,11 +117,33 @@ export default function SpecialistsPage() {
       {/* Header Section */}
       <section className="bg-primary text-primary-foreground py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <Link
+            href="/"
+            className="inline-flex items-center text-sm text-primary-foreground/80 hover:text-primary-foreground mb-6 transition-colors"
+          >
+            <svg
+              className="w-4 h-4 mr-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            Back to Home
+          </Link>
           <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Meet Our Specialists</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Meet Our Specialists
+            </h1>
             <p className="text-lg opacity-90">
-              Our team of experienced and licensed physiotherapists is dedicated to providing
-              the highest quality care to help you achieve your health goals.
+              Our team of experienced and licensed physiotherapists is dedicated
+              to providing the highest quality care to help you achieve your
+              health goals.
             </p>
           </div>
         </div>
@@ -133,11 +174,11 @@ export default function SpecialistsPage() {
                   onClick={() => setSelectedSpecialization(spec)}
                   className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
                     selectedSpecialization === spec
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-secondary hover:bg-secondary/80'
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-secondary hover:bg-secondary/80"
                   }`}
                 >
-                  {spec === 'ALL' ? 'All Specialists' : spec}
+                  {spec === "ALL" ? "All Specialists" : spec}
                 </button>
               ))}
             </div>
@@ -168,12 +209,14 @@ export default function SpecialistsPage() {
             </div>
           ) : filteredSpecialists.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">No specialists found matching your criteria.</p>
+              <p className="text-muted-foreground">
+                No specialists found matching your criteria.
+              </p>
               <Button
                 variant="outline"
                 onClick={() => {
-                  setSearchQuery('');
-                  setSelectedSpecialization('ALL');
+                  setSearchQuery("");
+                  setSelectedSpecialization("ALL");
                 }}
                 className="mt-4"
               >
@@ -183,7 +226,10 @@ export default function SpecialistsPage() {
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredSpecialists.map((specialist) => (
-                <Card key={specialist.id} className="hover:shadow-lg transition-shadow group">
+                <Card
+                  key={specialist.id}
+                  className="hover:shadow-lg transition-shadow group"
+                >
                   <CardHeader className="text-center">
                     <div className="relative mx-auto mb-4">
                       <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-primary/5 rounded-full flex items-center justify-center">
@@ -198,7 +244,10 @@ export default function SpecialistsPage() {
                         )}
                       </div>
                       {!specialist.isAvailable && (
-                        <Badge variant="secondary" className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
+                        <Badge
+                          variant="secondary"
+                          className="absolute -bottom-2 left-1/2 transform -translate-x-1/2"
+                        >
                           Unavailable
                         </Badge>
                       )}
@@ -214,17 +263,19 @@ export default function SpecialistsPage() {
                     <Badge variant="outline" className="mx-auto">
                       {specialist.experience} Years Experience
                     </Badge>
-                    
+
                     {specialist.qualifications && (
                       <p className="text-xs text-muted-foreground line-clamp-2">
                         {specialist.qualifications}
                       </p>
                     )}
-                    
+
                     <div className="flex items-center justify-center gap-2 text-sm pt-2">
                       <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                       <span className="font-semibold">4.9</span>
-                      <span className="text-muted-foreground">(Based on patient reviews)</span>
+                      <span className="text-muted-foreground">
+                        (Based on patient reviews)
+                      </span>
                     </div>
 
                     <div className="flex items-center justify-center gap-4 text-sm pt-2 border-t">
@@ -234,7 +285,9 @@ export default function SpecialistsPage() {
                       </div>
                       <div className="flex items-center gap-1">
                         <DollarSign className="w-4 h-4 text-muted-foreground" />
-                        <span className="font-semibold text-primary">${specialist.consultationFee}</span>
+                        <span className="font-semibold text-primary">
+                          ${specialist.consultationFee}
+                        </span>
                       </div>
                     </div>
 
@@ -256,9 +309,12 @@ export default function SpecialistsPage() {
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center space-y-4 mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold">Why Choose Our Specialists?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold">
+              Why Choose Our Specialists?
+            </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Our team brings together years of experience, specialized training, and a commitment to patient-centered care.
+              Our team brings together years of experience, specialized
+              training, and a commitment to patient-centered care.
             </p>
           </div>
 
@@ -270,7 +326,8 @@ export default function SpecialistsPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  All our specialists are licensed physiotherapists with advanced certifications in their respective fields.
+                  All our specialists are licensed physiotherapists with
+                  advanced certifications in their respective fields.
                 </p>
               </CardContent>
             </Card>
@@ -282,7 +339,8 @@ export default function SpecialistsPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  We believe in personalized care plans tailored to each patient's unique needs and goals.
+                  We believe in personalized care plans tailored to each
+                  patient's unique needs and goals.
                 </p>
               </CardContent>
             </Card>
@@ -294,7 +352,8 @@ export default function SpecialistsPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Our track record of successful patient outcomes speaks for our expertise and dedication.
+                  Our track record of successful patient outcomes speaks for our
+                  expertise and dedication.
                 </p>
               </CardContent>
             </Card>
@@ -310,7 +369,8 @@ export default function SpecialistsPage() {
               Ready to Meet Your Specialist?
             </h2>
             <p className="text-lg opacity-90">
-              Book an appointment today and start your journey to recovery with one of our expert physiotherapists.
+              Book an appointment today and start your journey to recovery with
+              one of our expert physiotherapists.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" variant="secondary" asChild>
@@ -319,7 +379,12 @@ export default function SpecialistsPage() {
                   Book Appointment
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary" asChild>
+              <Button
+                size="lg"
+                variant="outline"
+                className="bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+                asChild
+              >
                 <Link href="/services">
                   View Our Services
                   <ArrowRight className="ml-2 w-5 h-5" />
