@@ -39,6 +39,15 @@ import Image from "next/image";
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const serviceImages = {
+    "Orthopedic Physiotherapy": "/images/service-orthopedic.jpg",
+    "Neurological Physiotherapy": "/images/service-neurological.jpg",
+    "Sports Injury Rehabilitation": "/images/service-sports.jpg",
+    "Pediatric Physiotherapy": "/images/service-pediatric.jpg",
+    "Cardiopulmonary Rehabilitation": "/images/service-cardiopulmonary.jpg",
+    "Geriatric Physiotherapy": "/images/service-geriatric.jpg",
+  };
+
   const services = [
     {
       icon: <Bone className="w-8 h-8" />,
@@ -264,15 +273,15 @@ export default function Home() {
                 </div>
               </div>
               <div className="relative hidden lg:block">
-                <div className="aspect-square bg-gradient-to-br from-primary/20 to-primary/5 rounded-3xl flex items-center justify-center">
-                  <div className="text-center space-y-4 p-8">
-                    <Activity className="w-32 h-32 text-primary mx-auto" />
-                    <p className="text-2xl font-semibold">Expert Care</p>
-                    <p className="text-muted-foreground">Modern Technology</p>
-                    <p className="text-muted-foreground">
-                      Personalized Treatment
-                    </p>
-                  </div>
+                <div className="aspect-square rounded-3xl overflow-hidden shadow-lg">
+                  <Image
+                    src="/images/hero-banner.jpg"
+                    alt="Modern Physiotherapy Clinic"
+                    width={600}
+                    height={600}
+                    className="object-cover w-full h-full"
+                    priority
+                  />
                 </div>
               </div>
             </div>
@@ -294,13 +303,28 @@ export default function Home() {
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {services.map((service, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow">
+              {services.slice(0, 3).map((service, index) => (
+                <Card
+                  key={index}
+                  className="hover:shadow-lg transition-shadow overflow-hidden group"
+                >
+                  <div className="relative aspect-video bg-muted overflow-hidden">
+                    <Image
+                      src={
+                        serviceImages[
+                          service.title as keyof typeof serviceImages
+                        ]
+                      }
+                      alt={service.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      priority={index < 3}
+                    />
+                  </div>
                   <CardHeader>
-                    <div className="w-14 h-14 bg-primary/10 rounded-lg flex items-center justify-center text-primary mb-4">
-                      {service.icon}
-                    </div>
-                    <CardTitle className="text-xl">{service.title}</CardTitle>
+                    <CardTitle className="text-xl group-hover:text-primary transition-colors">
+                      {service.title}
+                    </CardTitle>
                     <CardDescription className="text-base">
                       {service.description}
                     </CardDescription>
@@ -347,6 +371,16 @@ export default function Home() {
                 dedicated to providing the highest quality care to help you
                 achieve your health goals.
               </p>
+            </div>
+
+            <div className="mb-12 rounded-2xl overflow-hidden shadow-lg">
+              <Image
+                src="/images/about-team.jpg"
+                alt="PhysioConnect Team"
+                width={1200}
+                height={400}
+                className="object-cover w-full h-auto"
+              />
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -410,7 +444,7 @@ export default function Home() {
                   </Button>
                 </Link>
               </div>
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-6 hidden md:grid">
                 <Card className="bg-primary/5 border-primary/20">
                   <CardHeader>
                     <div className="text-3xl font-bold text-primary">10K+</div>
@@ -435,6 +469,15 @@ export default function Home() {
                     <CardDescription>Online Booking</CardDescription>
                   </CardHeader>
                 </Card>
+              </div>
+              <div className="relative rounded-2xl overflow-hidden shadow-lg md:hidden">
+                <Image
+                  src="/images/about-clinic.jpg"
+                  alt="Our Modern Clinic"
+                  width={500}
+                  height={400}
+                  className="object-cover w-full h-full"
+                />
               </div>
             </div>
           </div>
@@ -550,6 +593,65 @@ export default function Home() {
           </div>
         </section>
       </main>
+
+      {/* Contact/Location Section */}
+      <section className="py-20 bg-gradient-to-br from-primary/5 to-background">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <Badge>Visit Us</Badge>
+              <h2 className="text-3xl md:text-4xl font-bold">
+                Our Modern Clinic
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                Located in the heart of the city, our state-of-the-art facility
+                is designed to provide a comfortable and welcoming environment
+                for our patients.
+              </p>
+              <div className="space-y-4">
+                <div className="flex items-start gap-4">
+                  <MapPin className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                  <div>
+                    <p className="font-semibold">Address</p>
+                    <p className="text-muted-foreground">
+                      123 Healthcare Plaza, Medical District, City, State 12345
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <Phone className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                  <div>
+                    <p className="font-semibold">Phone</p>
+                    <p className="text-muted-foreground">(555) 123-4567</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <Clock className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                  <div>
+                    <p className="font-semibold">Hours</p>
+                    <p className="text-muted-foreground">
+                      Mon-Fri: 8:00 AM - 6:00 PM
+                      <br />
+                      Sat: 9:00 AM - 2:00 PM
+                      <br />
+                      Sun: Closed
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="relative rounded-2xl overflow-hidden shadow-xl">
+              <Image
+                src="/images/clinic-exterior.jpg"
+                alt="PhysioConnect Clinic Exterior"
+                width={600}
+                height={500}
+                className="object-cover w-full h-full"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
       <footer id="contact" className="bg-muted/50 border-t">
