@@ -213,12 +213,12 @@ export default function Home() {
   ];
 
   const navLinks = [
-    { name: "Home", href: "#home" },
-    { name: "Services", href: "#services" },
-    { name: "Specialists", href: "#specialists" },
-    { name: "About Us", href: "#about" },
-    { name: "Blog", href: "#blog" },
-    { name: "Contact", href: "#contact" },
+    { name: "Home", href: "/#home" },
+    { name: "Services", href: "/services" },
+    { name: "Specialists", href: "/specialists" },
+    { name: "About Us", href: "/about" },
+    { name: "Blog", href: "/blog" },
+    { name: "Contact", href: "/contact" },
   ];
 
   return (
@@ -229,19 +229,21 @@ export default function Home() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
               <Activity className="w-8 h-8 text-primary" />
-              <span className="text-2xl font-bold">PhysioConnect</span>
+              <Link href="/#home" className="text-2xl font-bold">
+                PhysioConnect
+              </Link>
             </div>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-8">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.name}
                   href={link.href}
                   className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
                 >
                   {link.name}
-                </a>
+                </Link>
               ))}
             </div>
 
@@ -273,14 +275,14 @@ export default function Home() {
           <div className="md:hidden border-t">
             <div className="container mx-auto px-4 py-4 space-y-4">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.name}
                   href={link.href}
                   className="block text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {link.name}
-                </a>
+                </Link>
               ))}
               <div className="flex flex-col gap-2 pt-4 border-t">
                 <Link href="/auth/login">
@@ -508,7 +510,7 @@ export default function Home() {
                     </div>
                   ))}
                 </div>
-                <Link href="#about">
+                <Link href="/about">
                   <Button size="lg" className="mt-6">
                     Learn More About Us
                     <ArrowRight className="ml-2 w-5 h-5" />
@@ -654,7 +656,7 @@ export default function Home() {
             </div>
 
             <div className="text-center mt-12">
-              <Link href="#blog">
+              <Link href="/blog">
                 <Button size="lg" variant="outline">
                   View All Articles
                   <ArrowRight className="ml-2 w-5 h-5" />
