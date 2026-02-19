@@ -32,12 +32,83 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
+interface ClinicSettings {
+  clinicName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  description: string;
+  workingHours?: {
+    monday?: string;
+    tuesday?: string;
+    wednesday?: string;
+    thursday?: string;
+    friday?: string;
+    saturday?: string;
+    sunday?: string;
+  };
+}
+
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [clinicSettings, setClinicSettings] = useState<ClinicSettings | null>(
+    null,
+  );
+  const [loading, setLoading] = useState(true);
+
+  // Default values as fallback
+  const defaultSettings: ClinicSettings = {
+    clinicName: "PhysioConnect",
+    email: "info@physioconnect.com",
+    phone: "(555) 123-4567",
+    address: "123 Healthcare Plaza",
+    city: "Medical District",
+    state: "State",
+    postalCode: "12345",
+    country: "Country",
+    description: "Your trusted partner in physiotherapy care.",
+    workingHours: {
+      monday: "8:00 AM - 6:00 PM",
+      tuesday: "8:00 AM - 6:00 PM",
+      wednesday: "8:00 AM - 6:00 PM",
+      thursday: "8:00 AM - 6:00 PM",
+      friday: "8:00 AM - 6:00 PM",
+      saturday: "9:00 AM - 2:00 PM",
+      sunday: "Closed",
+    },
+  };
+
+  // Fetch clinic settings on mount
+  useEffect(() => {
+    const fetchClinicSettings = async () => {
+      try {
+        const response = await fetch("/api/admin/settings");
+        if (response.ok) {
+          const data = await response.json();
+          setClinicSettings(data);
+        } else {
+          setClinicSettings(defaultSettings);
+        }
+      } catch (error) {
+        console.error("Error fetching clinic settings:", error);
+        setClinicSettings(defaultSettings);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClinicSettings();
+  }, []);
+
+  const settings = clinicSettings || defaultSettings;
 
   const serviceImages = {
     "Orthopedic Physiotherapy": "/images/service-orthopedic.jpg",
@@ -614,7 +685,9 @@ export default function Home() {
                   <div>
                     <p className="font-semibold">Address</p>
                     <p className="text-muted-foreground">
-                      123 Healthcare Plaza, Medical District, City, State 12345
+                      {settings.address}
+                      <br />
+                      {settings.city}, {settings.state} {settings.postalCode}
                     </p>
                   </div>
                 </div>
@@ -622,7 +695,7 @@ export default function Home() {
                   <Phone className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                   <div>
                     <p className="font-semibold">Phone</p>
-                    <p className="text-muted-foreground">(555) 123-4567</p>
+                    <p className="text-muted-foreground">{settings.phone}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -630,11 +703,13 @@ export default function Home() {
                   <div>
                     <p className="font-semibold">Hours</p>
                     <p className="text-muted-foreground">
-                      Mon-Fri: 8:00 AM - 6:00 PM
+                      Mon-Fri:{" "}
+                      {settings.workingHours?.monday || "8:00 AM - 6:00 PM"}
                       <br />
-                      Sat: 9:00 AM - 2:00 PM
+                      Sat:{" "}
+                      {settings.workingHours?.saturday || "9:00 AM - 2:00 PM"}
                       <br />
-                      Sun: Closed
+                      Sun: {settings.workingHours?.sunday || "Closed"}
                     </p>
                   </div>
                 </div>
@@ -660,11 +735,10 @@ export default function Home() {
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <Activity className="w-6 h-6 text-primary" />
-                <span className="text-xl font-bold">PhysioConnect</span>
+                <span className="text-xl font-bold">{settings.clinicName}</span>
               </div>
               <p className="text-sm text-muted-foreground">
-                Your trusted partner in physiotherapy care. We're dedicated to
-                helping you achieve optimal health and wellness.
+                {settings.description}
               </p>
               <div className="flex items-center gap-4">
                 <Facebook className="w-5 h-5 text-muted-foreground hover:text-primary cursor-pointer" />
@@ -708,25 +782,28 @@ export default function Home() {
                 <li className="flex items-start gap-3">
                   <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-muted-foreground">
-                    123 Healthcare Street
+                    {settings.address}
                     <br />
-                    Medical District, MD 12345
+                    {settings.city}, {settings.state} {settings.postalCode}
                   </span>
                 </li>
                 <li className="flex items-center gap-3">
                   <Phone className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-muted-foreground">+8801XXXXXXXXX</span>
+                  <span className="text-muted-foreground">
+                    {settings.phone}
+                  </span>
                 </li>
                 <li className="flex items-center gap-3">
                   <Mail className="w-5 h-5 text-primary flex-shrink-0" />
                   <span className="text-muted-foreground">
-                    info@physioconnect.com
+                    {settings.email}
                   </span>
                 </li>
                 <li className="flex items-center gap-3">
                   <Clock className="w-5 h-5 text-primary flex-shrink-0" />
                   <span className="text-muted-foreground">
-                    Mon-Fri: 8:00 AM - 8:00 PM
+                    Mon-Fri:{" "}
+                    {settings.workingHours?.monday || "8:00 AM - 8:00 PM"}
                     <br />
                     Sat: 9:00 AM - 5:00 PM
                   </span>
