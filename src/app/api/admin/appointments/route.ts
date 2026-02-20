@@ -25,11 +25,14 @@ export async function GET(req: NextRequest) {
     const status = searchParams.get('status');
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
-    const limit = parseInt(searchParams.get('limit') || '50');
+    const search = searchParams.get('search');
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '20');
+    const skip = (page - 1) * limit;
 
     const where: any = {};
 
-    if (status) {
+    if (status && status !== 'all') {
       where.status = status;
     }
 
@@ -43,8 +46,21 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    // Search filter
+    if (search) {
+      where.OR = [
+        { user: { name: { contains: search, mode: 'insensitive' } } },
+        { user: { email: { contains: search, mode: 'insensitive' } } },
+        { service: { name: { contains: search, mode: 'insensitive' } } },
+      ];
+    }
+
+    // Get total count for pagination
+    const totalCount = await db.appointment.count({ where });
+
     const appointments = await db.appointment.findMany({
       where,
+      skip,
       take: limit,
       orderBy: {
         appointmentDate: 'desc',
@@ -80,7 +96,15 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    return NextResponse.json(appointments);
+    return NextResponse.json({
+      appointments,
+      pagination: {
+        page,
+        limit,
+        totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+      },
+    });
   } catch (error) {
     console.error('Error fetching appointments:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

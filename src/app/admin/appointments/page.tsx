@@ -14,6 +14,9 @@ import {
   Eye,
   X,
   MoreHorizontal,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -80,16 +83,41 @@ interface AppointmentDetails extends Appointment {
   updatedAt: string;
 }
 
+interface PaginationInfo {
+  page: number;
+  limit: number;
+  totalCount: number;
+  totalPages: number;
+}
+
 export default function AdminAppointmentsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedAppointment, setSelectedAppointment] =
     useState<AppointmentDetails | null>(null);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState<PaginationInfo>({
+    page: 1,
+    limit: 20,
+    totalCount: 0,
+    totalPages: 0,
+  });
+  const ITEMS_PER_PAGE = 20;
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setCurrentPage(1); // Reset to page 1 on search
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -106,18 +134,35 @@ export default function AdminAppointmentsPage() {
       router.push("/dashboard");
       return;
     }
-
-    fetchAppointments();
   }, [session, status, router]);
+
+  useEffect(() => {
+    if (session?.user?.role) {
+      fetchAppointments();
+    }
+  }, [session, currentPage, debouncedSearch, statusFilter]);
 
   const fetchAppointments = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/admin/appointments");
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: ITEMS_PER_PAGE.toString(),
+      });
+
+      if (debouncedSearch) {
+        params.append("search", debouncedSearch);
+      }
+      if (statusFilter && statusFilter !== "all") {
+        params.append("status", statusFilter);
+      }
+
+      const response = await fetch(`/api/admin/appointments?${params}`);
 
       if (response.ok) {
         const data = await response.json();
-        setAppointments(data);
+        setAppointments(data.appointments);
+        setPagination(data.pagination);
       } else {
         toast.error("Failed to fetch appointments");
       }
@@ -170,21 +215,10 @@ export default function AdminAppointmentsPage() {
     }
   };
 
-  const filteredAppointments = appointments.filter((appointment) => {
-    const matchesSearch =
-      appointment.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      appointment.user.email
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      appointment.service.name
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-
-    const matchesStatus =
-      statusFilter === "all" || appointment.status === statusFilter;
-
-    return matchesSearch && matchesStatus;
-  });
+  const handleStatusFilterChange = (value: string) => {
+    setStatusFilter(value);
+    setCurrentPage(1); // Reset to page 1 on filter change
+  };
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, any> = {
@@ -256,7 +290,10 @@ export default function AdminAppointmentsPage() {
                   className="pl-8 w-[250px]"
                 />
               </div>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <Select
+                value={statusFilter}
+                onValueChange={handleStatusFilterChange}
+              >
                 <SelectTrigger className="w-[150px]">
                   <Filter className="mr-2 h-4 w-4" />
                   <SelectValue placeholder="Status" />
@@ -287,7 +324,7 @@ export default function AdminAppointmentsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredAppointments.length === 0 ? (
+                {appointments.length === 0 ? (
                   <TableRow>
                     <TableCell
                       colSpan={7}
@@ -297,7 +334,7 @@ export default function AdminAppointmentsPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredAppointments.map((appointment) => (
+                  appointments.map((appointment) => (
                     <TableRow key={appointment.id}>
                       <TableCell>
                         <div>
@@ -373,6 +410,55 @@ export default function AdminAppointmentsPage() {
               </TableBody>
             </Table>
           </div>
+
+          {/* Pagination */}
+          {pagination.totalCount > 0 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
+              <p className="text-sm text-muted-foreground">
+                Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{" "}
+                {Math.min(currentPage * ITEMS_PER_PAGE, pagination.totalCount)}{" "}
+                of {pagination.totalCount} appointments
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronsLeft className="h-4 w-4 mr-1" />
+                  First
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="h-4 w-4 mr-1" />
+                  Previous
+                </Button>
+                <span className="text-sm text-muted-foreground px-2">
+                  Page {currentPage} of {pagination.totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setCurrentPage((prev) =>
+                      Math.min(prev + 1, pagination.totalPages),
+                    )
+                  }
+                  disabled={currentPage === pagination.totalPages}
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
