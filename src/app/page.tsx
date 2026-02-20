@@ -1176,7 +1176,7 @@ export default function Home() {
           <Separator className="my-8" />
 
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-            <p>© 2025 PhysioConnect. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} PhysioConnect. All rights reserved.</p>
             <div className="flex items-center gap-6">
               <a href="#" className="hover:text-primary transition-colors">
                 Privacy Policy

@@ -500,7 +500,7 @@ export default function PatientDashboard() {
                                 <Calendar className="w-6 h-6 text-primary" />
                               </div>
                             </div>
-                            <div className="flex-1 flex-1 sm:flex sm:items-center gap-4">
+                            <div className="flex-1 sm:flex sm:items-center gap-4">
                               <div className="flex-1">
                                 <h3 className="font-semibold">{apt.service.name}</h3>
                                 {apt.staff && (
@@ -798,7 +798,7 @@ export default function PatientDashboard() {
                               </div>
                             )}
                           </div>
-                          <div className="flex flex items-center gap-2">
+                          <div className="flex items-center gap-2">
                             <Button
                               variant="outline"
                               size="sm"

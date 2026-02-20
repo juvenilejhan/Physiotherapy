@@ -538,6 +538,7 @@ export default function AdminContentPage() {
                             checked={blogForm.isPublished}
                             onChange={(e) => setBlogForm({ ...blogForm, isPublished: e.target.checked })}
                             className="h-4 w-4"
+                            aria-label="Publish immediately"
                           />
                           <Label htmlFor="blogPublished" className="cursor-pointer">
                             Publish immediately
