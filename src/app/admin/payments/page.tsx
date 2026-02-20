@@ -20,13 +20,13 @@ import {
   Filter,
   Download,
   RefreshCw,
-  DollarSign,
   CheckCircle,
   Clock,
   XCircle,
   ArrowLeftRight,
   ArrowUpCircle,
 } from 'lucide-react';
+import { formatBDT } from '@/lib/utils';
 
 interface Payment {
   id: string;
@@ -183,10 +183,10 @@ export default function PaymentsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <span className="text-muted-foreground font-semibold">৳</span>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${stats.total.toFixed(2)}</div>
+            <div className="text-2xl font-bold">{formatBDT(stats.total)}</div>
             <p className="text-xs text-muted-foreground">All time</p>
           </CardContent>
         </Card>
@@ -197,7 +197,7 @@ export default function PaymentsPage() {
             <CheckCircle className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">${stats.completed.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-green-600">{formatBDT(stats.completed)}</div>
             <p className="text-xs text-muted-foreground">Successfully collected</p>
           </CardContent>
         </Card>
@@ -208,7 +208,7 @@ export default function PaymentsPage() {
             <Clock className="h-4 w-4 text-yellow-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">${stats.pending.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-yellow-600">{formatBDT(stats.pending)}</div>
             <p className="text-xs text-muted-foreground">Awaiting payment</p>
           </CardContent>
         </Card>
@@ -219,7 +219,7 @@ export default function PaymentsPage() {
             <XCircle className="h-4 w-4 text-red-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">${stats.failed.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-red-600">{formatBDT(stats.failed)}</div>
             <p className="text-xs text-muted-foreground">Payment failures</p>
           </CardContent>
         </Card>
@@ -230,7 +230,7 @@ export default function PaymentsPage() {
             <ArrowUpCircle className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">${stats.refunded.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-blue-600">{formatBDT(stats.refunded)}</div>
             <p className="text-xs text-muted-foreground">Total refunds</p>
           </CardContent>
         </Card>
@@ -292,7 +292,7 @@ export default function PaymentsPage() {
                             </div>
                           </TableCell>
                           <TableCell className="font-medium">
-                            ${payment.amount.toFixed(2)}
+                            {formatBDT(payment.amount)}
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">

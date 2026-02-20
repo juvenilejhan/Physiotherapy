@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/input";
 import {
   Search,
   Clock,
-  DollarSign,
   Calendar,
   ArrowRight,
   Filter,
@@ -25,6 +24,7 @@ import {
   Heart,
   Baby,
 } from "lucide-react";
+import { formatBDT } from "@/lib/utils";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -294,10 +294,9 @@ export default function ServicesPage() {
                             <Clock className="w-4 h-4" />
                             <span>{service.duration} minutes</span>
                           </div>
-                          <div className="flex items-center gap-2 font-semibold text-primary">
-                            <DollarSign className="w-4 h-4" />
-                            <span>${service.price}</span>
-                          </div>
+                          <span className="font-semibold text-primary">
+                            {formatBDT(service.price)}
+                          </span>
                         </div>
                       </div>
                       <Link href={`/services/${service.slug}`}>

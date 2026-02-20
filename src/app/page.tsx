@@ -32,6 +32,7 @@ import {
   Menu,
   X,
   MessageCircle,
+  FileText,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -58,12 +59,61 @@ interface ClinicSettings {
   };
 }
 
+interface DynamicService {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  conditions: string | null;
+  benefits: string | null;
+  duration: number;
+  price: number;
+  image: string | null;
+  category: string | null;
+}
+
+interface DynamicSpecialist {
+  id: string;
+  user: {
+    id: string;
+    name: string | null;
+    email: string;
+    image: string | null;
+  };
+  specialization: string | null;
+  experience: number | null;
+  consultationFee: number;
+  qualifications: string | null;
+  bio: string | null;
+}
+
+interface DynamicBlog {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  featuredImage: string | null;
+  category: string | null;
+  author: {
+    id: string;
+    name: string | null;
+    image: string | null;
+  } | null;
+  publishedAt: string | null;
+}
+
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [clinicSettings, setClinicSettings] = useState<ClinicSettings | null>(
     null,
   );
   const [loading, setLoading] = useState(true);
+  const [dynamicServices, setDynamicServices] = useState<DynamicService[]>([]);
+  const [dynamicSpecialists, setDynamicSpecialists] = useState<DynamicSpecialist[]>([]);
+  const [dynamicBlogs, setDynamicBlogs] = useState<DynamicBlog[]>([]);
+  const [servicesLoading, setServicesLoading] = useState(true);
+  const [specialistsLoading, setSpecialistsLoading] = useState(true);
+  const [blogsLoading, setBlogsLoading] = useState(true);
 
   // Default values as fallback
   const defaultSettings: ClinicSettings = {
@@ -107,6 +157,63 @@ export default function Home() {
     };
 
     fetchClinicSettings();
+  }, []);
+
+  // Fetch services from database
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await fetch("/api/services");
+        if (response.ok) {
+          const data = await response.json();
+          setDynamicServices(data.services || []);
+        }
+      } catch (error) {
+        console.error("Error fetching services:", error);
+      } finally {
+        setServicesLoading(false);
+      }
+    };
+
+    fetchServices();
+  }, []);
+
+  // Fetch specialists from database
+  useEffect(() => {
+    const fetchSpecialists = async () => {
+      try {
+        const response = await fetch("/api/specialists");
+        if (response.ok) {
+          const data = await response.json();
+          setDynamicSpecialists(data.specialists || []);
+        }
+      } catch (error) {
+        console.error("Error fetching specialists:", error);
+      } finally {
+        setSpecialistsLoading(false);
+      }
+    };
+
+    fetchSpecialists();
+  }, []);
+
+  // Fetch blog posts from database
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const response = await fetch("/api/public/blogs?limit=3");
+        if (response.ok) {
+          const data = await response.json();
+          setDynamicBlogs(data.blogs || []);
+        }
+      } catch (error) {
+        console.error("Error fetching blogs:", error);
+      } finally {
+        setBlogsLoading(false);
+      }
+    };
+
+    fetchBlogs();
   }, []);
 
   const settings = clinicSettings || defaultSettings;
@@ -416,48 +523,110 @@ export default function Home() {
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {services.slice(0, 3).map((service, index) => (
-                <Card
-                  key={index}
-                  className="hover:shadow-lg transition-shadow overflow-hidden group"
-                >
-                  <div className="relative aspect-video bg-muted overflow-hidden">
-                    <Image
-                      src={
-                        serviceImages[
-                          service.title as keyof typeof serviceImages
-                        ]
-                      }
-                      alt={service.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      priority={index < 3}
-                    />
-                  </div>
-                  <CardHeader>
-                    <CardTitle className="text-xl group-hover:text-primary transition-colors">
-                      {service.title}
-                    </CardTitle>
-                    <CardDescription className="text-base">
-                      {service.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium text-muted-foreground">
-                        Treats:
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {service.conditions.map((condition, idx) => (
-                          <Badge key={idx} variant="secondary">
-                            {condition}
-                          </Badge>
-                        ))}
+              {servicesLoading ? (
+                // Loading skeleton
+                [1, 2, 3].map((i) => (
+                  <Card key={i} className="animate-pulse">
+                    <div className="aspect-video bg-muted"></div>
+                    <CardHeader>
+                      <div className="h-6 bg-muted rounded w-3/4 mb-2"></div>
+                      <div className="h-4 bg-muted rounded w-full"></div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex gap-2">
+                        <div className="h-6 bg-muted rounded w-20"></div>
+                        <div className="h-6 bg-muted rounded w-20"></div>
                       </div>
+                    </CardContent>
+                  </Card>
+                ))
+              ) : dynamicServices.length > 0 ? (
+                // Dynamic services from database
+                dynamicServices.slice(0, 3).map((service) => (
+                  <Link key={service.id} href={`/services/${service.slug}`} className="block">
+                    <Card className="hover:shadow-lg transition-shadow overflow-hidden group h-full">
+                      <div className="relative aspect-video bg-muted overflow-hidden">
+                        <Image
+                          src={service.image || serviceImages[service.name as keyof typeof serviceImages] || "/images/service-orthopedic.jpg"}
+                          alt={service.name}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                      <CardHeader>
+                        <CardTitle className="text-xl group-hover:text-primary transition-colors">
+                          {service.name}
+                        </CardTitle>
+                        <CardDescription className="text-base line-clamp-2">
+                          {service.description}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2">
+                          {service.conditions && (
+                            <>
+                              <p className="text-sm font-medium text-muted-foreground">
+                                Treats:
+                              </p>
+                              <div className="flex flex-wrap gap-2">
+                                {service.conditions.split(",").slice(0, 3).map((condition, idx) => (
+                                  <Badge key={idx} variant="secondary">
+                                    {condition.trim()}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))
+              ) : (
+                // Fallback to static services
+                services.slice(0, 3).map((service, index) => (
+                  <Card
+                    key={index}
+                    className="hover:shadow-lg transition-shadow overflow-hidden group"
+                  >
+                    <div className="relative aspect-video bg-muted overflow-hidden">
+                      <Image
+                        src={
+                          serviceImages[
+                            service.title as keyof typeof serviceImages
+                          ]
+                        }
+                        alt={service.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        priority={index < 3}
+                      />
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    <CardHeader>
+                      <CardTitle className="text-xl group-hover:text-primary transition-colors">
+                        {service.title}
+                      </CardTitle>
+                      <CardDescription className="text-base">
+                        {service.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium text-muted-foreground">
+                          Treats:
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {service.conditions.map((condition, idx) => (
+                            <Badge key={idx} variant="secondary">
+                              {condition}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
 
             <div className="text-center mt-12">
@@ -497,32 +666,101 @@ export default function Home() {
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {specialists.map((specialist, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow">
-                  <CardHeader className="text-center">
-                    <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-primary/5 rounded-full mx-auto mb-4 flex items-center justify-center">
-                      <Users className="w-12 h-12 text-primary" />
-                    </div>
-                    <CardTitle className="text-lg">{specialist.name}</CardTitle>
-                    <CardDescription className="text-sm">
-                      {specialist.role}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="text-center space-y-3">
-                    <Badge variant="outline">{specialist.specialization}</Badge>
-                    <p className="text-sm text-muted-foreground">
-                      {specialist.experience} of experience
-                    </p>
-                    <div className="flex items-center justify-center gap-2">
-                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      <span className="font-semibold">{specialist.rating}</span>
-                      <span className="text-sm text-muted-foreground">
-                        ({specialist.reviews} reviews)
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+              {specialistsLoading ? (
+                // Loading skeleton
+                [1, 2, 3, 4].map((i) => (
+                  <Card key={i} className="animate-pulse">
+                    <CardHeader className="text-center">
+                      <div className="w-24 h-24 bg-muted rounded-full mx-auto mb-4"></div>
+                      <div className="h-6 bg-muted rounded w-3/4 mx-auto mb-2"></div>
+                      <div className="h-4 bg-muted rounded w-1/2 mx-auto"></div>
+                    </CardHeader>
+                    <CardContent className="text-center space-y-3">
+                      <div className="h-6 bg-muted rounded w-24 mx-auto"></div>
+                      <div className="h-4 bg-muted rounded w-32 mx-auto"></div>
+                    </CardContent>
+                  </Card>
+                ))
+              ) : dynamicSpecialists.length > 0 ? (
+                // Dynamic specialists from database
+                dynamicSpecialists.slice(0, 4).map((specialist) => (
+                  <Link key={specialist.id} href={`/specialists/${specialist.id}`} className="block">
+                    <Card className="hover:shadow-lg transition-shadow h-full">
+                      <CardHeader className="text-center">
+                        <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-primary/5 rounded-full mx-auto mb-4 flex items-center justify-center overflow-hidden">
+                          {specialist.user.image ? (
+                            <Image
+                              src={specialist.user.image}
+                              alt={specialist.user.name || "Specialist"}
+                              width={96}
+                              height={96}
+                              className="object-cover w-full h-full"
+                            />
+                          ) : (
+                            <Users className="w-12 h-12 text-primary" />
+                          )}
+                        </div>
+                        <CardTitle className="text-lg">{specialist.user.name || "Specialist"}</CardTitle>
+                        <CardDescription className="text-sm">
+                          {specialist.specialization || "Physiotherapist"}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="text-center space-y-3">
+                        {specialist.qualifications && (
+                          <Badge variant="outline">{specialist.qualifications.split(",")[0]}</Badge>
+                        )}
+                        <p className="text-sm text-muted-foreground">
+                          {specialist.experience ? `${specialist.experience} years of experience` : "Experienced Professional"}
+                        </p>
+                        <div className="flex items-center justify-center gap-2">
+                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                          <span className="font-semibold">4.9</span>
+                          <span className="text-sm text-muted-foreground">
+                            (Based on reviews)
+                          </span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))
+              ) : (
+                // Fallback to static specialists
+                specialists.map((specialist, index) => (
+                  <Card key={index} className="hover:shadow-lg transition-shadow">
+                    <CardHeader className="text-center">
+                      <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-primary/5 rounded-full mx-auto mb-4 flex items-center justify-center">
+                        <Users className="w-12 h-12 text-primary" />
+                      </div>
+                      <CardTitle className="text-lg">{specialist.name}</CardTitle>
+                      <CardDescription className="text-sm">
+                        {specialist.role}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="text-center space-y-3">
+                      <Badge variant="outline">{specialist.specialization}</Badge>
+                      <p className="text-sm text-muted-foreground">
+                        {specialist.experience} of experience
+                      </p>
+                      <div className="flex items-center justify-center gap-2">
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <span className="font-semibold">{specialist.rating}</span>
+                        <span className="text-sm text-muted-foreground">
+                          ({specialist.reviews} reviews)
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </div>
+
+            <div className="text-center mt-12">
+              <Link href="/specialists">
+                <Button size="lg" variant="outline">
+                  View All Specialists
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
@@ -673,54 +911,107 @@ export default function Home() {
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
-              {[
-                {
-                  title: "5 Common Sports Injuries and How to Prevent Them",
-                  category: "Sports Injuries",
-                  image: "/images/blog-sports-injuries.jpg",
-                  date: "Jan 10, 2025",
-                  readTime: "5 min read",
-                },
-                {
-                  title: "Recovery After Injury: A Complete Guide",
-                  category: "Recovery",
-                  image: "/images/blog-recovery.jpg",
-                  date: "Jan 11, 2025",
-                  readTime: "7 min read",
-                },
-                {
-                  title: "Physiotherapy Techniques for Better Health",
-                  category: "Wellness",
-                  image: "/images/blog-treatment.jpg",
-                  date: "Jan 12, 2025",
-                  readTime: "6 min read",
-                },
-              ].map((article, i) => (
-                <Card
-                  key={i}
-                  className="hover:shadow-lg transition-shadow overflow-hidden"
-                >
-                  <div className="relative aspect-video bg-muted">
-                    <Image
-                      src={article.image}
-                      alt={article.title}
-                      fill
-                      className="object-cover"
-                      priority={i < 3}
-                    />
-                  </div>
-                  <CardHeader>
-                    <Badge className="w-fit mb-2">{article.category}</Badge>
-                    <CardTitle className="text-lg">{article.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <span>{article.date}</span>
-                      <span>{article.readTime}</span>
+              {blogsLoading ? (
+                // Loading skeleton
+                [1, 2, 3].map((i) => (
+                  <Card key={i} className="animate-pulse overflow-hidden">
+                    <div className="relative aspect-video bg-muted"></div>
+                    <CardHeader>
+                      <div className="h-6 bg-muted rounded w-20 mb-2"></div>
+                      <div className="h-6 bg-muted rounded w-full"></div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex justify-between">
+                        <div className="h-4 bg-muted rounded w-24"></div>
+                        <div className="h-4 bg-muted rounded w-20"></div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              ) : dynamicBlogs.length > 0 ? (
+                // Dynamic blogs from database
+                dynamicBlogs.map((blog, i) => (
+                  <Link key={blog.id} href={`/blog/${blog.slug}`} className="block">
+                    <Card className="hover:shadow-lg transition-shadow overflow-hidden h-full">
+                      <div className="relative aspect-video bg-muted">
+                        {blog.featuredImage ? (
+                          <Image
+                            src={blog.featuredImage}
+                            alt={blog.title}
+                            fill
+                            className="object-cover"
+                            priority={i < 3}
+                          />
+                        ) : (
+                          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
+                            <FileText className="w-12 h-12 text-primary/40" />
+                          </div>
+                        )}
+                      </div>
+                      <CardHeader>
+                        <Badge className="w-fit mb-2">{blog.category || "Article"}</Badge>
+                        <CardTitle className="text-lg line-clamp-2">{blog.title}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex items-center justify-between text-sm text-muted-foreground">
+                          <span>{new Date(blog.publishedAt || blog.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+                          <span>{Math.ceil((blog.content?.length || 0) / 1000)} min read</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))
+              ) : (
+                // Fallback to static content
+                [
+                  {
+                    title: "5 Common Sports Injuries and How to Prevent Them",
+                    category: "Sports Injuries",
+                    image: "/images/blog-sports-injuries.jpg",
+                    date: "Jan 10, 2025",
+                    readTime: "5 min read",
+                  },
+                  {
+                    title: "Recovery After Injury: A Complete Guide",
+                    category: "Recovery",
+                    image: "/images/blog-recovery.jpg",
+                    date: "Jan 11, 2025",
+                    readTime: "7 min read",
+                  },
+                  {
+                    title: "Physiotherapy Techniques for Better Health",
+                    category: "Wellness",
+                    image: "/images/blog-treatment.jpg",
+                    date: "Jan 12, 2025",
+                    readTime: "6 min read",
+                  },
+                ].map((article, i) => (
+                  <Card
+                    key={i}
+                    className="hover:shadow-lg transition-shadow overflow-hidden"
+                  >
+                    <div className="relative aspect-video bg-muted">
+                      <Image
+                        src={article.image}
+                        alt={article.title}
+                        fill
+                        className="object-cover"
+                        priority={i < 3}
+                      />
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    <CardHeader>
+                      <Badge className="w-fit mb-2">{article.category}</Badge>
+                      <CardTitle className="text-lg">{article.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center justify-between text-sm text-muted-foreground">
+                        <span>{article.date}</span>
+                        <span>{article.readTime}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
 
             <div className="text-center mt-12">

@@ -15,7 +15,6 @@ import { Separator } from "@/components/ui/separator";
 import {
   Calendar,
   Clock,
-  DollarSign,
   ArrowLeft,
   ArrowRight,
   CheckCircle,
@@ -26,6 +25,7 @@ import {
   Star,
   Loader2,
 } from "lucide-react";
+import { formatBDT } from "@/lib/utils";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -250,7 +250,7 @@ export default function ServiceDetailPage() {
                             <span>{member.experience} years exp</span>
                             <span>•</span>
                             <span className="font-semibold text-primary">
-                              ${member.consultationFee}
+                              {formatBDT(member.consultationFee)}
                             </span>
                           </div>
                         </div>
@@ -286,11 +286,11 @@ export default function ServiceDetailPage() {
                 <Separator />
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-muted-foreground">
-                    <DollarSign className="w-5 h-5" />
+                    <Clock className="w-5 h-5" />
                     <span>Price</span>
                   </div>
                   <span className="text-2xl font-bold text-primary">
-                    ${service.price}
+                    {formatBDT(service.price)}
                   </span>
                 </div>
                 <Separator />

@@ -48,6 +48,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { format } from 'date-fns';
+import { formatBDT } from '@/lib/utils';
 
 interface Service {
   id: string;
@@ -357,7 +358,7 @@ export default function AdminContentPage() {
                             />
                           </div>
                           <div className="grid gap-2">
-                            <Label htmlFor="price">Price ($)</Label>
+                            <Label htmlFor="price">Price (BDT)</Label>
                             <Input
                               id="price"
                               type="number"
@@ -418,7 +419,7 @@ export default function AdminContentPage() {
                         <p className="text-sm text-muted-foreground mt-1">{service.description}</p>
                         <div className="flex gap-4 mt-2 text-sm">
                           <span className="text-muted-foreground">Duration: {service.duration} min</span>
-                          <span className="font-semibold">${service.price.toFixed(2)}</span>
+                          <span className="font-semibold">{formatBDT(service.price)}</span>
                         </div>
                       </div>
                       <DropdownMenu>

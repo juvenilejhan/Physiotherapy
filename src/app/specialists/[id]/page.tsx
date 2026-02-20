@@ -1,19 +1,24 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { 
-  ArrowLeft, 
-  Calendar, 
-  Clock, 
-  DollarSign, 
-  ArrowRight, 
-  Mail, 
-  Phone, 
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  ArrowLeft,
+  Calendar,
+  Clock,
+  ArrowRight,
+  Mail,
+  Phone,
   MapPin,
   User,
   Award,
@@ -21,10 +26,11 @@ import {
   CheckCircle,
   Loader2,
   BookOpen,
-  Heart
-} from 'lucide-react';
-import Link from 'next/link';
-import { toast } from 'sonner';
+  Heart,
+} from "lucide-react";
+import { formatBDT } from "@/lib/utils";
+import Link from "next/link";
+import { toast } from "sonner";
 
 interface Specialist {
   id: string;
@@ -66,7 +72,7 @@ export default function SpecialistDetailPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
-  
+
   const [specialist, setSpecialist] = useState<Specialist | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -83,14 +89,14 @@ export default function SpecialistDetailPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        toast.error('Specialist not found');
-        router.push('/specialists');
+        toast.error("Specialist not found");
+        router.push("/specialists");
         return;
       }
 
       setSpecialist(data.specialist);
     } catch (error) {
-      toast.error('Failed to load specialist details');
+      toast.error("Failed to load specialist details");
     } finally {
       setIsLoading(false);
     }
@@ -108,15 +114,23 @@ export default function SpecialistDetailPage() {
     return null;
   }
 
-  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const dayNames = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
 
   return (
     <div className="min-h-screen bg-muted/50">
       {/* Header */}
       <section className="bg-primary text-primary-foreground py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <Link 
-            href="/specialists" 
+          <Link
+            href="/specialists"
             className="inline-flex items-center text-sm text-primary-foreground/80 hover:text-primary-foreground mb-6"
           >
             <ArrowLeft className="w-4 h-4 mr-1" />
@@ -136,19 +150,28 @@ export default function SpecialistDetailPage() {
                 )}
               </div>
               {!specialist.isAvailable && (
-                <Badge variant="secondary" className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
+                <Badge
+                  variant="secondary"
+                  className="absolute -bottom-2 left-1/2 transform -translate-x-1/2"
+                >
                   Currently Unavailable
                 </Badge>
               )}
             </div>
             <div className="flex-1">
-              <h1 className="text-3xl md:text-4xl font-bold mb-2">{specialist.user.name}</h1>
-              <Badge variant="outline" className="mb-4 w-fit">{specialist.specialization}</Badge>
+              <h1 className="text-3xl md:text-4xl font-bold mb-2">
+                {specialist.user.name}
+              </h1>
+              <Badge variant="outline" className="mb-4 w-fit">
+                {specialist.specialization}
+              </Badge>
               <div className="flex items-center gap-4 text-sm">
                 <div className="flex items-center gap-2">
                   <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                   <span className="font-semibold">4.9</span>
-                  <span className="text-primary-foreground/80">(Based on patient reviews)</span>
+                  <span className="text-primary-foreground/80">
+                    (Based on patient reviews)
+                  </span>
                 </div>
               </div>
             </div>
@@ -170,9 +193,11 @@ export default function SpecialistDetailPage() {
                   <p className="text-muted-foreground">{specialist.bio}</p>
                 ) : (
                   <p className="text-muted-foreground">
-                    {specialist.user.name} is a dedicated physiotherapist with {specialist.experience} years 
-                    of experience in {specialist.specialization}. Our specialist is committed to providing 
-                    personalized, evidence-based care to help patients achieve their health and wellness goals.
+                    {specialist.user.name} is a dedicated physiotherapist with{" "}
+                    {specialist.experience} years of experience in{" "}
+                    {specialist.specialization}. Our specialist is committed to
+                    providing personalized, evidence-based care to help patients
+                    achieve their health and wellness goals.
                   </p>
                 )}
               </CardContent>
@@ -196,7 +221,8 @@ export default function SpecialistDetailPage() {
                 <CardHeader>
                   <CardTitle>Services Offered</CardTitle>
                   <CardDescription>
-                    {specialist.user.name} specializes in the following treatments
+                    {specialist.user.name} specializes in the following
+                    treatments
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -219,10 +245,9 @@ export default function SpecialistDetailPage() {
                               <Clock className="w-4 h-4" />
                               <span>{item.service.duration} min</span>
                             </div>
-                            <div className="flex items-center gap-1 font-semibold text-primary">
-                              <DollarSign className="w-4 h-4" />
-                              <span>${item.service.price}</span>
-                            </div>
+                            <span className="font-semibold text-primary">
+                              {formatBDT(item.service.price)}
+                            </span>
                           </div>
                         </div>
                       </Link>
@@ -244,8 +269,13 @@ export default function SpecialistDetailPage() {
                 <CardContent>
                   <div className="space-y-2">
                     {specialist.schedules.map((schedule) => (
-                      <div key={schedule.id} className="flex items-center justify-between text-sm py-2 border-b last:border-0">
-                        <span className="font-medium">{dayNames[schedule.dayOfWeek]}</span>
+                      <div
+                        key={schedule.id}
+                        className="flex items-center justify-between text-sm py-2 border-b last:border-0"
+                      >
+                        <span className="font-medium">
+                          {dayNames[schedule.dayOfWeek]}
+                        </span>
                         <span className="text-muted-foreground">
                           {schedule.startTime} - {schedule.endTime}
                         </span>
@@ -269,16 +299,20 @@ export default function SpecialistDetailPage() {
                   <Award className="w-5 h-5 text-primary" />
                   <div>
                     <p className="text-sm text-muted-foreground">Experience</p>
-                    <p className="font-semibold">{specialist.experience} Years</p>
+                    <p className="font-semibold">
+                      {specialist.experience} Years
+                    </p>
                   </div>
                 </div>
                 <Separator />
                 <div className="flex items-center gap-2">
-                  <DollarSign className="w-5 h-5 text-primary" />
+                  <Award className="w-5 h-5 text-primary" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Consultation Fee</p>
+                    <p className="text-sm text-muted-foreground">
+                      Consultation Fee
+                    </p>
                     <p className="text-2xl font-bold text-primary">
-                      ${specialist.consultationFee}
+                      {formatBDT(specialist.consultationFee)}
                     </p>
                   </div>
                 </div>
@@ -286,15 +320,23 @@ export default function SpecialistDetailPage() {
                 <div className="flex items-center gap-2">
                   <Calendar className="w-5 h-5 text-primary" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Availability</p>
+                    <p className="text-sm text-muted-foreground">
+                      Availability
+                    </p>
                     <p className="font-semibold">
-                      {specialist.isAvailable ? 'Available' : 'Currently Unavailable'}
+                      {specialist.isAvailable
+                        ? "Available"
+                        : "Currently Unavailable"}
                     </p>
                   </div>
                 </div>
               </CardContent>
               <Separator />
-              <Button asChild className="w-full" disabled={!specialist.isAvailable}>
+              <Button
+                asChild
+                className="w-full"
+                disabled={!specialist.isAvailable}
+              >
                 <Link href={`/book?specialist=${specialist.id}`}>
                   Book Appointment
                   <ArrowRight className="ml-2 w-4 h-4" />
@@ -337,7 +379,8 @@ export default function SpecialistDetailPage() {
                   <div className="text-sm">
                     <p className="font-medium">PhysioConnect Clinic</p>
                     <p className="text-muted-foreground">
-                      123 Healthcare Street<br />
+                      123 Healthcare Street
+                      <br />
                       Medical District, MD 12345
                     </p>
                   </div>

@@ -20,8 +20,8 @@ import {
   ArrowRight,
   Filter,
   Clock,
-  DollarSign,
 } from "lucide-react";
+import { formatBDT } from "@/lib/utils";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -284,9 +284,8 @@ export default function SpecialistsPage() {
                         <span className="text-muted-foreground">Flexible</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <DollarSign className="w-4 h-4 text-muted-foreground" />
                         <span className="font-semibold text-primary">
-                          ${specialist.consultationFee}
+                          {formatBDT(specialist.consultationFee)}
                         </span>
                       </div>
                     </div>

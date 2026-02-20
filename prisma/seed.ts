@@ -573,6 +573,8 @@ Don't wait! If you're experiencing pain or limited mobility, consult a physiothe
       authorId: staffUsers[0].user.id,
       isPublished: true,
       publishedAt: new Date("2024-01-10"),
+      featuredImage: "/images/blog-treatment.jpg",
+      category: "Recovery",
     },
     {
       title: "5 Tips for Preventing Sports Injuries",
@@ -591,6 +593,8 @@ Prevention is always better than cure. Stay safe and enjoy your sport!`,
       authorId: staffUsers[0].user.id,
       isPublished: true,
       publishedAt: new Date("2024-01-15"),
+      featuredImage: "/images/blog-sports-injuries.jpg",
+      category: "Sports Injuries",
     },
     {
       title: "Understanding Your Treatment Plan",
@@ -608,8 +612,41 @@ Your treatment plan is designed specifically for you based on your condition, go
 
 We believe in empowering our patients with knowledge and tools to take control of their recovery.`,
       authorId: staffUsers[1].user.id,
-      isPublished: false,
-      publishedAt: null,
+      isPublished: true,
+      publishedAt: new Date("2024-01-20"),
+      featuredImage: "/images/blog-recovery.jpg",
+      category: "Wellness",
+    },
+    {
+      title: "Managing Back Pain: A Complete Guide",
+      excerpt: "Expert advice on understanding, treating, and preventing chronic back pain.",
+      content: `# Managing Back Pain: A Complete Guide
+
+Back pain affects millions of people worldwide. Here's what you need to know about managing it effectively.
+
+## Common Causes of Back Pain
+- Poor posture
+- Muscle strain
+- Herniated discs
+- Sedentary lifestyle
+- Improper lifting techniques
+
+## Self-Care Tips
+1. **Stay Active**: Gentle movement helps more than bed rest
+2. **Improve Your Posture**: Set up an ergonomic workspace
+3. **Strengthen Your Core**: A strong core supports your spine
+4. **Apply Heat or Ice**: Use for 15-20 minutes at a time
+5. **Stretch Regularly**: Focus on hamstrings and hip flexors
+
+## When to See a Physiotherapist
+If your pain persists for more than a week, radiates down your legs, or is accompanied by numbness, seek professional help immediately.
+
+Our team specializes in evidence-based treatments for back pain. Book a consultation today!`,
+      authorId: staffUsers[0].user.id,
+      isPublished: true,
+      publishedAt: new Date("2024-01-25"),
+      featuredImage: "/images/blog-wellness.jpg",
+      category: "Back Pain",
     },
   ];
 
@@ -618,7 +655,12 @@ We believe in empowering our patients with knowledge and tools to take control o
       where: {
         slug: blog.title.toLowerCase().replace(/\s+/g, '-'),
       },
-      update: {},
+      update: {
+        isPublished: blog.isPublished,
+        publishedAt: blog.publishedAt,
+        featuredImage: blog.featuredImage,
+        category: blog.category,
+      },
       create: {
         title: blog.title,
         slug: blog.title.toLowerCase().replace(/\s+/g, '-'),
@@ -627,7 +669,8 @@ We believe in empowering our patients with knowledge and tools to take control o
         authorId: blog.authorId,
         isPublished: blog.isPublished,
         publishedAt: blog.publishedAt,
-        featuredImage: null,
+        featuredImage: blog.featuredImage,
+        category: blog.category,
       },
     });
   }

@@ -6,13 +6,13 @@ import { useRouter } from 'next/navigation';
 import { 
   Calendar, 
   Users, 
-  DollarSign, 
   TrendingUp,
   Clock,
   CheckCircle2,
   XCircle,
   AlertCircle
 } from 'lucide-react';
+import { formatBDT } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -153,8 +153,8 @@ export default function AdminDashboardPage() {
         />
         <StatCard
           title="This Month Revenue"
-          value={`$${stats?.monthRevenue?.toFixed(2) || 0}`}
-          icon={DollarSign}
+          value={formatBDT(stats?.monthRevenue || 0)}
+          icon={TrendingUp}
           trend="+8.2%"
           trendUp
         />
@@ -241,7 +241,7 @@ export default function AdminDashboardPage() {
                 <CardTitle>Total Revenue</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">${stats?.totalRevenue?.toFixed(2) || 0}</div>
+                <div className="text-3xl font-bold">{formatBDT(stats?.totalRevenue || 0)}</div>
                 <p className="text-sm text-muted-foreground mt-2">
                   All time revenue from completed appointments
                 </p>
@@ -252,7 +252,7 @@ export default function AdminDashboardPage() {
                 <CardTitle>This Month</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">${stats?.monthRevenue?.toFixed(2) || 0}</div>
+                <div className="text-3xl font-bold">{formatBDT(stats?.monthRevenue || 0)}</div>
                 <p className="text-sm text-muted-foreground mt-2">
                   Revenue for the current month
                 </p>

@@ -45,6 +45,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday, parseISO } from 'date-fns';
+import { formatBDT } from '@/lib/utils';
 
 interface Appointment {
   id: string;
@@ -291,7 +292,7 @@ export default function AdminCalendarPage() {
                       <SelectContent>
                         {services.map((service) => (
                           <SelectItem key={service.id} value={service.id}>
-                            {service.name} - ${service.price} ({service.duration} min)
+                            {service.name} - {formatBDT(service.price)} ({service.duration} min)
                           </SelectItem>
                         ))}
                       </SelectContent>

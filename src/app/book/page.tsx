@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { Activity, ArrowRight, ArrowLeft, Calendar, Clock, User, Check, Loader2, MapPin, Phone, Mail } from 'lucide-react';
+import { formatBDT } from '@/lib/utils';
 import { toast } from 'sonner';
 import { format, addDays, isWeekend } from 'date-fns';
 
@@ -346,7 +347,7 @@ export default function BookingPage() {
                             <span>{service.duration} minutes</span>
                           </div>
                           <div className="flex items-center gap-2 font-semibold text-primary">
-                            <span>${service.price}</span>
+                            <span>{formatBDT(service.price)}</span>
                           </div>
                           <p className="text-muted-foreground line-clamp-2">
                             {service.description}
@@ -411,7 +412,7 @@ export default function BookingPage() {
                           <p className="text-sm text-muted-foreground">{specialist.specialization}</p>
                           <div className="flex items-center gap-4 mt-2 text-sm">
                             <span className="text-muted-foreground">{specialist.experience} years exp</span>
-                            <span className="font-semibold text-primary">${specialist.consultationFee}</span>
+                            <span className="font-semibold text-primary">{formatBDT(specialist.consultationFee)}</span>
                           </div>
                         </div>
                       </div>
@@ -764,7 +765,7 @@ export default function BookingPage() {
                       <div className="flex justify-between items-center">
                         <span className="text-lg font-semibold">Total</span>
                         <span className="text-2xl font-bold text-primary">
-                          ${selectedService?.price}
+                          {formatBDT(selectedService?.price || 0)}
                         </span>
                       </div>
                     </CardContent>

@@ -59,6 +59,7 @@ model User {
   communicationLogs CommunicationLog[]
   waitlistEntries   WaitlistEntry[]
   auditLogs         AuditLog[]
+  blogPosts         BlogPost[]
 
   @@index([email])
   @@index([role])
@@ -264,6 +265,7 @@ model BlogPost {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   comments Comment[]
 
   @@index([slug])
@@ -421,7 +423,7 @@ model Payment {
   invoiceId       String?
   appointmentId   String?
   amount          Float
-  currency        String        @default("USD")
+  currency        String        @default("BDT")
   status          PaymentStatus @default(PENDING)
   paymentMethod   String? // e.g., 'credit_card', 'paypal'
   transactionId   String?       @unique
