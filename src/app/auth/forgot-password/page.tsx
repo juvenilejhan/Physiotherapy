@@ -80,7 +80,7 @@ export default function ForgotPasswordPage() {
                 </div>
                 <div className="bg-muted p-4 rounded-lg w-full text-left">
                   <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                    <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 shrink-0" />
                     <div className="text-sm">
                       <p className="font-medium">Email sent to:</p>
                       <p className="text-muted-foreground">{email}</p>

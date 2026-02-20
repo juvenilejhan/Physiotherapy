@@ -354,7 +354,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+      <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 border-b">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
@@ -436,7 +436,7 @@ export default function Home() {
         {/* Hero Section */}
         <section
           id="home"
-          className="relative py-20 md:py-32 bg-gradient-to-br from-primary/5 via-background to-primary/5"
+          className="relative py-20 md:py-32 bg-linear-to-br from-primary/5 via-background to-primary/5"
         >
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -687,7 +687,7 @@ export default function Home() {
                   <Link key={specialist.id} href={`/specialists/${specialist.id}`} className="block">
                     <Card className="hover:shadow-lg transition-shadow h-full">
                       <CardHeader className="text-center">
-                        <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-primary/5 rounded-full mx-auto mb-4 flex items-center justify-center overflow-hidden">
+                        <div className="w-24 h-24 bg-linear-to-br from-primary/20 to-primary/5 rounded-full mx-auto mb-4 flex items-center justify-center overflow-hidden">
                           {specialist.user.image ? (
                             <Image
                               src={specialist.user.image}
@@ -728,7 +728,7 @@ export default function Home() {
                 specialists.map((specialist, index) => (
                   <Card key={index} className="hover:shadow-lg transition-shadow">
                     <CardHeader className="text-center">
-                      <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-primary/5 rounded-full mx-auto mb-4 flex items-center justify-center">
+                      <div className="w-24 h-24 bg-linear-to-br from-primary/20 to-primary/5 rounded-full mx-auto mb-4 flex items-center justify-center">
                         <Users className="w-12 h-12 text-primary" />
                       </div>
                       <CardTitle className="text-lg">{specialist.name}</CardTitle>
@@ -783,7 +783,7 @@ export default function Home() {
                 <div className="space-y-3">
                   {features.map((feature, index) => (
                     <div key={index} className="flex items-center gap-3">
-                      <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                      <CheckCircle className="w-5 h-5 text-primary shrink-0" />
                       <span className="text-base">{feature}</span>
                     </div>
                   ))}
@@ -795,7 +795,7 @@ export default function Home() {
                   </Button>
                 </Link>
               </div>
-              <div className="grid grid-cols-2 gap-6 hidden md:grid">
+              <div className="hidden md:grid grid-cols-2 gap-6">
                 <Card className="bg-primary/5 border-primary/20">
                   <CardHeader>
                     <div className="text-3xl font-bold text-primary">10K+</div>
@@ -846,7 +846,7 @@ export default function Home() {
               priority
             />
             {/* Gradient Overlay for readability */}
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/85 via-primary/70 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-r from-primary/85 via-primary/70 to-transparent" />
           </div>
           
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -943,7 +943,7 @@ export default function Home() {
                             priority={i < 3}
                           />
                         ) : (
-                          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
+                          <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-primary/20 to-primary/5">
                             <FileText className="w-12 h-12 text-primary/40" />
                           </div>
                         )}
@@ -1027,7 +1027,7 @@ export default function Home() {
       </main>
 
       {/* Contact/Location Section */}
-      <section className="py-20 bg-gradient-to-br from-primary/5 to-background">
+      <section className="py-20 bg-linear-to-br from-primary/5 to-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
@@ -1042,7 +1042,7 @@ export default function Home() {
               </p>
               <div className="space-y-4">
                 <div className="flex items-start gap-4">
-                  <MapPin className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                  <MapPin className="w-6 h-6 text-primary shrink-0 mt-1" />
                   <div>
                     <p className="font-semibold">Address</p>
                     <p className="text-muted-foreground">
@@ -1053,14 +1053,14 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
-                  <Phone className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                  <Phone className="w-6 h-6 text-primary shrink-0 mt-1" />
                   <div>
                     <p className="font-semibold">Phone</p>
                     <p className="text-muted-foreground">{settings.phone}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
-                  <Clock className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                  <Clock className="w-6 h-6 text-primary shrink-0 mt-1" />
                   <div>
                     <p className="font-semibold">Hours</p>
                     <p className="text-muted-foreground">
@@ -1141,7 +1141,7 @@ export default function Home() {
               <h3 className="font-semibold mb-4">Contact Us</h3>
               <ul className="space-y-3 text-sm">
                 <li className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <MapPin className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                   <span className="text-muted-foreground">
                     {settings.address}
                     <br />
@@ -1149,19 +1149,19 @@ export default function Home() {
                   </span>
                 </li>
                 <li className="flex items-center gap-3">
-                  <Phone className="w-5 h-5 text-primary flex-shrink-0" />
+                  <Phone className="w-5 h-5 text-primary shrink-0" />
                   <span className="text-muted-foreground">
                     {settings.phone}
                   </span>
                 </li>
                 <li className="flex items-center gap-3">
-                  <Mail className="w-5 h-5 text-primary flex-shrink-0" />
+                  <Mail className="w-5 h-5 text-primary shrink-0" />
                   <span className="text-muted-foreground">
                     {settings.email}
                   </span>
                 </li>
                 <li className="flex items-center gap-3">
-                  <Clock className="w-5 h-5 text-primary flex-shrink-0" />
+                  <Clock className="w-5 h-5 text-primary shrink-0" />
                   <span className="text-muted-foreground">
                     Mon-Fri:{" "}
                     {settings.workingHours?.monday || "8:00 AM - 8:00 PM"}

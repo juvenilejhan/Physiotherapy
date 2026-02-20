@@ -186,7 +186,7 @@ export default function ServicesPage() {
 
             {/* Category Filter */}
             <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
-              <Filter className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+              <Filter className="w-5 h-5 text-muted-foreground shrink-0" />
               {categories.map((category) => (
                 <button
                   key={category}

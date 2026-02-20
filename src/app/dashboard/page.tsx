@@ -495,7 +495,7 @@ export default function PatientDashboard() {
                             key={apt.id}
                             className="flex flex-col sm:flex-row items-start gap-4 p-4 border rounded-lg hover:bg-accent/50 transition-colors"
                           >
-                            <div className="flex-shrink-0">
+                            <div className="shrink-0">
                               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                                 <Calendar className="w-6 h-6 text-primary" />
                               </div>
@@ -645,7 +645,7 @@ export default function PatientDashboard() {
                           className="border rounded-lg p-4 hover:bg-accent/50 transition-colors"
                         >
                           <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
-                            <div className="flex-shrink-0">
+                            <div className="shrink-0">
                               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                                 <CalendarIcon className="w-6 h-6 text-primary" />
                               </div>
@@ -753,7 +753,7 @@ export default function PatientDashboard() {
                         className="border rounded-lg p-4 hover:bg-accent/50 transition-colors"
                       >
                         <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
-                          <div className="flex-shrink-0">
+                          <div className="shrink-0">
                             <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
                               apt.status === 'COMPLETED' ? 'bg-green-100 text-green-800' :
                               apt.status === 'CANCELLED' ? 'bg-red-100 text-red-800' :
@@ -1005,7 +1005,7 @@ export default function PatientDashboard() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex items-start gap-3">
-                      <MapPin className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+                      <MapPin className="w-5 h-5 text-muted-foreground shrink-0" />
                       <div className="flex-1">
                         <p className="font-semibold">PhysioConnect Clinic</p>
                         <p className="text-sm text-muted-foreground">
@@ -1015,19 +1015,19 @@ export default function PatientDashboard() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <Phone className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+                      <Phone className="w-5 h-5 text-muted-foreground shrink-0" />
                       <a href="tel:+8801XXXXXXXXX" className="text-sm text-primary hover:underline">
                         +8801XXXXXXXXX
                       </a>
                     </div>
                     <div className="flex items-center gap-3">
-                      <Mail className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+                      <Mail className="w-5 h-5 text-muted-foreground shrink-0" />
                       <a href="mailto:info@physioconnect.com" className="text-sm text-primary hover:underline">
                         info@physioconnect.com
                       </a>
                     </div>
                     <div className="flex items-center gap-3">
-                      <Clock className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+                      <Clock className="w-5 h-5 text-muted-foreground shrink-0" />
                       <p className="text-sm text-muted-foreground">
                         Mon-Fri: 8:00 AM - 8:00 PM<br />
                         Sat: 9:00 AM - 5:00 PM

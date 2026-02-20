@@ -114,7 +114,7 @@ export default function BlogPage() {
                         className="object-cover"
                       />
                     ) : (
-                      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
+                      <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-primary/20 to-primary/5">
                         <FileText className="w-12 h-12 text-primary/40" />
                       </div>
                     )}

@@ -200,12 +200,11 @@ export default function ContactPage() {
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3651.9024039999997!2d90.38891517530665!3d23.750895078671!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755b8b087026b1%3A0x8fa563962f32a00e!2sDhaka%2C%20Bangladesh!5e0!3m2!1sen!2sus!4v1708000000000!5m2!1sen!2sus"
                     width="100%"
                     height="100%"
-                    style={{ border: 0 }}
                     allowFullScreen
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
                     title="Clinic Location"
-                    className="absolute inset-0"
+                    className="absolute inset-0 border-0"
                   ></iframe>
                 </div>
                 <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
@@ -227,7 +226,7 @@ export default function ContactPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <Phone className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <Phone className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                   <div>
                     <p className="font-medium">Phone</p>
                     <a
@@ -240,7 +239,7 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <MessageCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                  <MessageCircle className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
                   <div>
                     <p className="font-medium">WhatsApp</p>
                     <a
@@ -255,7 +254,7 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <Mail className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <Mail className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                   <div>
                     <p className="font-medium">Email</p>
                     <a
@@ -268,7 +267,7 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <MapPin className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                   <div>
                     <p className="font-medium">Address</p>
                     <p className="text-sm text-muted-foreground">

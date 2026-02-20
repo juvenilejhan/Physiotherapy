@@ -235,7 +235,7 @@ export default function AdminLayout({
       </aside>
 
       {/* Mobile Header */}
-      <header className="lg:hidden sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="lg:hidden sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-4">
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
@@ -262,7 +262,7 @@ export default function AdminLayout({
       </header>
 
       {/* Desktop Header */}
-      <header className="hidden lg:flex fixed inset-y-0 right-0 z-50 h-16 w-[calc(100%-16rem)] border-l bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 items-center justify-between px-6">
+      <header className="hidden lg:flex fixed inset-y-0 right-0 z-50 h-16 w-[calc(100%-16rem)] border-l bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 items-center justify-between px-6">
         <div className="flex items-center gap-4">
           <h1 className="text-lg font-semibold">
             {navItems.filter(item => !item.roles || item.roles.includes(userRole as string)).find(item => pathname === item.href || pathname.startsWith(item.href + '/'))?.title || 'Dashboard'}

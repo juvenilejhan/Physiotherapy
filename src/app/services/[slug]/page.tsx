@@ -189,7 +189,7 @@ export default function ServiceDetailPage() {
                   <div className="grid md:grid-cols-2 gap-3">
                     {conditionsArray.map((condition, index) => (
                       <div key={index} className="flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                        <CheckCircle className="w-5 h-5 text-primary shrink-0" />
                         <span>{condition}</span>
                       </div>
                     ))}
@@ -211,7 +211,7 @@ export default function ServiceDetailPage() {
                   <ul className="space-y-2">
                     {benefitsArray.map((benefit, index) => (
                       <li key={index} className="flex items-start gap-2">
-                        <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                        <CheckCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                         <span>{benefit}</span>
                       </li>
                     ))}
@@ -236,7 +236,7 @@ export default function ServiceDetailPage() {
                         key={member.id}
                         className="flex items-start gap-4 p-4 border rounded-lg hover:border-primary transition-colors"
                       >
-                        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
                           <User className="w-8 h-8 text-primary" />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -323,7 +323,7 @@ export default function ServiceDetailPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <Phone className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <Phone className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                   <div>
                     <p className="text-sm font-medium">Call Us</p>
                     <p className="text-sm text-muted-foreground">
@@ -332,7 +332,7 @@ export default function ServiceDetailPage() {
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <Mail className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <Mail className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                   <div>
                     <p className="text-sm font-medium">Email Us</p>
                     <p className="text-sm text-muted-foreground">
@@ -341,7 +341,7 @@ export default function ServiceDetailPage() {
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <MapPin className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                   <div>
                     <p className="text-sm font-medium">Visit Us</p>
                     <p className="text-sm text-muted-foreground">

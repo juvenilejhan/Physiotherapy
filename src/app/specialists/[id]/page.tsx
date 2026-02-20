@@ -138,7 +138,7 @@ export default function SpecialistDetailPage() {
           </Link>
           <div className="flex flex-col md:flex-row gap-6 items-start">
             <div className="relative">
-              <div className="w-32 h-32 bg-gradient-to-br from-primary/20 to-primary/5 rounded-full flex items-center justify-center">
+              <div className="w-32 h-32 bg-linear-to-br from-primary/20 to-primary/5 rounded-full flex items-center justify-center">
                 {specialist.user.image ? (
                   <img
                     src={specialist.user.image}
@@ -375,7 +375,7 @@ export default function SpecialistDetailPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <MapPin className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                   <div className="text-sm">
                     <p className="font-medium">PhysioConnect Clinic</p>
                     <p className="text-muted-foreground">

@@ -167,7 +167,7 @@ export default function SpecialistsPage() {
 
             {/* Specialization Filter */}
             <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
-              <Filter className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+              <Filter className="w-5 h-5 text-muted-foreground shrink-0" />
               {specializations.map((spec) => (
                 <button
                   key={spec}
@@ -232,7 +232,7 @@ export default function SpecialistsPage() {
                 >
                   <CardHeader className="text-center">
                     <div className="relative mx-auto mb-4">
-                      <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-primary/5 rounded-full flex items-center justify-center">
+                      <div className="w-24 h-24 bg-linear-to-br from-primary/20 to-primary/5 rounded-full flex items-center justify-center">
                         {specialist.user.image ? (
                           <img
                             src={specialist.user.image}

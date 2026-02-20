@@ -239,7 +239,7 @@ export default function AdminCalendarPage() {
         </div>
         <div className="flex items-center gap-2">
           <Select value={selectedStaff} onValueChange={setSelectedStaff}>
-            <SelectTrigger className="w-[200px]">
+            <SelectTrigger className="w-50">
               <Filter className="mr-2 h-4 w-4" />
               <SelectValue placeholder="Filter by staff" />
             </SelectTrigger>
@@ -404,7 +404,7 @@ export default function AdminCalendarPage() {
                   key={date.toISOString()}
                   onClick={() => handleDateClick(date)}
                   className={`
-                    min-h-[100px] border rounded-lg p-2 cursor-pointer transition-colors
+                    min-h-25 border rounded-lg p-2 cursor-pointer transition-colors
                     ${isCurrentMonth ? 'bg-background' : 'bg-muted/30'}
                     ${isDayToday ? 'border-primary' : 'border-border'}
                     hover:bg-accent/50
@@ -525,7 +525,7 @@ function CalendarPageSkeleton() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <Skeleton className="h-8 w-64" />
-        <Skeleton className="h-10 w-[200px]" />
+        <Skeleton className="h-10 w-50" />
       </div>
       <Card>
         <CardHeader>
@@ -537,7 +537,7 @@ function CalendarPageSkeleton() {
               <Skeleton key={i} className="h-6 w-full" />
             ))}
             {Array.from({ length: 35 }).map((_, i) => (
-              <Skeleton key={i} className="h-[100px] w-full" />
+              <Skeleton key={i} className="h-25 w-full" />
             ))}
           </div>
         </CardContent>
