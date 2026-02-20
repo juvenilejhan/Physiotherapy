@@ -1,22 +1,28 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { 
-  Search, 
-  Plus, 
-  MoreVertical, 
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import {
+  Search,
+  Plus,
+  MoreVertical,
   Eye,
   FileText,
   Calendar,
   Phone,
   Mail,
-  MapPin
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+  MapPin,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -24,9 +30,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Dialog,
   DialogContent,
@@ -34,18 +40,18 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Skeleton } from '@/components/ui/skeleton';
-import { toast } from 'sonner';
-import { format } from 'date-fns';
+} from "@/components/ui/dropdown-menu";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+import { format } from "date-fns";
 
 interface Patient {
   id: string;
@@ -93,19 +99,26 @@ export default function AdminPatientsPage() {
   const router = useRouter();
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedPatient, setSelectedPatient] = useState<PatientDetail | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedPatient, setSelectedPatient] = useState<PatientDetail | null>(
+    null,
+  );
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState("overview");
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/login');
+    if (status === "unauthenticated") {
+      router.push("/auth/login");
       return;
     }
 
-    if (session?.user?.role && !['SUPER_ADMIN', 'CLINIC_MANAGER', 'DOCTOR', 'RECEPTIONIST'].includes(session.user.role)) {
-      router.push('/admin');
+    if (
+      session?.user?.role &&
+      !["SUPER_ADMIN", "CLINIC_MANAGER", "DOCTOR", "RECEPTIONIST"].includes(
+        session.user.role,
+      )
+    ) {
+      router.push("/admin");
       return;
     }
 
@@ -115,17 +128,17 @@ export default function AdminPatientsPage() {
   const fetchPatients = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/patients');
-      
+      const response = await fetch("/api/admin/patients");
+
       if (response.ok) {
         const data = await response.json();
         setPatients(data);
       } else {
-        toast.error('Failed to fetch patients');
+        toast.error("Failed to fetch patients");
       }
     } catch (error) {
-      console.error('Error fetching patients:', error);
-      toast.error('An error occurred');
+      console.error("Error fetching patients:", error);
+      toast.error("An error occurred");
     } finally {
       setLoading(false);
     }
@@ -134,25 +147,26 @@ export default function AdminPatientsPage() {
   const handleViewPatient = async (patientId: string) => {
     try {
       const response = await fetch(`/api/admin/patients/${patientId}`);
-      
+
       if (response.ok) {
         const data = await response.json();
         setSelectedPatient(data);
-        setActiveTab('overview');
+        setActiveTab("overview");
         setDetailsDialogOpen(true);
       } else {
-        toast.error('Failed to fetch patient details');
+        toast.error("Failed to fetch patient details");
       }
     } catch (error) {
-      console.error('Error fetching patient details:', error);
-      toast.error('An error occurred');
+      console.error("Error fetching patient details:", error);
+      toast.error("An error occurred");
     }
   };
 
-  const filteredPatients = patients.filter(patient =>
-    patient.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    patient.user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    patient.user.phone?.includes(searchQuery)
+  const filteredPatients = patients.filter(
+    (patient) =>
+      patient.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      patient.user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      patient.user.phone?.includes(searchQuery),
   );
 
   if (loading) {
@@ -195,7 +209,7 @@ export default function AdminPatientsPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border">
+          <div className="rounded-md border overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -211,7 +225,10 @@ export default function AdminPatientsPage() {
               <TableBody>
                 {filteredPatients.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                    <TableCell
+                      colSpan={7}
+                      className="text-center text-muted-foreground py-8"
+                    >
                       No patients found
                     </TableCell>
                   </TableRow>
@@ -221,14 +238,19 @@ export default function AdminPatientsPage() {
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Avatar>
-                            <AvatarImage src={patient.user.image} alt={patient.user.name} />
+                            <AvatarImage
+                              src={patient.user.image}
+                              alt={patient.user.name}
+                            />
                             <AvatarFallback>
                               {patient.user.name.charAt(0).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
                           <div>
                             <p className="font-medium">{patient.user.name}</p>
-                            <p className="text-sm text-muted-foreground">{patient.user.email}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {patient.user.email}
+                            </p>
                           </div>
                         </div>
                       </TableCell>
@@ -241,9 +263,14 @@ export default function AdminPatientsPage() {
                         )}
                       </TableCell>
                       <TableCell>
-                        {patient.dateOfBirth ? format(new Date(patient.dateOfBirth), 'MMM dd, yyyy') : '-'}
+                        {patient.dateOfBirth
+                          ? format(
+                              new Date(patient.dateOfBirth),
+                              "MMM dd, yyyy",
+                            )
+                          : "-"}
                       </TableCell>
-                      <TableCell>{patient.gender || '-'}</TableCell>
+                      <TableCell>{patient.gender || "-"}</TableCell>
                       <TableCell>
                         {patient.city && (
                           <div className="flex items-center gap-2 text-sm">
@@ -253,7 +280,7 @@ export default function AdminPatientsPage() {
                         )}
                       </TableCell>
                       <TableCell>
-                        {format(new Date(patient.createdAt), 'MMM dd, yyyy')}
+                        {format(new Date(patient.createdAt), "MMM dd, yyyy")}
                       </TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
@@ -264,7 +291,9 @@ export default function AdminPatientsPage() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={() => handleViewPatient(patient.id)}>
+                            <DropdownMenuItem
+                              onClick={() => handleViewPatient(patient.id)}
+                            >
                               <Eye className="mr-2 h-4 w-4" />
                               View Details
                             </DropdownMenuItem>
@@ -290,13 +319,18 @@ export default function AdminPatientsPage() {
           <DialogHeader>
             <div className="flex items-center gap-4">
               <Avatar className="h-16 w-16">
-                <AvatarImage src={selectedPatient?.user.image} alt={selectedPatient?.user.name} />
+                <AvatarImage
+                  src={selectedPatient?.user.image}
+                  alt={selectedPatient?.user.name}
+                />
                 <AvatarFallback className="text-2xl">
                   {selectedPatient?.user.name.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <DialogTitle className="text-2xl">{selectedPatient?.user.name}</DialogTitle>
+                <DialogTitle className="text-2xl">
+                  {selectedPatient?.user.name}
+                </DialogTitle>
                 <DialogDescription>
                   {selectedPatient?.user.email}
                 </DialogDescription>
@@ -317,26 +351,37 @@ export default function AdminPatientsPage() {
                 <div className="grid gap-4 md:grid-cols-2">
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-lg">Personal Information</CardTitle>
+                      <CardTitle className="text-lg">
+                        Personal Information
+                      </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <div>
-                        <p className="text-sm text-muted-foreground">Date of Birth</p>
+                        <p className="text-sm text-muted-foreground">
+                          Date of Birth
+                        </p>
                         <p className="font-medium">
-                          {selectedPatient.dateOfBirth 
-                            ? format(new Date(selectedPatient.dateOfBirth), 'MMMM dd, yyyy')
-                            : 'Not provided'}
+                          {selectedPatient.dateOfBirth
+                            ? format(
+                                new Date(selectedPatient.dateOfBirth),
+                                "MMMM dd, yyyy",
+                              )
+                            : "Not provided"}
                         </p>
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">Gender</p>
-                        <p className="font-medium">{selectedPatient.gender || 'Not provided'}</p>
+                        <p className="font-medium">
+                          {selectedPatient.gender || "Not provided"}
+                        </p>
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">Phone</p>
                         <div className="flex items-center gap-2">
                           <Phone className="h-4 w-4 text-muted-foreground" />
-                          <p className="font-medium">{selectedPatient.user.phone || 'Not provided'}</p>
+                          <p className="font-medium">
+                            {selectedPatient.user.phone || "Not provided"}
+                          </p>
                         </div>
                       </div>
                     </CardContent>
@@ -344,7 +389,9 @@ export default function AdminPatientsPage() {
 
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-lg">Address & Emergency Contact</CardTitle>
+                      <CardTitle className="text-lg">
+                        Address & Emergency Contact
+                      </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <div>
@@ -353,16 +400,24 @@ export default function AdminPatientsPage() {
                           {selectedPatient.address ? (
                             <>
                               {selectedPatient.address}
-                              {selectedPatient.city && `, ${selectedPatient.city}`}
+                              {selectedPatient.city &&
+                                `, ${selectedPatient.city}`}
                             </>
-                          ) : 'Not provided'}
+                          ) : (
+                            "Not provided"
+                          )}
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm text-muted-foreground">Emergency Contact</p>
-                        <p className="font-medium">{selectedPatient.emergencyContactName || 'Not provided'}</p>
                         <p className="text-sm text-muted-foreground">
-                          {selectedPatient.emergencyContactPhone || ''}
+                          Emergency Contact
+                        </p>
+                        <p className="font-medium">
+                          {selectedPatient.emergencyContactName ||
+                            "Not provided"}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {selectedPatient.emergencyContactPhone || ""}
                         </p>
                       </div>
                     </CardContent>
@@ -382,7 +437,9 @@ export default function AdminPatientsPage() {
                   <Card>
                     <CardContent className="flex flex-col items-center justify-center py-12">
                       <FileText className="h-12 w-12 text-muted-foreground mb-4" />
-                      <p className="text-muted-foreground">No medical history records</p>
+                      <p className="text-muted-foreground">
+                        No medical history records
+                      </p>
                     </CardContent>
                   </Card>
                 ) : (
@@ -393,13 +450,19 @@ export default function AdminPatientsPage() {
                           <div className="flex items-start justify-between">
                             <div>
                               <div className="flex items-center gap-2 mb-2">
-                                <h4 className="font-semibold">{record.condition}</h4>
+                                <h4 className="font-semibold">
+                                  {record.condition}
+                                </h4>
                                 {record.isChronic && (
                                   <Badge variant="secondary">Chronic</Badge>
                                 )}
                               </div>
                               <p className="text-sm text-muted-foreground mb-2">
-                                Diagnosed: {format(new Date(record.diagnosisDate), 'MMMM dd, yyyy')}
+                                Diagnosed:{" "}
+                                {format(
+                                  new Date(record.diagnosisDate),
+                                  "MMMM dd, yyyy",
+                                )}
                               </p>
                               {record.description && (
                                 <p className="text-sm">{record.description}</p>
@@ -430,7 +493,9 @@ export default function AdminPatientsPage() {
                   <Card>
                     <CardContent className="flex flex-col items-center justify-center py-12">
                       <FileText className="h-12 w-12 text-muted-foreground mb-4" />
-                      <p className="text-muted-foreground">No consent forms on file</p>
+                      <p className="text-muted-foreground">
+                        No consent forms on file
+                      </p>
                     </CardContent>
                   </Card>
                 ) : (
@@ -442,11 +507,17 @@ export default function AdminPatientsPage() {
                             <div>
                               <h4 className="font-semibold">{form.formType}</h4>
                               <p className="text-sm text-muted-foreground">
-                                Signed: {format(new Date(form.consentDate), 'MMMM dd, yyyy')}
+                                Signed:{" "}
+                                {format(
+                                  new Date(form.consentDate),
+                                  "MMMM dd, yyyy",
+                                )}
                               </p>
                             </div>
-                            <Badge variant={form.isSigned ? 'default' : 'secondary'}>
-                              {form.isSigned ? 'Signed' : 'Pending'}
+                            <Badge
+                              variant={form.isSigned ? "default" : "secondary"}
+                            >
+                              {form.isSigned ? "Signed" : "Pending"}
                             </Badge>
                           </div>
                         </CardContent>
@@ -462,7 +533,9 @@ export default function AdminPatientsPage() {
                   <Card>
                     <CardContent className="flex flex-col items-center justify-center py-12">
                       <Calendar className="h-12 w-12 text-muted-foreground mb-4" />
-                      <p className="text-muted-foreground">No appointments scheduled</p>
+                      <p className="text-muted-foreground">
+                        No appointments scheduled
+                      </p>
                     </CardContent>
                   </Card>
                 ) : (
@@ -472,10 +545,17 @@ export default function AdminPatientsPage() {
                         <CardContent className="pt-6">
                           <div className="flex items-center justify-between">
                             <div>
-                              <h4 className="font-semibold">{apt.service?.name || 'Unknown Service'}</h4>
+                              <h4 className="font-semibold">
+                                {apt.service?.name || "Unknown Service"}
+                              </h4>
                               <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
                                 <Calendar className="h-3 w-3" />
-                                <span>{format(new Date(apt.appointmentDate), 'MMMM dd, yyyy at h:mm a')}</span>
+                                <span>
+                                  {format(
+                                    new Date(apt.appointmentDate),
+                                    "MMMM dd, yyyy at h:mm a",
+                                  )}
+                                </span>
                               </div>
                             </div>
                             <Badge>{apt.status}</Badge>

@@ -393,11 +393,12 @@ export default function StaffManagementPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Staff Member</TableHead>
-                <TableHead>Role</TableHead>
+          <div className="rounded-md border overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Staff Member</TableHead>
+                  <TableHead>Role</TableHead>
                 <TableHead>Specialty</TableHead>
                 <TableHead>Experience</TableHead>
                 <TableHead>Services</TableHead>
@@ -479,6 +480,7 @@ export default function StaffManagementPage() {
               )}
             </TableBody>
           </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

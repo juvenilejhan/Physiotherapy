@@ -1,11 +1,24 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useEffect, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +26,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   CreditCard,
   MoreHorizontal,
@@ -25,8 +38,8 @@ import {
   XCircle,
   ArrowLeftRight,
   ArrowUpCircle,
-} from 'lucide-react';
-import { formatBDT } from '@/lib/utils';
+} from "lucide-react";
+import { formatBDT } from "@/lib/utils";
 
 interface Payment {
   id: string;
@@ -53,28 +66,28 @@ interface Payment {
 
 const statusConfig = {
   COMPLETED: {
-    label: 'Completed',
-    color: 'bg-green-500/10 text-green-700 dark:text-green-400',
+    label: "Completed",
+    color: "bg-green-500/10 text-green-700 dark:text-green-400",
     icon: <CheckCircle className="w-4 h-4" />,
   },
   PENDING: {
-    label: 'Pending',
-    color: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400',
+    label: "Pending",
+    color: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
     icon: <Clock className="w-4 h-4" />,
   },
   FAILED: {
-    label: 'Failed',
-    color: 'bg-red-500/10 text-red-700 dark:text-red-400',
+    label: "Failed",
+    color: "bg-red-500/10 text-red-700 dark:text-red-400",
     icon: <XCircle className="w-4 h-4" />,
   },
   REFUNDED: {
-    label: 'Refunded',
-    color: 'bg-blue-500/10 text-blue-700 dark:text-blue-400',
+    label: "Refunded",
+    color: "bg-blue-500/10 text-blue-700 dark:text-blue-400",
     icon: <ArrowUpCircle className="w-4 h-4" />,
   },
   PARTIALLY_REFUNDED: {
-    label: 'Partially Refunded',
-    color: 'bg-orange-500/10 text-orange-700 dark:text-orange-400',
+    label: "Partially Refunded",
+    color: "bg-orange-500/10 text-orange-700 dark:text-orange-400",
     icon: <ArrowLeftRight className="w-4 h-4" />,
   },
 };
@@ -82,7 +95,7 @@ const statusConfig = {
 export default function PaymentsPage() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('all');
+  const [activeTab, setActiveTab] = useState("all");
   const [stats, setStats] = useState({
     total: 0,
     completed: 0,
@@ -95,8 +108,8 @@ export default function PaymentsPage() {
     try {
       setLoading(true);
       const params = new URLSearchParams();
-      if (status && status !== 'all') {
-        params.append('status', status);
+      if (status && status !== "all") {
+        params.append("status", status);
       }
 
       const response = await fetch(`/api/admin/payments?${params.toString()}`);
@@ -105,7 +118,7 @@ export default function PaymentsPage() {
         setPayments(data);
       }
     } catch (error) {
-      console.error('Error fetching payments:', error);
+      console.error("Error fetching payments:", error);
     } finally {
       setLoading(false);
     }
@@ -122,13 +135,16 @@ export default function PaymentsPage() {
 
     data.forEach((payment) => {
       stats.total += payment.amount;
-      if (payment.status === 'COMPLETED') {
+      if (payment.status === "COMPLETED") {
         stats.completed += payment.amount;
-      } else if (payment.status === 'PENDING') {
+      } else if (payment.status === "PENDING") {
         stats.pending += payment.amount;
-      } else if (payment.status === 'FAILED') {
+      } else if (payment.status === "FAILED") {
         stats.failed += payment.amount;
-      } else if (payment.status === 'REFUNDED' || payment.status === 'PARTIALLY_REFUNDED') {
+      } else if (
+        payment.status === "REFUNDED" ||
+        payment.status === "PARTIALLY_REFUNDED"
+      ) {
         stats.refunded += payment.amount;
       }
     });
@@ -139,7 +155,7 @@ export default function PaymentsPage() {
   useEffect(() => {
     const fetchData = async () => {
       await fetchPayments();
-      const response = await fetch('/api/admin/payments?limit=1000');
+      const response = await fetch("/api/admin/payments?limit=1000");
       if (response.ok) {
         const allPayments = await response.json();
         setStats(calculateStats(allPayments));
@@ -197,8 +213,12 @@ export default function PaymentsPage() {
             <CheckCircle className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{formatBDT(stats.completed)}</div>
-            <p className="text-xs text-muted-foreground">Successfully collected</p>
+            <div className="text-2xl font-bold text-green-600">
+              {formatBDT(stats.completed)}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Successfully collected
+            </p>
           </CardContent>
         </Card>
 
@@ -208,7 +228,9 @@ export default function PaymentsPage() {
             <Clock className="h-4 w-4 text-yellow-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{formatBDT(stats.pending)}</div>
+            <div className="text-2xl font-bold text-yellow-600">
+              {formatBDT(stats.pending)}
+            </div>
             <p className="text-xs text-muted-foreground">Awaiting payment</p>
           </CardContent>
         </Card>
@@ -219,7 +241,9 @@ export default function PaymentsPage() {
             <XCircle className="h-4 w-4 text-red-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">{formatBDT(stats.failed)}</div>
+            <div className="text-2xl font-bold text-red-600">
+              {formatBDT(stats.failed)}
+            </div>
             <p className="text-xs text-muted-foreground">Payment failures</p>
           </CardContent>
         </Card>
@@ -230,7 +254,9 @@ export default function PaymentsPage() {
             <ArrowUpCircle className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{formatBDT(stats.refunded)}</div>
+            <div className="text-2xl font-bold text-blue-600">
+              {formatBDT(stats.refunded)}
+            </div>
             <p className="text-xs text-muted-foreground">Total refunds</p>
           </CardContent>
         </Card>
@@ -240,10 +266,16 @@ export default function PaymentsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Payment Transactions</CardTitle>
-          <CardDescription>View and manage all payment transactions</CardDescription>
+          <CardDescription>
+            View and manage all payment transactions
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
+          <Tabs
+            value={activeTab}
+            onValueChange={handleTabChange}
+            className="space-y-4"
+          >
             <TabsList>
               <TabsTrigger value="all">All</TabsTrigger>
               <TabsTrigger value="COMPLETED">Completed</TabsTrigger>
@@ -262,7 +294,7 @@ export default function PaymentsPage() {
                   No payments found
                 </div>
               ) : (
-                <div className="rounded-md border">
+                <div className="rounded-md border overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -284,7 +316,7 @@ export default function PaymentsPage() {
                           <TableCell>
                             <div>
                               <div className="font-medium">
-                                {payment.user.name || 'Unknown'}
+                                {payment.user.name || "Unknown"}
                               </div>
                               <div className="text-xs text-muted-foreground">
                                 {payment.user.email}
@@ -298,26 +330,44 @@ export default function PaymentsPage() {
                             <div className="flex items-center gap-2">
                               <CreditCard className="w-4 h-4 text-muted-foreground" />
                               <span className="capitalize">
-                                {payment.paymentMethod?.replace('_', ' ') || 'N/A'}
+                                {payment.paymentMethod?.replace("_", " ") ||
+                                  "N/A"}
                               </span>
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge className={statusConfig[payment.status as keyof typeof statusConfig]?.color}>
+                            <Badge
+                              className={
+                                statusConfig[
+                                  payment.status as keyof typeof statusConfig
+                                ]?.color
+                              }
+                            >
                               <div className="flex items-center gap-1.5">
-                                {statusConfig[payment.status as keyof typeof statusConfig]?.icon}
-                                {statusConfig[payment.status as keyof typeof statusConfig]?.label}
+                                {
+                                  statusConfig[
+                                    payment.status as keyof typeof statusConfig
+                                  ]?.icon
+                                }
+                                {
+                                  statusConfig[
+                                    payment.status as keyof typeof statusConfig
+                                  ]?.label
+                                }
                               </div>
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            {new Date(payment.createdAt).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'short',
-                              day: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
+                            {new Date(payment.createdAt).toLocaleDateString(
+                              "en-US",
+                              {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              },
+                            )}
                           </TableCell>
                           <TableCell>
                             <DropdownMenu>
@@ -329,17 +379,27 @@ export default function PaymentsPage() {
                               <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem>View Details</DropdownMenuItem>
-                                {payment.status === 'PENDING' && (
+                                <DropdownMenuItem>
+                                  View Details
+                                </DropdownMenuItem>
+                                {payment.status === "PENDING" && (
                                   <>
-                                    <DropdownMenuItem>Process Payment</DropdownMenuItem>
-                                    <DropdownMenuItem>Send Reminder</DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                      Process Payment
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                      Send Reminder
+                                    </DropdownMenuItem>
                                   </>
                                 )}
-                                {payment.status === 'COMPLETED' && (
-                                  <DropdownMenuItem>Issue Refund</DropdownMenuItem>
+                                {payment.status === "COMPLETED" && (
+                                  <DropdownMenuItem>
+                                    Issue Refund
+                                  </DropdownMenuItem>
                                 )}
-                                <DropdownMenuItem>Download Receipt</DropdownMenuItem>
+                                <DropdownMenuItem>
+                                  Download Receipt
+                                </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </TableCell>
