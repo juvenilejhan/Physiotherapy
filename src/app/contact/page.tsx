@@ -127,12 +127,12 @@ export default function ContactPage() {
               </div>
             </div>
 
-            <div className="mt-6 flex flex-col sm:flex-row gap-3">
-              <Link href="/book">
-                <Button>Book Appointment</Button>
+            <div className="mt-6 flex flex-col sm:flex-row gap-3 items-center sm:items-start">
+              <Link href="/book" className="w-full sm:w-auto">
+                <Button className="w-full sm:w-auto">Book Appointment</Button>
               </Link>
-              <a href={`tel:${formatPhoneForTel(phoneNumber)}`}>
-                <Button variant="outline">
+              <a href={`tel:${formatPhoneForTel(phoneNumber)}`} className="w-full sm:w-auto">
+                <Button variant="outline" className="w-full sm:w-auto">
                   <Phone className="mr-2 w-4 h-4" />
                   Call Us
                 </Button>
@@ -141,10 +141,11 @@ export default function ContactPage() {
                 href={`https://wa.me/${formatPhoneForWhatsApp(phoneNumber)}?text=${WHATSAPP_MESSAGE}`}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="w-full sm:w-auto"
               >
                 <Button
                   variant="outline"
-                  className="bg-green-500 hover:bg-green-600 text-white border-green-500 hover:border-green-600"
+                  className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white border-green-500 hover:border-green-600"
                 >
                   <MessageCircle className="mr-2 w-4 h-4" />
                   WhatsApp

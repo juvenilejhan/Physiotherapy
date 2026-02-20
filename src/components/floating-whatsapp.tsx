@@ -59,9 +59,10 @@ export function FloatingWhatsApp() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat with us on WhatsApp"
-      className="fixed bottom-20 right-4 z-9999 flex items-center justify-center w-14 h-14 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
+      className="fixed bottom-6 right-6 z-9999 flex items-center gap-2 px-4 py-3 bg-green-500 hover:bg-green-600 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
     >
-      <MessageCircle className="w-7 h-7" />
+      <MessageCircle className="w-6 h-6" />
+      <span className="font-medium text-sm hidden sm:inline">Chat with us</span>
     </a>
   );
 }

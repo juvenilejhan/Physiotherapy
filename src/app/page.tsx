@@ -345,15 +345,15 @@ export default function Home() {
                   to help you regain mobility, reduce pain, and improve your
                   quality of life.
                 </p>
-                <div className="flex flex-col sm:flex-row flex-wrap gap-4">
-                  <Link href="/book">
-                    <Button size="lg" className="text-lg">
+                <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-center sm:items-start">
+                  <Link href="/book" className="w-full sm:w-auto">
+                    <Button size="lg" className="text-lg w-full sm:w-auto">
                       Book Appointment
                       <ArrowRight className="ml-2 w-5 h-5" />
                     </Button>
                   </Link>
-                  <a href={`tel:${formatPhoneForTel(settings.phone)}`}>
-                    <Button size="lg" variant="outline" className="text-lg">
+                  <a href={`tel:${formatPhoneForTel(settings.phone)}`} className="w-full sm:w-auto">
+                    <Button size="lg" variant="outline" className="text-lg w-full sm:w-auto">
                       <Phone className="mr-2 w-5 h-5" />
                       Call Us Now
                     </Button>
@@ -362,11 +362,12 @@ export default function Home() {
                     href={`https://wa.me/${formatPhoneForWhatsApp(settings.phone)}?text=${whatsappMessage}`}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="w-full sm:w-auto"
                   >
                     <Button
                       size="lg"
                       variant="outline"
-                      className="text-lg bg-green-500 hover:bg-green-600 text-white border-green-500 hover:border-green-600"
+                      className="text-lg w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white border-green-500 hover:border-green-600"
                     >
                       <MessageCircle className="mr-2 w-5 h-5" />
                       WhatsApp
@@ -596,29 +597,42 @@ export default function Home() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 bg-primary text-primary-foreground">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-3xl mx-auto text-center space-y-6">
-              <h2 className="text-3xl md:text-4xl font-bold">
+        <section className="py-28 md:py-36 relative overflow-hidden min-h-[500px] md:min-h-[600px]">
+          {/* Background Image */}
+          <div className="absolute inset-0">
+            <Image
+              src="/images/cta-energetic.jpg"
+              alt="Recovery Journey"
+              fill
+              className="object-cover object-top lg:object-[center_20%]"
+              priority
+            />
+            {/* Gradient Overlay for readability */}
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/85 via-primary/70 to-transparent" />
+          </div>
+          
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="max-w-3xl mx-auto text-center space-y-8 text-white">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
                 Ready to Start Your Recovery Journey?
               </h2>
-              <p className="text-lg opacity-90">
+              <p className="text-xl md:text-2xl opacity-95">
                 Book your appointment today and take the first step towards a
                 pain-free, active life. Our team is ready to help you achieve
                 your health goals.
               </p>
-              <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center">
-                <Link href="/book">
-                  <Button size="lg" variant="secondary" className="text-lg">
+              <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-center justify-center pt-4">
+                <Link href="/book" className="w-full sm:w-auto">
+                  <Button size="lg" variant="secondary" className="text-lg w-full sm:w-auto shadow-lg hover:shadow-xl transition-shadow">
                     <Calendar className="mr-2 w-5 h-5" />
                     Book Appointment Now
                   </Button>
                 </Link>
-                <a href={`tel:${formatPhoneForTel(settings.phone)}`}>
+                <a href={`tel:${formatPhoneForTel(settings.phone)}`} className="w-full sm:w-auto">
                   <Button
                     size="lg"
                     variant="outline"
-                    className="text-lg bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+                    className="text-lg w-full sm:w-auto bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white hover:text-primary shadow-lg"
                   >
                     <Phone className="mr-2 w-5 h-5" />
                     Call: {settings.phone}
@@ -628,11 +642,12 @@ export default function Home() {
                   href={`https://wa.me/${formatPhoneForWhatsApp(settings.phone)}?text=${whatsappMessage}`}
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="w-full sm:w-auto"
                 >
                   <Button
                     size="lg"
                     variant="outline"
-                    className="text-lg bg-green-500 hover:bg-green-600 text-white border-green-500 hover:border-green-600"
+                    className="text-lg w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white border-green-500 hover:border-green-600 shadow-lg"
                   >
                     <MessageCircle className="mr-2 w-5 h-5" />
                     WhatsApp
