@@ -31,6 +31,7 @@ import {
   ArrowRight,
   Menu,
   X,
+  MessageCircle,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -90,7 +91,7 @@ export default function Home() {
   useEffect(() => {
     const fetchClinicSettings = async () => {
       try {
-        const response = await fetch("/api/admin/settings");
+        const response = await fetch("/api/public/settings");
         if (response.ok) {
           const data = await response.json();
           setClinicSettings(data);
@@ -109,6 +110,28 @@ export default function Home() {
   }, []);
 
   const settings = clinicSettings || defaultSettings;
+
+  // Helper to format phone for WhatsApp with proper country code
+  const formatPhoneForWhatsApp = (phone: string): string => {
+    // Remove all non-digit characters
+    let digits = phone.replace(/\D/g, "");
+
+    // Handle Bangladesh local format (starts with 0, 11 digits)
+    // Convert 01723131343 -> 8801723131343
+    if (digits.startsWith("0") && digits.length === 11) {
+      digits = "880" + digits.substring(1);
+    }
+
+    return digits;
+  };
+
+  // Helper to format phone for tel: links (keeps + for international format)
+  const formatPhoneForTel = (phone: string): string => {
+    return phone.replace(/[^\d+]/g, "");
+  };
+
+  // Pre-filled WhatsApp message
+  const whatsappMessage = encodeURIComponent("Hello! I have some pain/discomfort and would like to consult with a physiotherapist. Can you help?");
 
   const serviceImages = {
     "Orthopedic Physiotherapy": "/images/service-orthopedic.jpg",
@@ -322,17 +345,31 @@ export default function Home() {
                   to help you regain mobility, reduce pain, and improve your
                   quality of life.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex flex-col sm:flex-row flex-wrap gap-4">
                   <Link href="/book">
                     <Button size="lg" className="text-lg">
                       Book Appointment
                       <ArrowRight className="ml-2 w-5 h-5" />
                     </Button>
                   </Link>
-                  <a href="tel:5551234567">
+                  <a href={`tel:${formatPhoneForTel(settings.phone)}`}>
                     <Button size="lg" variant="outline" className="text-lg">
                       <Phone className="mr-2 w-5 h-5" />
                       Call Us Now
+                    </Button>
+                  </a>
+                  <a
+                    href={`https://wa.me/${formatPhoneForWhatsApp(settings.phone)}?text=${whatsappMessage}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="text-lg bg-green-500 hover:bg-green-600 text-white border-green-500 hover:border-green-600"
+                    >
+                      <MessageCircle className="mr-2 w-5 h-5" />
+                      WhatsApp
                     </Button>
                   </a>
                 </div>
@@ -570,21 +607,35 @@ export default function Home() {
                 pain-free, active life. Our team is ready to help you achieve
                 your health goals.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center">
                 <Link href="/book">
                   <Button size="lg" variant="secondary" className="text-lg">
                     <Calendar className="mr-2 w-5 h-5" />
                     Book Appointment Now
                   </Button>
                 </Link>
-                <a href="tel:+8801XXXXXXXXX">
+                <a href={`tel:${formatPhoneForTel(settings.phone)}`}>
                   <Button
                     size="lg"
                     variant="outline"
                     className="text-lg bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
                   >
                     <Phone className="mr-2 w-5 h-5" />
-                    Call: +8801XXXXXXXXX
+                    Call: {settings.phone}
+                  </Button>
+                </a>
+                <a
+                  href={`https://wa.me/${formatPhoneForWhatsApp(settings.phone)}?text=${whatsappMessage}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="text-lg bg-green-500 hover:bg-green-600 text-white border-green-500 hover:border-green-600"
+                  >
+                    <MessageCircle className="mr-2 w-5 h-5" />
+                    WhatsApp
                   </Button>
                 </a>
               </div>

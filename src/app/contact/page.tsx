@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Phone, Mail, MapPin } from "lucide-react";
+import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 
 interface Settings {
   clinicName?: string;
@@ -18,13 +18,34 @@ interface Settings {
   description?: string;
 }
 
+// Helper to format phone for tel: and wa.me links
+function formatPhoneForTel(phone: string): string {
+  return phone.replace(/[^\d+]/g, "");
+}
+
+function formatPhoneForWhatsApp(phone: string): string {
+  // Remove all non-digit characters
+  let digits = phone.replace(/\D/g, "");
+
+  // Handle Bangladesh local format (starts with 0, 11 digits)
+  // Convert 01723131343 -> 8801723131343
+  if (digits.startsWith("0") && digits.length === 11) {
+    digits = "880" + digits.substring(1);
+  }
+
+  return digits;
+}
+
+// Pre-filled WhatsApp message
+const WHATSAPP_MESSAGE = encodeURIComponent("Hello! I have some pain/discomfort and would like to consult with a physiotherapist. Can you help?");
+
 export default function ContactPage() {
   const [settings, setSettings] = useState<Settings | null>(null);
 
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await fetch("/api/admin/settings");
+        const res = await fetch("/api/public/settings");
         if (res.ok) {
           const data = await res.json();
           setSettings(data);
@@ -35,6 +56,8 @@ export default function ContactPage() {
     };
     fetchSettings();
   }, []);
+
+  const phoneNumber = settings?.phone || "(555) 123-4567";
 
   return (
     <div className="min-h-screen bg-muted/50">
@@ -65,10 +88,22 @@ export default function ContactPage() {
               <div className="flex items-center gap-3">
                 <Phone />
                 <a
-                  href={`tel:${settings?.phone || "5551234567"}`}
-                  className="font-medium"
+                  href={`tel:${formatPhoneForTel(phoneNumber)}`}
+                  className="font-medium hover:text-primary transition-colors"
                 >
-                  {settings?.phone || "(555) 123-4567"}
+                  {phoneNumber}
+                </a>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <MessageCircle className="text-green-500" />
+                <a
+                  href={`https://wa.me/${formatPhoneForWhatsApp(phoneNumber)}?text=${WHATSAPP_MESSAGE}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-green-600 hover:text-green-700 transition-colors"
+                >
+                  Chat on WhatsApp
                 </a>
               </div>
 
@@ -92,10 +127,29 @@ export default function ContactPage() {
               </div>
             </div>
 
-            <div className="mt-6">
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <Link href="/book">
                 <Button>Book Appointment</Button>
               </Link>
+              <a href={`tel:${formatPhoneForTel(phoneNumber)}`}>
+                <Button variant="outline">
+                  <Phone className="mr-2 w-4 h-4" />
+                  Call Us
+                </Button>
+              </a>
+              <a
+                href={`https://wa.me/${formatPhoneForWhatsApp(phoneNumber)}?text=${WHATSAPP_MESSAGE}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button
+                  variant="outline"
+                  className="bg-green-500 hover:bg-green-600 text-white border-green-500 hover:border-green-600"
+                >
+                  <MessageCircle className="mr-2 w-4 h-4" />
+                  WhatsApp
+                </Button>
+              </a>
             </div>
           </div>
 
