@@ -235,7 +235,7 @@ export default function Home() {
             </div>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-8">
+            <div className="hidden lg:flex items-center gap-8">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
@@ -247,18 +247,20 @@ export default function Home() {
               ))}
             </div>
 
-            <div className="hidden md:flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-2 lg:gap-4">
               <Link href="/auth/login">
-                <Button variant="ghost">Login</Button>
+                <Button variant="ghost" className="px-2 lg:px-4">
+                  Login
+                </Button>
               </Link>
               <Link href="/auth/register">
-                <Button>Book Appointment</Button>
+                <Button className="px-3 lg:px-4">Book Appointment</Button>
               </Link>
             </div>
 
             {/* Mobile Menu Button */}
             <button
-              className="md:hidden"
+              className="lg:hidden"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? (
@@ -272,7 +274,7 @@ export default function Home() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t">
+          <div className="lg:hidden border-t">
             <div className="container mx-auto px-4 py-4 space-y-4">
               {navLinks.map((link) => (
                 <Link
