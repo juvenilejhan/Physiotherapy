@@ -1283,7 +1283,8 @@ export default function Home() {
 
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
             <p>
-              © {new Date().getFullYear()} {settings.clinicName}. All rights reserved.
+              © {new Date().getFullYear()} {settings.clinicName}. All rights
+              reserved.
             </p>
             <div className="flex items-center gap-6">
               <a href="#" className="hover:text-primary transition-colors">
