@@ -364,7 +364,7 @@ export default function Home() {
             <div className="flex items-center gap-2">
               <Activity className="w-8 h-8 text-primary" />
               <Link href="/#home" className="text-2xl font-bold">
-                PhysioConnect
+                {settings.clinicName}
               </Link>
             </div>
 
@@ -1108,7 +1108,7 @@ export default function Home() {
             <div className="space-y-6">
               <Badge>Visit Us</Badge>
               <h2 className="text-3xl md:text-4xl font-bold">
-                Our Modern Clinic
+                {settings.clinicName}
               </h2>
               <p className="text-lg text-muted-foreground">
                 Located in the heart of the city, our state-of-the-art facility
@@ -1138,15 +1138,34 @@ export default function Home() {
                   <Clock className="w-6 h-6 text-primary shrink-0 mt-1" />
                   <div>
                     <p className="font-semibold">Hours</p>
-                    <p className="text-muted-foreground">
-                      Mon-Fri:{" "}
-                      {settings.workingHours?.monday || "8:00 AM - 6:00 PM"}
-                      <br />
-                      Sat:{" "}
-                      {settings.workingHours?.saturday || "9:00 AM - 2:00 PM"}
-                      <br />
-                      Sun: {settings.workingHours?.sunday || "Closed"}
-                    </p>
+                    <div className="text-muted-foreground text-sm space-y-0.5">
+                      <p>
+                        Mon:{" "}
+                        {settings.workingHours?.monday || "8:00 AM - 6:00 PM"}
+                      </p>
+                      <p>
+                        Tue:{" "}
+                        {settings.workingHours?.tuesday || "8:00 AM - 6:00 PM"}
+                      </p>
+                      <p>
+                        Wed:{" "}
+                        {settings.workingHours?.wednesday ||
+                          "8:00 AM - 6:00 PM"}
+                      </p>
+                      <p>
+                        Thu:{" "}
+                        {settings.workingHours?.thursday || "8:00 AM - 6:00 PM"}
+                      </p>
+                      <p>
+                        Fri:{" "}
+                        {settings.workingHours?.friday || "8:00 AM - 6:00 PM"}
+                      </p>
+                      <p>
+                        Sat:{" "}
+                        {settings.workingHours?.saturday || "9:00 AM - 2:00 PM"}
+                      </p>
+                      <p>Sun: {settings.workingHours?.sunday || "Closed"}</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1235,13 +1254,25 @@ export default function Home() {
                     {settings.email}
                   </span>
                 </li>
-                <li className="flex items-center gap-3">
-                  <Clock className="w-5 h-5 text-primary shrink-0" />
-                  <span className="text-muted-foreground">
-                    Mon-Fri:{" "}
-                    {settings.workingHours?.monday || "8:00 AM - 8:00 PM"}
+                <li className="flex items-start gap-3">
+                  <Clock className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <span className="text-muted-foreground text-sm">
+                    Mon: {settings.workingHours?.monday || "8:00 AM - 6:00 PM"}
                     <br />
-                    Sat: 9:00 AM - 5:00 PM
+                    Tue: {settings.workingHours?.tuesday || "8:00 AM - 6:00 PM"}
+                    <br />
+                    Wed:{" "}
+                    {settings.workingHours?.wednesday || "8:00 AM - 6:00 PM"}
+                    <br />
+                    Thu:{" "}
+                    {settings.workingHours?.thursday || "8:00 AM - 6:00 PM"}
+                    <br />
+                    Fri: {settings.workingHours?.friday || "8:00 AM - 6:00 PM"}
+                    <br />
+                    Sat:{" "}
+                    {settings.workingHours?.saturday || "9:00 AM - 2:00 PM"}
+                    <br />
+                    Sun: {settings.workingHours?.sunday || "Closed"}
                   </span>
                 </li>
               </ul>
@@ -1252,7 +1283,7 @@ export default function Home() {
 
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
             <p>
-              © {new Date().getFullYear()} PhysioConnect. All rights reserved.
+              © {new Date().getFullYear()} {settings.clinicName}. All rights reserved.
             </p>
             <div className="flex items-center gap-6">
               <a href="#" className="hover:text-primary transition-colors">

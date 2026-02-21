@@ -55,6 +55,7 @@ import {
 } from "@/components/ui/select";
 import { format } from "date-fns";
 import { formatBDT } from "@/lib/utils";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 interface Service {
   id: string;
@@ -64,6 +65,7 @@ interface Service {
   price: number;
   category: string;
   isActive: boolean;
+  image?: string;
 }
 
 interface BlogPost {
@@ -71,6 +73,7 @@ interface BlogPost {
   title: string;
   excerpt: string;
   content: string;
+  featuredImage?: string;
   author?: {
     name: string;
   };
@@ -109,10 +112,13 @@ export default function AdminContentPage() {
     price: "",
     category: "ORTHOPEDIC",
     isActive: true,
+    image: "",
   });
 
   // Blog dialog state
   const [blogDialogOpen, setBlogDialogOpen] = useState(false);
+  const [blogEditMode, setBlogEditMode] = useState(false);
+  const [selectedBlog, setSelectedBlog] = useState<BlogPost | null>(null);
   const [blogForm, setBlogForm] = useState({
     title: "",
     excerpt: "",
@@ -120,6 +126,19 @@ export default function AdminContentPage() {
     category: "",
     tags: "",
     isPublished: false,
+    featuredImage: "",
+  });
+
+  // Gallery dialog state
+  const [galleryDialogOpen, setGalleryDialogOpen] = useState(false);
+  const [galleryEditMode, setGalleryEditMode] = useState(false);
+  const [selectedGalleryItem, setSelectedGalleryItem] =
+    useState<GalleryItem | null>(null);
+  const [galleryForm, setGalleryForm] = useState({
+    title: "",
+    description: "",
+    url: "",
+    category: "GENERAL",
   });
 
   useEffect(() => {
@@ -206,6 +225,7 @@ export default function AdminContentPage() {
       price: service.price.toString(),
       category: service.category,
       isActive: service.isActive,
+      image: service.image || "",
     });
     setServiceDialogOpen(true);
   };
@@ -240,6 +260,7 @@ export default function AdminContentPage() {
       price: "",
       category: "ORTHOPEDIC",
       isActive: true,
+      image: "",
     });
     setEditMode(false);
     setSelectedService(null);
@@ -249,30 +270,91 @@ export default function AdminContentPage() {
     e.preventDefault();
 
     try {
-      const response = await fetch("/api/admin/content/blogs", {
-        method: "POST",
+      const url = blogEditMode
+        ? `/api/admin/content/blogs/${selectedBlog?.id}`
+        : "/api/admin/content/blogs";
+      const method = blogEditMode ? "PATCH" : "POST";
+
+      const response = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(blogForm),
       });
 
       if (response.ok) {
-        toast.success("Blog post created successfully");
+        toast.success(
+          blogEditMode
+            ? "Blog post updated successfully"
+            : "Blog post created successfully",
+        );
         setBlogDialogOpen(false);
-        setBlogForm({
-          title: "",
-          excerpt: "",
-          content: "",
-          category: "",
-          tags: "",
-          isPublished: false,
-        });
+        resetBlogForm();
         fetchContent();
       } else {
         const error = await response.json();
-        toast.error(error.error || "Failed to create blog post");
+        toast.error(error.error || "Failed to save blog post");
       }
     } catch (error) {
-      console.error("Error creating blog post:", error);
+      console.error("Error saving blog post:", error);
+      toast.error("An error occurred");
+    }
+  };
+
+  const handleEditBlog = (blog: BlogPost) => {
+    setSelectedBlog(blog);
+    setBlogEditMode(true);
+    setBlogForm({
+      title: blog.title,
+      excerpt: blog.excerpt || "",
+      content: blog.content,
+      category: "",
+      tags: "",
+      isPublished: blog.isPublished,
+      featuredImage: blog.featuredImage || "",
+    });
+    setBlogDialogOpen(true);
+  };
+
+  const handleDeleteBlog = async (blogId: string) => {
+    if (!confirm("Are you sure you want to delete this blog post?")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/content/blogs/${blogId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        toast.success("Blog post deleted successfully");
+        fetchContent();
+      } else {
+        toast.error("Failed to delete blog post");
+      }
+    } catch (error) {
+      console.error("Error deleting blog post:", error);
+      toast.error("An error occurred");
+    }
+  };
+
+  const handleTogglePublish = async (blog: BlogPost) => {
+    try {
+      const response = await fetch(`/api/admin/content/blogs/${blog.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isPublished: !blog.isPublished }),
+      });
+
+      if (response.ok) {
+        toast.success(
+          blog.isPublished ? "Blog post unpublished" : "Blog post published",
+        );
+        fetchContent();
+      } else {
+        toast.error("Failed to update blog post");
+      }
+    } catch (error) {
+      console.error("Error updating blog post:", error);
       toast.error("An error occurred");
     }
   };
@@ -285,7 +367,90 @@ export default function AdminContentPage() {
       category: "",
       tags: "",
       isPublished: false,
+      featuredImage: "",
     });
+    setBlogEditMode(false);
+    setSelectedBlog(null);
+  };
+
+  // Gallery handlers
+  const handleGallerySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const url = galleryEditMode
+        ? `/api/admin/content/gallery/${selectedGalleryItem?.id}`
+        : "/api/admin/content/gallery";
+      const method = galleryEditMode ? "PATCH" : "POST";
+
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(galleryForm),
+      });
+
+      if (response.ok) {
+        toast.success(
+          galleryEditMode
+            ? "Gallery item updated successfully"
+            : "Gallery item added successfully",
+        );
+        setGalleryDialogOpen(false);
+        resetGalleryForm();
+        fetchContent();
+      } else {
+        const error = await response.json();
+        toast.error(error.error || "Failed to save gallery item");
+      }
+    } catch (error) {
+      console.error("Error saving gallery item:", error);
+      toast.error("An error occurred");
+    }
+  };
+
+  const handleEditGallery = (item: GalleryItem) => {
+    setSelectedGalleryItem(item);
+    setGalleryEditMode(true);
+    setGalleryForm({
+      title: item.title || "",
+      description: item.description || "",
+      url: item.url,
+      category: item.category || "GENERAL",
+    });
+    setGalleryDialogOpen(true);
+  };
+
+  const handleDeleteGallery = async (itemId: string) => {
+    if (!confirm("Are you sure you want to delete this gallery item?")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/content/gallery/${itemId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        toast.success("Gallery item deleted successfully");
+        fetchContent();
+      } else {
+        toast.error("Failed to delete gallery item");
+      }
+    } catch (error) {
+      console.error("Error deleting gallery item:", error);
+      toast.error("An error occurred");
+    }
+  };
+
+  const resetGalleryForm = () => {
+    setGalleryForm({
+      title: "",
+      description: "",
+      url: "",
+      category: "GENERAL",
+    });
+    setGalleryEditMode(false);
+    setSelectedGalleryItem(null);
   };
 
   if (loading) {
@@ -450,6 +615,20 @@ export default function AdminContentPage() {
                             </SelectContent>
                           </Select>
                         </div>
+                        <div className="grid gap-2">
+                          <Label>Service Image</Label>
+                          <ImageUpload
+                            value={serviceForm.image}
+                            onChange={(url) =>
+                              setServiceForm({
+                                ...serviceForm,
+                                image: url,
+                              })
+                            }
+                            folder="services"
+                            placeholder="Upload or paste image URL"
+                          />
+                        </div>
                       </div>
                       <DialogFooter>
                         <Button type="submit">
@@ -546,16 +725,22 @@ export default function AdminContentPage() {
                   }}
                 >
                   <DialogTrigger asChild>
-                    <Button>
+                    <Button onClick={() => setBlogEditMode(false)}>
                       <Plus className="mr-2 h-4 w-4" />
                       New Post
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-175 max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                      <DialogTitle>Create New Blog Post</DialogTitle>
+                      <DialogTitle>
+                        {blogEditMode
+                          ? "Edit Blog Post"
+                          : "Create New Blog Post"}
+                      </DialogTitle>
                       <DialogDescription>
-                        Write and publish a new blog post
+                        {blogEditMode
+                          ? "Update blog post content"
+                          : "Write and publish a new blog post"}
                       </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleBlogSubmit}>
@@ -657,9 +842,25 @@ export default function AdminContentPage() {
                             Publish immediately
                           </Label>
                         </div>
+                        <div className="grid gap-2">
+                          <Label>Featured Image</Label>
+                          <ImageUpload
+                            value={blogForm.featuredImage}
+                            onChange={(url) =>
+                              setBlogForm({
+                                ...blogForm,
+                                featuredImage: url,
+                              })
+                            }
+                            folder="blogs"
+                            placeholder="Upload or paste featured image URL"
+                          />
+                        </div>
                       </div>
                       <DialogFooter>
-                        <Button type="submit">Create Post</Button>
+                        <Button type="submit">
+                          {blogEditMode ? "Update Post" : "Create Post"}
+                        </Button>
                       </DialogFooter>
                     </form>
                   </DialogContent>
@@ -714,16 +915,23 @@ export default function AdminContentPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleEditBlog(blog)}
+                          >
                             <Edit className="mr-2 h-4 w-4" />
                             Edit
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleTogglePublish(blog)}
+                          >
                             <FileText className="mr-2 h-4 w-4" />
-                            View
+                            {blog.isPublished ? "Unpublish" : "Publish"}
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-destructive">
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={() => handleDeleteBlog(blog.id)}
+                          >
                             <Trash2 className="mr-2 h-4 w-4" />
                             Delete
                           </DropdownMenuItem>
@@ -755,10 +963,115 @@ export default function AdminContentPage() {
                   <Button variant="outline" size="icon">
                     <List className="h-4 w-4" />
                   </Button>
-                  <Button>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Image
-                  </Button>
+                  <Dialog
+                    open={galleryDialogOpen}
+                    onOpenChange={(open) => {
+                      setGalleryDialogOpen(open);
+                      if (!open) resetGalleryForm();
+                    }}
+                  >
+                    <DialogTrigger asChild>
+                      <Button onClick={() => setGalleryEditMode(false)}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Image
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>
+                          {galleryEditMode
+                            ? "Edit Gallery Item"
+                            : "Add New Image"}
+                        </DialogTitle>
+                        <DialogDescription>
+                          {galleryEditMode
+                            ? "Update gallery item details"
+                            : "Add a new image to the gallery"}
+                        </DialogDescription>
+                      </DialogHeader>
+                      <form onSubmit={handleGallerySubmit}>
+                        <div className="grid gap-4 py-4">
+                          <div className="grid gap-2">
+                            <Label htmlFor="galleryTitle">Title</Label>
+                            <Input
+                              id="galleryTitle"
+                              value={galleryForm.title}
+                              onChange={(e) =>
+                                setGalleryForm({
+                                  ...galleryForm,
+                                  title: e.target.value,
+                                })
+                              }
+                              placeholder="Image title"
+                            />
+                          </div>
+                          <div className="grid gap-2">
+                            <Label>Image *</Label>
+                            <ImageUpload
+                              value={galleryForm.url}
+                              onChange={(url) =>
+                                setGalleryForm({
+                                  ...galleryForm,
+                                  url: url,
+                                })
+                              }
+                              folder="gallery"
+                              placeholder="Upload or paste image URL"
+                            />
+                          </div>
+                          <div className="grid gap-2">
+                            <Label htmlFor="galleryDescription">
+                              Description
+                            </Label>
+                            <Textarea
+                              id="galleryDescription"
+                              value={galleryForm.description}
+                              onChange={(e) =>
+                                setGalleryForm({
+                                  ...galleryForm,
+                                  description: e.target.value,
+                                })
+                              }
+                              rows={2}
+                              placeholder="Optional description"
+                            />
+                          </div>
+                          <div className="grid gap-2">
+                            <Label htmlFor="galleryCategory">Category</Label>
+                            <Select
+                              value={galleryForm.category}
+                              onValueChange={(value) =>
+                                setGalleryForm({
+                                  ...galleryForm,
+                                  category: value,
+                                })
+                              }
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select category" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="GENERAL">General</SelectItem>
+                                <SelectItem value="CLINIC">Clinic</SelectItem>
+                                <SelectItem value="EQUIPMENT">
+                                  Equipment
+                                </SelectItem>
+                                <SelectItem value="TEAM">Team</SelectItem>
+                                <SelectItem value="TREATMENTS">
+                                  Treatments
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button type="submit">
+                            {galleryEditMode ? "Update" : "Add Image"}
+                          </Button>
+                        </DialogFooter>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
             </CardHeader>
@@ -767,7 +1080,13 @@ export default function AdminContentPage() {
                 <div className="text-center py-12">
                   <ImageIcon className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                   <p className="text-muted-foreground">No images in gallery</p>
-                  <Button className="mt-4">
+                  <Button
+                    className="mt-4"
+                    onClick={() => {
+                      setGalleryEditMode(false);
+                      setGalleryDialogOpen(true);
+                    }}
+                  >
                     <Plus className="mr-2 h-4 w-4" />
                     Add Your First Image
                   </Button>
@@ -790,10 +1109,18 @@ export default function AdminContentPage() {
                           }}
                         />
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                          <Button size="sm" variant="secondary">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => handleEditGallery(item)}
+                          >
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button size="sm" variant="destructive">
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleDeleteGallery(item.id)}
+                          >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>

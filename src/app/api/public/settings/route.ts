@@ -18,12 +18,28 @@ export async function GET() {
         postalCode: "10001",
         country: "United States",
         description: "Your trusted partner in physiotherapy care.",
+        workingHours: {
+          monday: "9:00 AM - 5:00 PM",
+          tuesday: "9:00 AM - 5:00 PM",
+          wednesday: "9:00 AM - 5:00 PM",
+          thursday: "9:00 AM - 5:00 PM",
+          friday: "9:00 AM - 5:00 PM",
+          saturday: "Closed",
+          sunday: "Closed",
+        },
       });
     }
 
     // Parse social media links for description
     const parsedSocial = settings.socialMediaLinks
       ? JSON.parse(settings.socialMediaLinks)
+      : {};
+
+    // Parse working hours
+    const parsedWorkingHours = settings.workingHours
+      ? typeof settings.workingHours === "string"
+        ? JSON.parse(settings.workingHours)
+        : settings.workingHours
       : {};
 
     // Return only public information
@@ -38,6 +54,7 @@ export async function GET() {
       country: settings.country,
       description:
         (settings as any).description || parsedSocial.description || "",
+      workingHours: parsedWorkingHours,
     });
   } catch (error) {
     console.error("Error fetching public settings:", error);
