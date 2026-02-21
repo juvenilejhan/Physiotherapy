@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { hasPermission } from "@/lib/rbac";
+import { normalizeBDPhone } from "@/lib/utils";
 
 // GET - Get clinic settings
 export async function GET(req: NextRequest) {
@@ -129,7 +130,7 @@ export async function PATCH(req: NextRequest) {
     if (clinicName !== undefined) updateData.name = clinicName;
     if (name !== undefined) updateData.name = name;
     if (email !== undefined) updateData.email = email;
-    if (phone !== undefined) updateData.phone = phone;
+    if (phone !== undefined) updateData.phone = normalizeBDPhone(phone);
     if (address !== undefined) updateData.address = address;
     if (city !== undefined) updateData.city = city;
     if (state !== undefined) updateData.state = state;

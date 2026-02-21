@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { UserRole, AccountType } from "@prisma/client";
 import { z } from "zod";
+import { normalizeBDPhone } from "@/lib/utils";
 
 // Validation schema
 const registerSchema = z.object({
@@ -43,13 +44,16 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    // Normalize Bangladeshi phone number
+    const normalizedPhone = normalizeBDPhone(phone);
+
     // Create user
     const user = await db.user.create({
       data: {
         email,
         password: hashedPassword,
         name,
-        phone,
+        phone: normalizedPhone,
         dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
         role: UserRole.PATIENT,
         accountType: AccountType.CREDENTIALS,

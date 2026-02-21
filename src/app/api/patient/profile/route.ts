@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { normalizeBDPhone } from "@/lib/utils";
 
 export async function GET(request: NextRequest) {
   try {
@@ -108,7 +109,7 @@ export async function PATCH(request: NextRequest) {
       where: { userId: (session.user as any).id },
       data: {
         emergencyContact: body.emergencyContact || undefined,
-        emergencyPhone: body.emergencyPhone || undefined,
+        emergencyPhone: normalizeBDPhone(body.emergencyPhone) || undefined,
         bloodGroup: body.bloodGroup || undefined,
         allergies: body.allergies || undefined,
         medicalConditions: body.medicalConditions || undefined,
@@ -137,7 +138,7 @@ export async function PATCH(request: NextRequest) {
       where: { id: (session.user as any).id },
       data: {
         name: body.name || undefined,
-        phone: body.phone || undefined,
+        phone: normalizeBDPhone(body.phone) || undefined,
         dateOfBirth: body.dateOfBirth ? new Date(body.dateOfBirth) : undefined,
       },
     });
@@ -151,7 +152,7 @@ export async function PATCH(request: NextRequest) {
             id: (session.user as any).id,
             email: (session.user as any).email,
             name: body.name || (session.user as any).name,
-            phone: body.phone || undefined,
+            phone: normalizeBDPhone(body.phone) || undefined,
             dateOfBirth: (session.user as any).dateOfBirth,
           },
         },
