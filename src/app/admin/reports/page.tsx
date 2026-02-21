@@ -29,6 +29,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -575,14 +576,16 @@ export default function AdminReportsPage() {
                                     {staff.name}
                                   </span>
                                   <div className="flex items-center gap-2">
-                                    <div className="h-2 w-24 rounded-full bg-muted overflow-hidden">
-                                      <div
-                                        className="h-full bg-primary rounded-full"
-                                        style={{
-                                          width: `${Math.min(100, (staff.appointments / (overviewData.appointments.total || 1)) * 100)}%`,
-                                        }}
-                                      />
-                                    </div>
+                                    <Progress
+                                      value={Math.min(
+                                        100,
+                                        (staff.appointments /
+                                          (overviewData.appointments.total ||
+                                            1)) *
+                                          100,
+                                      )}
+                                      className="h-2 w-24"
+                                    />
                                     <span className="text-sm text-muted-foreground">
                                       {staff.appointments}
                                     </span>
@@ -604,32 +607,27 @@ export default function AdminReportsPage() {
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <div className="flex items-end justify-between gap-2 h-40">
+                        <div className="space-y-3">
                           {overviewData.dayTrends.labels.map((day, index) => {
                             const maxValue = Math.max(
                               ...overviewData.dayTrends.data,
                               1,
                             );
-                            const height =
+                            const value =
                               (overviewData.dayTrends.data[index] / maxValue) *
                               100;
                             return (
                               <div
                                 key={day}
-                                className="flex flex-col items-center gap-2 flex-1"
+                                className="flex items-center gap-3"
                               >
-                                <div
-                                  className="w-full bg-muted rounded-t relative"
-                                  style={{ height: `${Math.max(height, 5)}%` }}
-                                >
-                                  <div
-                                    className="absolute inset-0 bg-primary rounded-t transition-all"
-                                    style={{ height: "100%" }}
-                                  />
-                                </div>
-                                <span className="text-xs font-medium">
+                                <span className="text-xs font-medium w-10">
                                   {day}
                                 </span>
+                                <Progress
+                                  value={Math.max(value, 5)}
+                                  className="h-2 flex-1"
+                                />
                                 <span className="text-xs text-muted-foreground">
                                   {overviewData.dayTrends.data[index]}
                                 </span>
@@ -957,14 +955,16 @@ export default function AdminReportsPage() {
                               >
                                 <span>{item.group}</span>
                                 <div className="flex items-center gap-2">
-                                  <div className="h-2 w-20 rounded-full bg-muted overflow-hidden">
-                                    <div
-                                      className="h-full bg-primary rounded-full"
-                                      style={{
-                                        width: `${Math.min(100, (item.count / (patientsData.stats.totalPatients || 1)) * 100)}%`,
-                                      }}
-                                    />
-                                  </div>
+                                  <Progress
+                                    value={Math.min(
+                                      100,
+                                      (item.count /
+                                        (patientsData.stats.totalPatients ||
+                                          1)) *
+                                        100,
+                                    )}
+                                    className="h-2 w-20"
+                                  />
                                   <span className="text-sm text-muted-foreground w-8 text-right">
                                     {item.count}
                                   </span>

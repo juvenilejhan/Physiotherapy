@@ -1,23 +1,31 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { signIn, getSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Activity, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { signIn, getSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Activity, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { BackButton } from "@/components/BackButton";
 
 export default function LoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
     rememberMe: false,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -26,13 +34,13 @@ export default function LoginPage() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = "Please enter a valid email address";
     }
 
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = "Password is required";
     }
 
     setErrors(newErrors);
@@ -49,7 +57,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const result = await signIn('credentials', {
+      const result = await signIn("credentials", {
         email: formData.email,
         password: formData.password,
         redirect: false,
@@ -65,20 +73,25 @@ export default function LoginPage() {
       const session = await getSession();
 
       if (session) {
-        toast.success('Login successful!');
-        
+        toast.success("Login successful!");
+
         // Redirect based on user role
         const role = (session.user as any).role;
-        
-        if (role === 'SUPER_ADMIN' || role === 'CLINIC_MANAGER' || role === 'DOCTOR' || role === 'RECEPTIONIST') {
-          router.push('/admin');
+
+        if (
+          role === "SUPER_ADMIN" ||
+          role === "CLINIC_MANAGER" ||
+          role === "DOCTOR" ||
+          role === "RECEPTIONIST"
+        ) {
+          router.push("/admin");
         } else {
-          router.push('/dashboard');
+          router.push("/dashboard");
         }
       }
     } catch (error) {
-      console.error('Login error:', error);
-      toast.error('An error occurred. Please try again.');
+      console.error("Login error:", error);
+      toast.error("An error occurred. Please try again.");
       setIsLoading(false);
     }
   };
@@ -90,13 +103,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/50 p-4">
       <div className="w-full max-w-md">
-        {/* Back to Home Button */}
-        <Link href="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6 transition-colors">
-          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          Back to Home
-        </Link>
+        <BackButton isAuthPage={true} />
 
         {/* Logo */}
         <div className="flex items-center justify-center gap-2 mb-8">
@@ -120,8 +127,10 @@ export default function LoginPage() {
                   type="email"
                   placeholder="john@example.com"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className={errors.email ? 'border-destructive' : ''}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  className={errors.email ? "border-destructive" : ""}
                   disabled={isLoading}
                 />
                 {errors.email && (
@@ -144,8 +153,10 @@ export default function LoginPage() {
                   type="password"
                   placeholder="••••••••"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className={errors.password ? 'border-destructive' : ''}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  className={errors.password ? "border-destructive" : ""}
                   disabled={isLoading}
                 />
                 {errors.password && (
@@ -170,14 +181,19 @@ export default function LoginPage() {
                 </Label>
               </div>
 
-              <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="w-full"
+                size="lg"
+                disabled={isLoading}
+              >
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Signing in...
                   </>
                 ) : (
-                  'Sign In'
+                  "Sign In"
                 )}
               </Button>
             </form>
@@ -197,7 +213,7 @@ export default function LoginPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => handleSocialLogin('Google')}
+                onClick={() => handleSocialLogin("Google")}
                 disabled={isLoading}
               >
                 <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -223,10 +239,14 @@ export default function LoginPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => handleSocialLogin('Facebook')}
+                onClick={() => handleSocialLogin("Facebook")}
                 disabled={isLoading}
               >
-                <svg className="mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="mr-2 h-4 w-4"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                 </svg>
                 Facebook
@@ -235,8 +255,11 @@ export default function LoginPage() {
           </CardContent>
           <CardFooter className="flex justify-center">
             <p className="text-sm text-muted-foreground">
-              Don't have an account?{' '}
-              <Link href="/auth/register" className="text-primary hover:underline font-medium">
+              Don't have an account?{" "}
+              <Link
+                href="/auth/register"
+                className="text-primary hover:underline font-medium"
+              >
                 Sign up
               </Link>
             </p>
@@ -244,11 +267,11 @@ export default function LoginPage() {
         </Card>
 
         <p className="text-xs text-center text-muted-foreground mt-6">
-          By signing in, you agree to our{' '}
+          By signing in, you agree to our{" "}
           <Link href="#" className="underline hover:text-primary">
             Terms of Service
-          </Link>{' '}
-          and{' '}
+          </Link>{" "}
+          and{" "}
           <Link href="#" className="underline hover:text-primary">
             Privacy Policy
           </Link>

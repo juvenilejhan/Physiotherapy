@@ -109,7 +109,9 @@ export default function Home() {
   );
   const [loading, setLoading] = useState(true);
   const [dynamicServices, setDynamicServices] = useState<DynamicService[]>([]);
-  const [dynamicSpecialists, setDynamicSpecialists] = useState<DynamicSpecialist[]>([]);
+  const [dynamicSpecialists, setDynamicSpecialists] = useState<
+    DynamicSpecialist[]
+  >([]);
   const [dynamicBlogs, setDynamicBlogs] = useState<DynamicBlog[]>([]);
   const [servicesLoading, setServicesLoading] = useState(true);
   const [specialistsLoading, setSpecialistsLoading] = useState(true);
@@ -238,7 +240,9 @@ export default function Home() {
   };
 
   // Pre-filled WhatsApp message
-  const whatsappMessage = encodeURIComponent("Hello! I have some pain/discomfort and would like to consult with a physiotherapist. Can you help?");
+  const whatsappMessage = encodeURIComponent(
+    "Hello! I have some pain/discomfort and would like to consult with a physiotherapist. Can you help?",
+  );
 
   const serviceImages = {
     "Orthopedic Physiotherapy": "/images/service-orthopedic.jpg",
@@ -459,8 +463,15 @@ export default function Home() {
                       <ArrowRight className="ml-2 w-5 h-5" />
                     </Button>
                   </Link>
-                  <a href={`tel:${formatPhoneForTel(settings.phone)}`} className="w-full sm:w-auto">
-                    <Button size="lg" variant="outline" className="text-lg w-full sm:w-auto">
+                  <a
+                    href={`tel:${formatPhoneForTel(settings.phone)}`}
+                    className="w-full sm:w-auto"
+                  >
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="text-lg w-full sm:w-auto"
+                    >
                       <Phone className="mr-2 w-5 h-5" />
                       Call Us Now
                     </Button>
@@ -523,110 +534,121 @@ export default function Home() {
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {servicesLoading ? (
-                // Loading skeleton
-                [1, 2, 3].map((i) => (
-                  <Card key={i} className="animate-pulse">
-                    <div className="aspect-video bg-muted"></div>
-                    <CardHeader>
-                      <div className="h-6 bg-muted rounded w-3/4 mb-2"></div>
-                      <div className="h-4 bg-muted rounded w-full"></div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex gap-2">
-                        <div className="h-6 bg-muted rounded w-20"></div>
-                        <div className="h-6 bg-muted rounded w-20"></div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              ) : dynamicServices.length > 0 ? (
-                // Dynamic services from database
-                dynamicServices.slice(0, 3).map((service) => (
-                  <Link key={service.id} href={`/services/${service.slug}`} className="block">
-                    <Card className="hover:shadow-lg transition-shadow overflow-hidden group h-full">
-                      <div className="relative aspect-video bg-muted overflow-hidden">
-                        <Image
-                          src={service.image || serviceImages[service.name as keyof typeof serviceImages] || "/images/service-orthopedic.jpg"}
-                          alt={service.name}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
+              {servicesLoading
+                ? // Loading skeleton
+                  [1, 2, 3].map((i) => (
+                    <Card key={i} className="animate-pulse">
+                      <div className="aspect-video bg-muted"></div>
                       <CardHeader>
-                        <CardTitle className="text-xl group-hover:text-primary transition-colors">
-                          {service.name}
-                        </CardTitle>
-                        <CardDescription className="text-base line-clamp-2">
-                          {service.description}
-                        </CardDescription>
+                        <div className="h-6 bg-muted rounded w-3/4 mb-2"></div>
+                        <div className="h-4 bg-muted rounded w-full"></div>
                       </CardHeader>
                       <CardContent>
-                        <div className="space-y-2">
-                          {service.conditions && (
-                            <>
-                              <p className="text-sm font-medium text-muted-foreground">
-                                Treats:
-                              </p>
-                              <div className="flex flex-wrap gap-2">
-                                {service.conditions.split(",").slice(0, 3).map((condition, idx) => (
-                                  <Badge key={idx} variant="secondary">
-                                    {condition.trim()}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </>
-                          )}
+                        <div className="flex gap-2">
+                          <div className="h-6 bg-muted rounded w-20"></div>
+                          <div className="h-6 bg-muted rounded w-20"></div>
                         </div>
                       </CardContent>
                     </Card>
-                  </Link>
-                ))
-              ) : (
-                // Fallback to static services
-                services.slice(0, 3).map((service, index) => (
-                  <Card
-                    key={index}
-                    className="hover:shadow-lg transition-shadow overflow-hidden group"
-                  >
-                    <div className="relative aspect-video bg-muted overflow-hidden">
-                      <Image
-                        src={
-                          serviceImages[
-                            service.title as keyof typeof serviceImages
-                          ]
-                        }
-                        alt={service.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        priority={index < 3}
-                      />
-                    </div>
-                    <CardHeader>
-                      <CardTitle className="text-xl group-hover:text-primary transition-colors">
-                        {service.title}
-                      </CardTitle>
-                      <CardDescription className="text-base">
-                        {service.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium text-muted-foreground">
-                          Treats:
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {service.conditions.map((condition, idx) => (
-                            <Badge key={idx} variant="secondary">
-                              {condition}
-                            </Badge>
-                          ))}
+                  ))
+                : dynamicServices.length > 0
+                  ? // Dynamic services from database
+                    dynamicServices.slice(0, 3).map((service) => (
+                      <Link
+                        key={service.id}
+                        href={`/services/${service.slug}`}
+                        className="block"
+                      >
+                        <Card className="hover:shadow-lg transition-shadow overflow-hidden group h-full">
+                          <div className="relative aspect-video bg-muted overflow-hidden">
+                            <Image
+                              src={
+                                service.image ||
+                                serviceImages[
+                                  service.name as keyof typeof serviceImages
+                                ] ||
+                                "/images/service-orthopedic.jpg"
+                              }
+                              alt={service.name}
+                              fill
+                              className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                          <CardHeader>
+                            <CardTitle className="text-xl group-hover:text-primary transition-colors">
+                              {service.name}
+                            </CardTitle>
+                            <CardDescription className="text-base line-clamp-2">
+                              {service.description}
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-2">
+                              {service.conditions && (
+                                <>
+                                  <p className="text-sm font-medium text-muted-foreground">
+                                    Treats:
+                                  </p>
+                                  <div className="flex flex-wrap gap-2">
+                                    {service.conditions
+                                      .split(",")
+                                      .slice(0, 3)
+                                      .map((condition, idx) => (
+                                        <Badge key={idx} variant="secondary">
+                                          {condition.trim()}
+                                        </Badge>
+                                      ))}
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    ))
+                  : // Fallback to static services
+                    services.slice(0, 3).map((service, index) => (
+                      <Card
+                        key={index}
+                        className="hover:shadow-lg transition-shadow overflow-hidden group"
+                      >
+                        <div className="relative aspect-video bg-muted overflow-hidden">
+                          <Image
+                            src={
+                              serviceImages[
+                                service.title as keyof typeof serviceImages
+                              ]
+                            }
+                            alt={service.title}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            priority={index < 3}
+                          />
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              )}
+                        <CardHeader>
+                          <CardTitle className="text-xl group-hover:text-primary transition-colors">
+                            {service.title}
+                          </CardTitle>
+                          <CardDescription className="text-base">
+                            {service.description}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2">
+                            <p className="text-sm font-medium text-muted-foreground">
+                              Treats:
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              {service.conditions.map((condition, idx) => (
+                                <Badge key={idx} variant="secondary">
+                                  {condition}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
             </div>
 
             <div className="text-center mt-12">
@@ -666,92 +688,109 @@ export default function Home() {
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {specialistsLoading ? (
-                // Loading skeleton
-                [1, 2, 3, 4].map((i) => (
-                  <Card key={i} className="animate-pulse">
-                    <CardHeader className="text-center">
-                      <div className="w-24 h-24 bg-muted rounded-full mx-auto mb-4"></div>
-                      <div className="h-6 bg-muted rounded w-3/4 mx-auto mb-2"></div>
-                      <div className="h-4 bg-muted rounded w-1/2 mx-auto"></div>
-                    </CardHeader>
-                    <CardContent className="text-center space-y-3">
-                      <div className="h-6 bg-muted rounded w-24 mx-auto"></div>
-                      <div className="h-4 bg-muted rounded w-32 mx-auto"></div>
-                    </CardContent>
-                  </Card>
-                ))
-              ) : dynamicSpecialists.length > 0 ? (
-                // Dynamic specialists from database
-                dynamicSpecialists.slice(0, 4).map((specialist) => (
-                  <Link key={specialist.id} href={`/specialists/${specialist.id}`} className="block">
-                    <Card className="hover:shadow-lg transition-shadow h-full">
+              {specialistsLoading
+                ? // Loading skeleton
+                  [1, 2, 3, 4].map((i) => (
+                    <Card key={i} className="animate-pulse">
                       <CardHeader className="text-center">
-                        <div className="w-24 h-24 bg-linear-to-br from-primary/20 to-primary/5 rounded-full mx-auto mb-4 flex items-center justify-center overflow-hidden">
-                          {specialist.user.image ? (
-                            <Image
-                              src={specialist.user.image}
-                              alt={specialist.user.name || "Specialist"}
-                              width={96}
-                              height={96}
-                              className="object-cover w-full h-full"
-                            />
-                          ) : (
-                            <Users className="w-12 h-12 text-primary" />
-                          )}
-                        </div>
-                        <CardTitle className="text-lg">{specialist.user.name || "Specialist"}</CardTitle>
-                        <CardDescription className="text-sm">
-                          {specialist.specialization || "Physiotherapist"}
-                        </CardDescription>
+                        <div className="w-24 h-24 bg-muted rounded-full mx-auto mb-4"></div>
+                        <div className="h-6 bg-muted rounded w-3/4 mx-auto mb-2"></div>
+                        <div className="h-4 bg-muted rounded w-1/2 mx-auto"></div>
                       </CardHeader>
                       <CardContent className="text-center space-y-3">
-                        {specialist.qualifications && (
-                          <Badge variant="outline">{specialist.qualifications.split(",")[0]}</Badge>
-                        )}
-                        <p className="text-sm text-muted-foreground">
-                          {specialist.experience ? `${specialist.experience} years of experience` : "Experienced Professional"}
-                        </p>
-                        <div className="flex items-center justify-center gap-2">
-                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                          <span className="font-semibold">4.9</span>
-                          <span className="text-sm text-muted-foreground">
-                            (Based on reviews)
-                          </span>
-                        </div>
+                        <div className="h-6 bg-muted rounded w-24 mx-auto"></div>
+                        <div className="h-4 bg-muted rounded w-32 mx-auto"></div>
                       </CardContent>
                     </Card>
-                  </Link>
-                ))
-              ) : (
-                // Fallback to static specialists
-                specialists.map((specialist, index) => (
-                  <Card key={index} className="hover:shadow-lg transition-shadow">
-                    <CardHeader className="text-center">
-                      <div className="w-24 h-24 bg-linear-to-br from-primary/20 to-primary/5 rounded-full mx-auto mb-4 flex items-center justify-center">
-                        <Users className="w-12 h-12 text-primary" />
-                      </div>
-                      <CardTitle className="text-lg">{specialist.name}</CardTitle>
-                      <CardDescription className="text-sm">
-                        {specialist.role}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="text-center space-y-3">
-                      <Badge variant="outline">{specialist.specialization}</Badge>
-                      <p className="text-sm text-muted-foreground">
-                        {specialist.experience} of experience
-                      </p>
-                      <div className="flex items-center justify-center gap-2">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span className="font-semibold">{specialist.rating}</span>
-                        <span className="text-sm text-muted-foreground">
-                          ({specialist.reviews} reviews)
-                        </span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              )}
+                  ))
+                : dynamicSpecialists.length > 0
+                  ? // Dynamic specialists from database
+                    dynamicSpecialists.slice(0, 4).map((specialist) => (
+                      <Link
+                        key={specialist.id}
+                        href={`/specialists/${specialist.id}`}
+                        className="block"
+                      >
+                        <Card className="hover:shadow-lg transition-shadow h-full">
+                          <CardHeader className="text-center">
+                            <div className="w-24 h-24 bg-linear-to-br from-primary/20 to-primary/5 rounded-full mx-auto mb-4 flex items-center justify-center overflow-hidden">
+                              {specialist.user.image ? (
+                                <Image
+                                  src={specialist.user.image}
+                                  alt={specialist.user.name || "Specialist"}
+                                  width={96}
+                                  height={96}
+                                  className="object-cover w-full h-full"
+                                />
+                              ) : (
+                                <Users className="w-12 h-12 text-primary" />
+                              )}
+                            </div>
+                            <CardTitle className="text-lg">
+                              {specialist.user.name || "Specialist"}
+                            </CardTitle>
+                            <CardDescription className="text-sm">
+                              {specialist.specialization || "Physiotherapist"}
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent className="text-center space-y-3">
+                            {specialist.qualifications && (
+                              <Badge variant="outline">
+                                {specialist.qualifications.split(",")[0]}
+                              </Badge>
+                            )}
+                            <p className="text-sm text-muted-foreground">
+                              {specialist.experience
+                                ? `${specialist.experience} years of experience`
+                                : "Experienced Professional"}
+                            </p>
+                            <div className="flex items-center justify-center gap-2">
+                              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                              <span className="font-semibold">4.9</span>
+                              <span className="text-sm text-muted-foreground">
+                                (Based on reviews)
+                              </span>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    ))
+                  : // Fallback to static specialists
+                    specialists.map((specialist, index) => (
+                      <Card
+                        key={index}
+                        className="hover:shadow-lg transition-shadow"
+                      >
+                        <CardHeader className="text-center">
+                          <div className="w-24 h-24 bg-linear-to-br from-primary/20 to-primary/5 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <Users className="w-12 h-12 text-primary" />
+                          </div>
+                          <CardTitle className="text-lg">
+                            {specialist.name}
+                          </CardTitle>
+                          <CardDescription className="text-sm">
+                            {specialist.role}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="text-center space-y-3">
+                          <Badge variant="outline">
+                            {specialist.specialization}
+                          </Badge>
+                          <p className="text-sm text-muted-foreground">
+                            {specialist.experience} of experience
+                          </p>
+                          <div className="flex items-center justify-center gap-2">
+                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                            <span className="font-semibold">
+                              {specialist.rating}
+                            </span>
+                            <span className="text-sm text-muted-foreground">
+                              ({specialist.reviews} reviews)
+                            </span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
             </div>
 
             <div className="text-center mt-12">
@@ -835,7 +874,7 @@ export default function Home() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-28 md:py-36 relative overflow-hidden min-h-[500px] md:min-h-[600px]">
+        <section className="py-28 md:py-36 relative overflow-hidden min-h-125 md:min-h-150">
           {/* Background Image */}
           <div className="absolute inset-0">
             <Image
@@ -848,7 +887,7 @@ export default function Home() {
             {/* Gradient Overlay for readability */}
             <div className="absolute inset-0 bg-linear-to-r from-primary/85 via-primary/70 to-transparent" />
           </div>
-          
+
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="max-w-3xl mx-auto text-center space-y-8 text-white">
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
@@ -861,12 +900,19 @@ export default function Home() {
               </p>
               <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-center justify-center pt-4">
                 <Link href="/book" className="w-full sm:w-auto">
-                  <Button size="lg" variant="secondary" className="text-lg w-full sm:w-auto shadow-lg hover:shadow-xl transition-shadow">
+                  <Button
+                    size="lg"
+                    variant="secondary"
+                    className="text-lg w-full sm:w-auto shadow-lg hover:shadow-xl transition-shadow"
+                  >
                     <Calendar className="mr-2 w-5 h-5" />
                     Book Appointment Now
                   </Button>
                 </Link>
-                <a href={`tel:${formatPhoneForTel(settings.phone)}`} className="w-full sm:w-auto">
+                <a
+                  href={`tel:${formatPhoneForTel(settings.phone)}`}
+                  className="w-full sm:w-auto"
+                >
                   <Button
                     size="lg"
                     variant="outline"
@@ -911,107 +957,136 @@ export default function Home() {
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
-              {blogsLoading ? (
-                // Loading skeleton
-                [1, 2, 3].map((i) => (
-                  <Card key={i} className="animate-pulse overflow-hidden">
-                    <div className="relative aspect-video bg-muted"></div>
-                    <CardHeader>
-                      <div className="h-6 bg-muted rounded w-20 mb-2"></div>
-                      <div className="h-6 bg-muted rounded w-full"></div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex justify-between">
-                        <div className="h-4 bg-muted rounded w-24"></div>
-                        <div className="h-4 bg-muted rounded w-20"></div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              ) : dynamicBlogs.length > 0 ? (
-                // Dynamic blogs from database
-                dynamicBlogs.map((blog, i) => (
-                  <Link key={blog.id} href={`/blog/${blog.slug}`} className="block">
-                    <Card className="hover:shadow-lg transition-shadow overflow-hidden h-full">
-                      <div className="relative aspect-video bg-muted">
-                        {blog.featuredImage ? (
+              {blogsLoading
+                ? // Loading skeleton
+                  [1, 2, 3].map((i) => (
+                    <Card key={i} className="animate-pulse overflow-hidden">
+                      <div className="relative aspect-video bg-muted"></div>
+                      <CardHeader>
+                        <div className="h-6 bg-muted rounded w-20 mb-2"></div>
+                        <div className="h-6 bg-muted rounded w-full"></div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex justify-between">
+                          <div className="h-4 bg-muted rounded w-24"></div>
+                          <div className="h-4 bg-muted rounded w-20"></div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+                : dynamicBlogs.length > 0
+                  ? // Dynamic blogs from database
+                    dynamicBlogs.map((blog, i) => (
+                      <Link
+                        key={blog.id}
+                        href={`/blog/${blog.slug}`}
+                        className="block"
+                      >
+                        <Card className="hover:shadow-lg transition-shadow overflow-hidden h-full">
+                          <div className="relative aspect-video bg-muted">
+                            {blog.featuredImage ? (
+                              <Image
+                                src={blog.featuredImage}
+                                alt={blog.title}
+                                fill
+                                className="object-cover"
+                                priority={i < 3}
+                              />
+                            ) : (
+                              <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-primary/20 to-primary/5">
+                                <FileText className="w-12 h-12 text-primary/40" />
+                              </div>
+                            )}
+                          </div>
+                          <CardHeader>
+                            <Badge className="w-fit mb-2">
+                              {blog.category || "Article"}
+                            </Badge>
+                            <CardTitle className="text-lg line-clamp-2">
+                              {blog.title}
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="flex items-center justify-between text-sm text-muted-foreground">
+                              <span>
+                                {blog.publishedAt
+                                  ? new Date(
+                                      blog.publishedAt,
+                                    ).toLocaleDateString("en-US", {
+                                      month: "short",
+                                      day: "numeric",
+                                      year: "numeric",
+                                    })
+                                  : "Recently"}
+                              </span>
+                              <span>
+                                {Math.max(
+                                  1,
+                                  Math.ceil(
+                                    (blog.excerpt?.length || 600) / 1000,
+                                  ),
+                                )}{" "}
+                                min read
+                              </span>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    ))
+                  : // Fallback to static content
+                    [
+                      {
+                        title:
+                          "5 Common Sports Injuries and How to Prevent Them",
+                        category: "Sports Injuries",
+                        image: "/images/blog-sports-injuries.jpg",
+                        date: "Jan 10, 2025",
+                        readTime: "5 min read",
+                      },
+                      {
+                        title: "Recovery After Injury: A Complete Guide",
+                        category: "Recovery",
+                        image: "/images/blog-recovery.jpg",
+                        date: "Jan 11, 2025",
+                        readTime: "7 min read",
+                      },
+                      {
+                        title: "Physiotherapy Techniques for Better Health",
+                        category: "Wellness",
+                        image: "/images/blog-treatment.jpg",
+                        date: "Jan 12, 2025",
+                        readTime: "6 min read",
+                      },
+                    ].map((article, i) => (
+                      <Card
+                        key={i}
+                        className="hover:shadow-lg transition-shadow overflow-hidden"
+                      >
+                        <div className="relative aspect-video bg-muted">
                           <Image
-                            src={blog.featuredImage}
-                            alt={blog.title}
+                            src={article.image}
+                            alt={article.title}
                             fill
                             className="object-cover"
                             priority={i < 3}
                           />
-                        ) : (
-                          <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-primary/20 to-primary/5">
-                            <FileText className="w-12 h-12 text-primary/40" />
-                          </div>
-                        )}
-                      </div>
-                      <CardHeader>
-                        <Badge className="w-fit mb-2">{blog.category || "Article"}</Badge>
-                        <CardTitle className="text-lg line-clamp-2">{blog.title}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex items-center justify-between text-sm text-muted-foreground">
-                          <span>{new Date(blog.publishedAt || blog.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
-                          <span>{Math.ceil((blog.content?.length || 0) / 1000)} min read</span>
                         </div>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                ))
-              ) : (
-                // Fallback to static content
-                [
-                  {
-                    title: "5 Common Sports Injuries and How to Prevent Them",
-                    category: "Sports Injuries",
-                    image: "/images/blog-sports-injuries.jpg",
-                    date: "Jan 10, 2025",
-                    readTime: "5 min read",
-                  },
-                  {
-                    title: "Recovery After Injury: A Complete Guide",
-                    category: "Recovery",
-                    image: "/images/blog-recovery.jpg",
-                    date: "Jan 11, 2025",
-                    readTime: "7 min read",
-                  },
-                  {
-                    title: "Physiotherapy Techniques for Better Health",
-                    category: "Wellness",
-                    image: "/images/blog-treatment.jpg",
-                    date: "Jan 12, 2025",
-                    readTime: "6 min read",
-                  },
-                ].map((article, i) => (
-                  <Card
-                    key={i}
-                    className="hover:shadow-lg transition-shadow overflow-hidden"
-                  >
-                    <div className="relative aspect-video bg-muted">
-                      <Image
-                        src={article.image}
-                        alt={article.title}
-                        fill
-                        className="object-cover"
-                        priority={i < 3}
-                      />
-                    </div>
-                    <CardHeader>
-                      <Badge className="w-fit mb-2">{article.category}</Badge>
-                      <CardTitle className="text-lg">{article.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center justify-between text-sm text-muted-foreground">
-                        <span>{article.date}</span>
-                        <span>{article.readTime}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              )}
+                        <CardHeader>
+                          <Badge className="w-fit mb-2">
+                            {article.category}
+                          </Badge>
+                          <CardTitle className="text-lg">
+                            {article.title}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="flex items-center justify-between text-sm text-muted-foreground">
+                            <span>{article.date}</span>
+                            <span>{article.readTime}</span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
             </div>
 
             <div className="text-center mt-12">
@@ -1176,7 +1251,9 @@ export default function Home() {
           <Separator className="my-8" />
 
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-            <p>© {new Date().getFullYear()} PhysioConnect. All rights reserved.</p>
+            <p>
+              © {new Date().getFullYear()} PhysioConnect. All rights reserved.
+            </p>
             <div className="flex items-center gap-6">
               <a href="#" className="hover:text-primary transition-colors">
                 Privacy Policy

@@ -28,6 +28,7 @@ import {
 import { formatBDT } from "@/lib/utils";
 import Link from "next/link";
 import { toast } from "sonner";
+import { BackButton } from "@/components/BackButton";
 
 interface Service {
   id: string;
@@ -125,25 +126,7 @@ export default function ServiceDetailPage() {
       <section className="bg-primary text-primary-foreground py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex gap-4 mb-6">
-            <Link
-              href="/"
-              className="inline-flex items-center text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-            >
-              <svg
-                className="w-4 h-4 mr-1"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
-              Back to Home
-            </Link>
+            <BackButton className="inline-flex items-center text-sm text-primary-foreground/80 hover:text-primary-foreground mb-0 transition-colors" />
             <span className="text-primary-foreground/50">•</span>
             <Link
               href="/services"

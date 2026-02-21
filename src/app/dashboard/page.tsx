@@ -1,18 +1,24 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Progress } from '@/components/ui/progress';
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
 import {
   Calendar,
   Clock,
@@ -38,9 +44,17 @@ import {
   Video,
   Plus,
   Loader2,
-} from 'lucide-react';
-import { format, isBefore, isAfter, isSameDay, addDays, isPast, isToday } from 'date-fns';
-import { toast } from 'sonner';
+} from "lucide-react";
+import {
+  format,
+  isBefore,
+  isAfter,
+  isSameDay,
+  addDays,
+  isPast,
+  isToday,
+} from "date-fns";
+import { toast } from "sonner";
 
 interface Appointment {
   id: string;
@@ -48,7 +62,7 @@ interface Appointment {
   appointmentDate: string;
   startTime: string;
   endTime: string;
-  type: 'IN_PERSON' | 'TELEHEALTH';
+  type: "IN_PERSON" | "TELEHEALTH";
   reason?: string | null;
   notes?: string | null;
   cancelReason?: string | null;
@@ -91,38 +105,83 @@ interface PatientProfile {
 export default function PatientDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  
+
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [patientProfile, setPatientProfile] = useState<PatientProfile | null>(null);
+  const [patientProfile, setPatientProfile] = useState<PatientProfile | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [isSaving, setIsSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    dateOfBirth: "",
+    address: "",
+    city: "",
+    state: "",
+    postalCode: "",
+    country: "",
+    emergencyContact: "",
+    emergencyPhone: "",
+    bloodGroup: "",
+    allergies: "",
+    medicalConditions: "",
+    medications: "",
+  });
 
   // Fetch appointments and profile on mount
   useEffect(() => {
-    if (status === 'authenticated' && session?.user) {
+    if (status === "authenticated" && session?.user) {
       fetchData();
     }
   }, [status, session]);
+
+  // Update form data when profile or session changes
+  useEffect(() => {
+    if (session?.user && patientProfile) {
+      setFormData({
+        name: session.user.name || "",
+        phone: (session.user as any).phone || "",
+        dateOfBirth: (session.user as any).dateOfBirth
+          ? new Date((session.user as any).dateOfBirth)
+              .toISOString()
+              .split("T")[0]
+          : "",
+        address: patientProfile.address || "",
+        city: patientProfile.city || "",
+        state: patientProfile.state || "",
+        postalCode: patientProfile.postalCode || "",
+        country: patientProfile.country || "",
+        emergencyContact: patientProfile.emergencyContact || "",
+        emergencyPhone: patientProfile.emergencyPhone || "",
+        bloodGroup: patientProfile.bloodGroup || "",
+        allergies: patientProfile.allergies || "",
+        medicalConditions: patientProfile.medicalConditions || "",
+        medications: patientProfile.medications || "",
+      });
+    }
+  }, [session?.user, patientProfile]);
 
   const fetchData = async () => {
     setIsLoading(true);
     try {
       // Fetch appointments
-      const appointmentsRes = await fetch('/api/appointments');
+      const appointmentsRes = await fetch("/api/appointments");
       if (appointmentsRes.ok) {
         const data = await appointmentsRes.json();
         setAppointments(data.appointments || []);
       }
 
       // Fetch patient profile
-      const profileRes = await fetch('/api/patient/profile');
+      const profileRes = await fetch("/api/patient/profile");
       if (profileRes.ok) {
         const data = await profileRes.json();
         setPatientProfile(data.profile || null);
       }
     } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-      toast.error('Failed to load your data');
+      console.error("Error fetching dashboard data:", error);
+      toast.error("Failed to load your data");
     } finally {
       setIsLoading(false);
     }
@@ -130,49 +189,121 @@ export default function PatientDashboard() {
 
   // Handle appointment cancellation
   const handleCancelAppointment = async (appointmentId: string) => {
-    if (!confirm('Are you sure you want to cancel this appointment?')) {
+    if (!confirm("Are you sure you want to cancel this appointment?")) {
       return;
     }
 
     try {
       const response = await fetch(`/api/appointments/${appointmentId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          status: 'CANCELLED',
-          cancelReason: 'Cancelled by patient',
+          status: "CANCELLED",
+          cancelReason: "Cancelled by patient",
         }),
       });
 
       if (response.ok) {
-        toast.success('Appointment cancelled successfully');
+        toast.success("Appointment cancelled successfully");
         fetchData();
       } else {
         const data = await response.json();
-        toast.error(data.error || 'Failed to cancel appointment');
+        toast.error(data.error || "Failed to cancel appointment");
       }
     } catch (error) {
-      console.error('Error cancelling appointment:', error);
-      toast.error('Failed to cancel appointment');
+      console.error("Error cancelling appointment:", error);
+      toast.error("Failed to cancel appointment");
+    }
+  };
+
+  // Handle personal information save
+  const handleSavePersonalInfo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+
+    try {
+      const response = await fetch("/api/patient/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          phone: formData.phone,
+          dateOfBirth: formData.dateOfBirth,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          postalCode: formData.postalCode,
+          country: formData.country,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success("Personal information updated successfully");
+        fetchData();
+      } else {
+        const data = await response.json();
+        toast.error(data.error || "Failed to update personal information");
+      }
+    } catch (error) {
+      console.error("Error saving personal information:", error);
+      toast.error("Failed to save personal information");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Handle medical information save
+  const handleSaveMedicalInfo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+
+    try {
+      const response = await fetch("/api/patient/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          emergencyContact: formData.emergencyContact,
+          emergencyPhone: formData.emergencyPhone,
+          bloodGroup: formData.bloodGroup,
+          allergies: formData.allergies,
+          medicalConditions: formData.medicalConditions,
+          medications: formData.medications,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success("Medical information updated successfully");
+        fetchData();
+      } else {
+        const data = await response.json();
+        toast.error(data.error || "Failed to update medical information");
+      }
+    } catch (error) {
+      console.error("Error saving medical information:", error);
+      toast.error("Failed to save medical information");
+    } finally {
+      setIsSaving(false);
     }
   };
 
   // Handle sign out
   const handleSignOut = async () => {
-    const response = await fetch('/api/auth/signout', {
-      method: 'POST',
+    const response = await fetch("/api/auth/signout", {
+      method: "POST",
     });
     if (response.ok) {
-      router.push('/auth/login');
+      router.push("/auth/login");
     }
   };
 
-  if (status === 'loading' || !session?.user) {
+  if (status === "loading" || !session?.user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex items-center gap-4">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          <p className="text-lg text-muted-foreground">Loading your dashboard...</p>
+          <p className="text-lg text-muted-foreground">
+            Loading your dashboard...
+          </p>
         </div>
       </div>
     );
@@ -180,46 +311,59 @@ export default function PatientDashboard() {
 
   // Filter appointments into upcoming and past
   const upcomingAppointments = appointments
-    .filter(apt => ['CONFIRMED', 'PENDING'].includes(apt.status) && new Date(apt.appointmentDate) >= new Date(new Date().setHours(0,0,0,0)))
-    .sort((a, b) => new Date(a.appointmentDate).getTime() - new Date(b.appointmentDate).getTime());
+    .filter(
+      (apt) =>
+        ["CONFIRMED", "PENDING"].includes(apt.status) &&
+        new Date(apt.appointmentDate) >=
+          new Date(new Date().setHours(0, 0, 0, 0)),
+    )
+    .sort(
+      (a, b) =>
+        new Date(a.appointmentDate).getTime() -
+        new Date(b.appointmentDate).getTime(),
+    );
 
   const pastAppointments = appointments
-    .filter(apt => ['COMPLETED', 'CANCELLED', 'NO_SHOW'].includes(apt.status))
-    .sort((a, b) => new Date(b.appointmentDate).getTime() - new Date(a.appointmentDate).getTime());
+    .filter((apt) => ["COMPLETED", "CANCELLED", "NO_SHOW"].includes(apt.status))
+    .sort(
+      (a, b) =>
+        new Date(b.appointmentDate).getTime() -
+        new Date(a.appointmentDate).getTime(),
+    );
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'CONFIRMED':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'PENDING':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'COMPLETED':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'CANCELLED':
-        return 'bg-red-100 text-red-800 border-red-200';
-      case 'NO_SHOW':
-        return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'IN_PROGRESS':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
+      case "CONFIRMED":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "PENDING":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      case "COMPLETED":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "CANCELLED":
+        return "bg-red-100 text-red-800 border-red-200";
+      case "NO_SHOW":
+        return "bg-orange-100 text-orange-800 border-orange-200";
+      case "IN_PROGRESS":
+        return "bg-purple-100 text-purple-800 border-purple-200";
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'CONFIRMED':
-        return 'Confirmed';
-      case 'COMPLETED':
-        return 'Completed';
-      case 'CANCELLED':
-        return 'Cancelled';
-      case 'NO_SHOW':
-        return 'No Show';
-      case 'IN_PROGRESS':
-        return 'In Progress';
-      case 'PENDING':
-        return 'Pending';
+      case "CONFIRMED":
+        return "Confirmed";
+      case "COMPLETED":
+        return "Completed";
+      case "CANCELLED":
+        return "Cancelled";
+      case "NO_SHOW":
+        return "No Show";
+      case "IN_PROGRESS":
+        return "In Progress";
+      case "PENDING":
+        return "Pending";
       default:
         return status;
     }
@@ -244,28 +388,28 @@ export default function PatientDashboard() {
               <div className="flex items-center gap-2">
                 <Avatar className="h-8 w-8 bg-primary/10 text-primary">
                   <AvatarFallback>
-                    {session.user.name?.charAt(0) || 'U'}
+                    {session.user.name?.charAt(0) || "U"}
                   </AvatarFallback>
                 </Avatar>
                 <span className="hidden sm:inline text-sm font-medium max-w-32 truncate">
-                  {session.user.name || 'Patient'}
+                  {session.user.name || "Patient"}
                 </span>
               </div>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => {
-                  setActiveTab('profile');
-                  router.push('/dashboard?tab=profile');
+                  setActiveTab("profile");
+                  router.push("/dashboard?tab=profile");
                 }}
-                className={activeTab === 'profile' ? 'bg-accent' : ''}
+                className={activeTab === "profile" ? "bg-accent" : ""}
                 title="Settings"
               >
                 <Settings className="h-5 w-5" />
               </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={handleSignOut}
                 title="Logout"
               >
@@ -283,24 +427,25 @@ export default function PatientDashboard() {
             Welcome back, {session.user.name}!
           </h1>
           <p className="text-muted-foreground text-lg">
-            Manage your appointments, view your health journey, and connect with your care team.
+            Manage your appointments, view your health journey, and connect with
+            your care team.
           </p>
         </div>
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <Card 
+          <Card
             className="hover:shadow-lg transition-shadow cursor-pointer"
             onClick={() => {
-              setActiveTab('appointments');
-              router.push('/dashboard?tab=appointments');
+              setActiveTab("appointments");
+              router.push("/dashboard?tab=appointments");
             }}
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-lg font-semibold">Upcoming Appointments</CardTitle>
-              <Badge variant="secondary">
-                {upcomingAppointments.length}
-              </Badge>
+              <CardTitle className="text-lg font-semibold">
+                Upcoming Appointments
+              </CardTitle>
+              <Badge variant="secondary">{upcomingAppointments.length}</Badge>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-primary mb-1">
@@ -312,18 +457,18 @@ export default function PatientDashboard() {
             </CardContent>
           </Card>
 
-          <Card 
+          <Card
             className="hover:shadow-lg transition-shadow cursor-pointer"
             onClick={() => {
-              setActiveTab('history');
-              router.push('/dashboard?tab=history');
+              setActiveTab("history");
+              router.push("/dashboard?tab=history");
             }}
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-lg font-semibold">Past Appointments</CardTitle>
-              <Badge variant="secondary">
-                {pastAppointments.length}
-              </Badge>
+              <CardTitle className="text-lg font-semibold">
+                Past Appointments
+              </CardTitle>
+              <Badge variant="secondary">{pastAppointments.length}</Badge>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-primary mb-1">
@@ -335,15 +480,17 @@ export default function PatientDashboard() {
             </CardContent>
           </Card>
 
-          <Card 
+          <Card
             className="hover:shadow-lg transition-shadow cursor-pointer"
             onClick={() => {
-              setActiveTab('overview');
-              router.push('/dashboard?tab=overview');
+              setActiveTab("overview");
+              router.push("/dashboard?tab=overview");
             }}
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-lg font-semibold">Health Journey</CardTitle>
+              <CardTitle className="text-lg font-semibold">
+                Health Journey
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-3">
@@ -363,12 +510,17 @@ export default function PatientDashboard() {
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-lg font-semibold mb-1">Book New Appointment</CardTitle>
+                    <CardTitle className="text-lg font-semibold mb-1">
+                      Book New Appointment
+                    </CardTitle>
                     <CardDescription>
                       Schedule your next session
                     </CardDescription>
                   </div>
-                  <Button size="icon" className="bg-primary text-primary-foreground group-hover:bg-primary/90">
+                  <Button
+                    size="icon"
+                    className="bg-primary text-primary-foreground group-hover:bg-primary/90"
+                  >
                     <Plus className="w-5 h-5" />
                   </Button>
                 </div>
@@ -378,32 +530,36 @@ export default function PatientDashboard() {
         </div>
 
         {/* Main Content */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           {/* Tab Navigation */}
           <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-muted">
-            <TabsTrigger 
-              value="overview" 
+            <TabsTrigger
+              value="overview"
               className="data-[state=active]:bg-background data-[state=active]:shadow-sm"
             >
               <Activity className="w-4 h-4 mr-2" />
               <span className="hidden sm:inline">Overview</span>
             </TabsTrigger>
-            <TabsTrigger 
-              value="appointments" 
+            <TabsTrigger
+              value="appointments"
               className="data-[state=active]:bg-background data-[state=active]:shadow-sm"
             >
               <Calendar className="w-4 h-4 mr-2" />
               <span className="hidden sm:inline">Appointments</span>
             </TabsTrigger>
-            <TabsTrigger 
-              value="history" 
+            <TabsTrigger
+              value="history"
               className="data-[state=active]:bg-background data-[state=active]:shadow-sm"
             >
               <FileText className="w-4 h-4 mr-2" />
               <span className="hidden sm:inline">History</span>
             </TabsTrigger>
-            <TabsTrigger 
-              value="profile" 
+            <TabsTrigger
+              value="profile"
               className="data-[state=active]:bg-background data-[state=active]:shadow-sm"
             >
               <User className="w-4 h-4 mr-2" />
@@ -426,9 +582,7 @@ export default function PatientDashboard() {
                       <div className="text-3xl font-bold">
                         {appointments.length}
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        All time
-                      </p>
+                      <p className="text-xs text-muted-foreground">All time</p>
                     </CardContent>
                   </Card>
 
@@ -438,11 +592,16 @@ export default function PatientDashboard() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-3xl font-bold">
-                        {appointments.filter(a => {
-                          const aptDate = new Date(a.appointmentDate);
-                          const now = new Date();
-                          return aptDate.getMonth() === now.getMonth() && aptDate.getFullYear() === now.getFullYear();
-                        }).length}
+                        {
+                          appointments.filter((a) => {
+                            const aptDate = new Date(a.appointmentDate);
+                            const now = new Date();
+                            return (
+                              aptDate.getMonth() === now.getMonth() &&
+                              aptDate.getFullYear() === now.getFullYear()
+                            );
+                          }).length
+                        }
                       </div>
                       <p className="text-xs text-muted-foreground">
                         Sessions this month
@@ -456,7 +615,10 @@ export default function PatientDashboard() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-3xl font-bold">
-                        {appointments.filter(a => a.status === 'COMPLETED').length}
+                        {
+                          appointments.filter((a) => a.status === "COMPLETED")
+                            .length
+                        }
                       </div>
                       <p className="text-xs text-muted-foreground">
                         Completed sessions
@@ -468,7 +630,9 @@ export default function PatientDashboard() {
                 {/* Upcoming Appointments */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-xl font-semibold">Upcoming Appointments</CardTitle>
+                    <CardTitle className="text-xl font-semibold">
+                      Upcoming Appointments
+                    </CardTitle>
                     <CardDescription>
                       Your next scheduled sessions
                     </CardDescription>
@@ -481,11 +645,11 @@ export default function PatientDashboard() {
                     ) : upcomingAppointments.length === 0 ? (
                       <div className="text-center py-8">
                         <Calendar className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                        <p className="text-muted-foreground">No upcoming appointments</p>
+                        <p className="text-muted-foreground">
+                          No upcoming appointments
+                        </p>
                         <Link href="/book">
-                          <Button>
-                            Book an Appointment
-                          </Button>
+                          <Button>Book an Appointment</Button>
                         </Link>
                       </div>
                     ) : (
@@ -502,7 +666,9 @@ export default function PatientDashboard() {
                             </div>
                             <div className="flex-1 sm:flex sm:items-center gap-4">
                               <div className="flex-1">
-                                <h3 className="font-semibold">{apt.service.name}</h3>
+                                <h3 className="font-semibold">
+                                  {apt.service.name}
+                                </h3>
                                 {apt.staff && (
                                   <p className="text-sm text-muted-foreground">
                                     with {apt.staff.user.name}
@@ -511,7 +677,10 @@ export default function PatientDashboard() {
                                 <div className="flex items-center gap-2 mt-2">
                                   <div className="flex items-center gap-1 text-sm text-muted-foreground">
                                     <CalendarIcon className="w-4 h-4" />
-                                    {format(new Date(apt.appointmentDate), 'EEE, MMM d')}
+                                    {format(
+                                      new Date(apt.appointmentDate),
+                                      "EEE, MMM d",
+                                    )}
                                   </div>
                                   <div className="flex items-center gap-1 text-sm text-muted-foreground">
                                     <ClockIcon className="w-4 h-4" />
@@ -519,7 +688,7 @@ export default function PatientDashboard() {
                                   </div>
                                 </div>
                               </div>
-                              {apt.type === 'TELEHEALTH' && (
+                              {apt.type === "TELEHEALTH" && (
                                 <Badge variant="secondary" className="w-fit">
                                   <Video className="w-3 h-3 mr-1" />
                                   Video Consultation
@@ -551,21 +720,35 @@ export default function PatientDashboard() {
                 {/* Appointment Completion Rate */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg font-semibold">Completion Rate</CardTitle>
+                    <CardTitle className="text-lg font-semibold">
+                      Completion Rate
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-end justify-between mb-2">
                       <div className="text-3xl font-bold text-primary">
-                        {appointments.length > 0 
-                          ? Math.round((appointments.filter(a => a.status === 'COMPLETED').length / appointments.length) * 100)
+                        {appointments.length > 0
+                          ? Math.round(
+                              (appointments.filter(
+                                (a) => a.status === "COMPLETED",
+                              ).length /
+                                appointments.length) *
+                                100,
+                            )
                           : 0}
                         %
                       </div>
                     </div>
-                    <Progress 
-                      value={appointments.length > 0 
-                        ? (appointments.filter(a => a.status === 'COMPLETED').length / appointments.length) * 100 
-                        : 0} 
+                    <Progress
+                      value={
+                        appointments.length > 0
+                          ? (appointments.filter(
+                              (a) => a.status === "COMPLETED",
+                            ).length /
+                              appointments.length) *
+                            100
+                          : 0
+                      }
                       className="h-2"
                     />
                     <p className="text-xs text-muted-foreground">
@@ -577,25 +760,40 @@ export default function PatientDashboard() {
                 {/* Services Breakdown */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg font-semibold">Services Breakdown</CardTitle>
+                    <CardTitle className="text-lg font-semibold">
+                      Services Breakdown
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      {appointments.reduce((acc: Record<string, number>, apt) => {
-                        const serviceName = apt.service.name;
-                        acc[serviceName] = (acc[serviceName] || 0) + 1;
-                        return acc;
-                      }, {} as Record<string, number>).length > 0 ? (
+                      {appointments.reduce(
+                        (acc: Record<string, number>, apt) => {
+                          const serviceName = apt.service.name;
+                          acc[serviceName] = (acc[serviceName] || 0) + 1;
+                          return acc;
+                        },
+                        {} as Record<string, number>,
+                      ).length > 0 ? (
                         Object.entries(
-                          appointments.reduce((acc: Record<string, number>, apt) => {
-                            const serviceName = apt.service.name;
-                            acc[serviceName] = (acc[serviceName] || 0) + 1;
-                            return acc;
-                          }, {} as Record<string, number>)
+                          appointments.reduce(
+                            (acc: Record<string, number>, apt) => {
+                              const serviceName = apt.service.name;
+                              acc[serviceName] = (acc[serviceName] || 0) + 1;
+                              return acc;
+                            },
+                            {} as Record<string, number>,
+                          ),
                         ).map(([name, count]) => (
-                          <div key={name} className="flex items-center justify-between">
-                            <span className="text-sm text-muted-foreground">{name}</span>
-                            <span className="text-sm font-semibold">{count}</span>
+                          <div
+                            key={name}
+                            className="flex items-center justify-between"
+                          >
+                            <span className="text-sm text-muted-foreground">
+                              {name}
+                            </span>
+                            <span className="text-sm font-semibold">
+                              {count}
+                            </span>
                           </div>
                         ))
                       ) : (
@@ -615,7 +813,9 @@ export default function PatientDashboard() {
             <div className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-xl font-semibold">All Appointments</CardTitle>
+                  <CardTitle className="text-xl font-semibold">
+                    All Appointments
+                  </CardTitle>
                   <CardDescription>
                     View and manage all your appointments
                   </CardDescription>
@@ -632,9 +832,7 @@ export default function PatientDashboard() {
                         You don't have any appointments yet
                       </p>
                       <Link href="/book">
-                        <Button>
-                          Book Your First Appointment
-                        </Button>
+                        <Button>Book Your First Appointment</Button>
                       </Link>
                     </div>
                   ) : (
@@ -652,7 +850,9 @@ export default function PatientDashboard() {
                             </div>
                             <div className="flex-1 space-y-2">
                               <div className="flex items-center justify-between">
-                                <h3 className="font-semibold">{apt.service.name}</h3>
+                                <h3 className="font-semibold">
+                                  {apt.service.name}
+                                </h3>
                                 <Badge className={getStatusColor(apt.status)}>
                                   {getStatusText(apt.status)}
                                 </Badge>
@@ -660,7 +860,10 @@ export default function PatientDashboard() {
                               <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                                 <div className="flex items-center gap-1">
                                   <CalendarIcon className="w-4 h-4" />
-                                  {format(new Date(apt.appointmentDate), 'EEEE, MMMM d, yyyy')}
+                                  {format(
+                                    new Date(apt.appointmentDate),
+                                    "EEEE, MMMM d, yyyy",
+                                  )}
                                 </div>
                                 <div className="flex items-center gap-1">
                                   <ClockIcon className="w-4 h-4" />
@@ -672,7 +875,7 @@ export default function PatientDashboard() {
                                     {apt.staff.user.name}
                                   </div>
                                 )}
-                                {apt.type === 'TELEHEALTH' && (
+                                {apt.type === "TELEHEALTH" && (
                                   <Badge variant="secondary">
                                     <Video className="w-3 h-3 mr-1" />
                                     Video Call
@@ -681,29 +884,26 @@ export default function PatientDashboard() {
                               </div>
                               {apt.reason && (
                                 <div className="text-sm text-muted-foreground">
-                                  <span className="font-medium">Reason:</span> {apt.reason}
+                                  <span className="font-medium">Reason:</span>{" "}
+                                  {apt.reason}
                                 </div>
                               )}
                               {apt.notes && (
                                 <div className="text-sm text-muted-foreground">
-                                  <span className="font-medium">Notes:</span> {apt.notes.substring(0, 50)}
-                                  {apt.notes.length > 50 && '...'}
+                                  <span className="font-medium">Notes:</span>{" "}
+                                  {apt.notes.substring(0, 50)}
+                                  {apt.notes.length > 50 && "..."}
                                 </div>
                               )}
                             </div>
                             <div className="flex flex-wrap items-center gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => router.push(`/dashboard/appointments/${apt.id}`)}
-                              >
-                                View Details
-                              </Button>
-                              {apt.status === 'CONFIRMED' && (
+                              {apt.status === "CONFIRMED" && (
                                 <Button
                                   variant="destructive"
                                   size="sm"
-                                  onClick={() => handleCancelAppointment(apt.id)}
+                                  onClick={() =>
+                                    handleCancelAppointment(apt.id)
+                                  }
                                 >
                                   Cancel
                                 </Button>
@@ -723,7 +923,9 @@ export default function PatientDashboard() {
           <TabsContent value="history">
             <Card>
               <CardHeader>
-                <CardTitle className="text-xl font-semibold">Appointment History</CardTitle>
+                <CardTitle className="text-xl font-semibold">
+                  Appointment History
+                </CardTitle>
                 <CardDescription>
                   Your past appointments and treatment records
                 </CardDescription>
@@ -740,9 +942,7 @@ export default function PatientDashboard() {
                       You don't have any past appointments yet
                     </p>
                     <Link href="/book">
-                      <Button>
-                        Book Your First Appointment
-                      </Button>
+                      <Button>Book Your First Appointment</Button>
                     </Link>
                   </div>
                 ) : (
@@ -754,19 +954,31 @@ export default function PatientDashboard() {
                       >
                         <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
                           <div className="shrink-0">
-                            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                              apt.status === 'COMPLETED' ? 'bg-green-100 text-green-800' :
-                              apt.status === 'CANCELLED' ? 'bg-red-100 text-red-800' :
-                              'bg-gray-100 text-gray-800'
-                            }`}>
-                              {apt.status === 'COMPLETED' && <CheckCircle className="w-6 h-6" />}
-                              {apt.status === 'CANCELLED' && <XCircle className="w-6 h-6" />}
-                              {apt.status === 'NO_SHOW' && <ClockIcon className="w-6 h-6" />}
+                            <div
+                              className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                                apt.status === "COMPLETED"
+                                  ? "bg-green-100 text-green-800"
+                                  : apt.status === "CANCELLED"
+                                    ? "bg-red-100 text-red-800"
+                                    : "bg-gray-100 text-gray-800"
+                              }`}
+                            >
+                              {apt.status === "COMPLETED" && (
+                                <CheckCircle className="w-6 h-6" />
+                              )}
+                              {apt.status === "CANCELLED" && (
+                                <XCircle className="w-6 h-6" />
+                              )}
+                              {apt.status === "NO_SHOW" && (
+                                <ClockIcon className="w-6 h-6" />
+                              )}
                             </div>
                           </div>
                           <div className="flex-1 space-y-2">
                             <div className="flex flex-wrap items-center justify-between">
-                              <h3 className="font-semibold">{apt.service.name}</h3>
+                              <h3 className="font-semibold">
+                                {apt.service.name}
+                              </h3>
                               <Badge className={getStatusColor(apt.status)}>
                                 {getStatusText(apt.status)}
                               </Badge>
@@ -774,7 +986,10 @@ export default function PatientDashboard() {
                             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                               <div className="flex items-center gap-1">
                                 <CalendarIcon className="w-4 h-4" />
-                                {format(new Date(apt.appointmentDate), 'EEEE, MMMM d, yyyy')}
+                                {format(
+                                  new Date(apt.appointmentDate),
+                                  "EEEE, MMMM d, yyyy",
+                                )}
                               </div>
                               <div className="flex items-center gap-1">
                                 <ClockIcon className="w-4 h-4" />
@@ -789,27 +1004,28 @@ export default function PatientDashboard() {
                             </div>
                             {apt.reason && (
                               <div className="text-sm text-muted-foreground">
-                                <span className="font-medium">Reason:</span> {apt.reason}
+                                <span className="font-medium">Reason:</span>{" "}
+                                {apt.reason}
                               </div>
                             )}
                             {apt.cancelReason && (
                               <div className="text-sm text-muted-foreground">
-                                <span className="font-medium">Cancellation:</span> {apt.cancelReason}
+                                <span className="font-medium">
+                                  Cancellation:
+                                </span>{" "}
+                                {apt.cancelReason}
                               </div>
                             )}
                           </div>
                           <div className="flex items-center gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => router.push(`/dashboard/appointments/${apt.id}`)}
-                            >
-                              View Details
-                            </Button>
-                            {apt.status === 'COMPLETED' && (
+                            {apt.status === "COMPLETED" && (
                               <Button
                                 size="sm"
-                                onClick={() => router.push(`/book?service=${apt.service.slug}`)}
+                                onClick={() =>
+                                  router.push(
+                                    `/book?service=${apt.service.slug}`,
+                                  )
+                                }
                               >
                                 Book Again
                               </Button>
@@ -831,7 +1047,9 @@ export default function PatientDashboard() {
               <div className="lg:col-span-2 space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-xl font-semibold">Personal Information</CardTitle>
+                    <CardTitle className="text-xl font-semibold">
+                      Personal Information
+                    </CardTitle>
                     <CardDescription>
                       Manage your personal details and contact information
                     </CardDescription>
@@ -842,13 +1060,22 @@ export default function PatientDashboard() {
                         <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
                       </div>
                     ) : (
-                      <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                      <form
+                        className="space-y-4"
+                        onSubmit={handleSavePersonalInfo}
+                      >
                         <div className="grid md:grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <Label htmlFor="name">Full Name *</Label>
                             <Input
                               id="name"
-                              defaultValue={session.user.name || ''}
+                              value={formData.name}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  name: e.target.value,
+                                })
+                              }
                               placeholder="Your full name"
                             />
                           </div>
@@ -857,8 +1084,9 @@ export default function PatientDashboard() {
                             <Input
                               id="email"
                               type="email"
-                              defaultValue={session.user.email || ''}
+                              value={session.user.email || ""}
                               placeholder="your.email@example.com"
+                              disabled
                             />
                           </div>
                           <div className="space-y-2">
@@ -867,7 +1095,13 @@ export default function PatientDashboard() {
                               id="phone"
                               type="tel"
                               placeholder="+8801XXXXXXXXX"
-                              defaultValue={(session.user as any).phone || ''}
+                              value={formData.phone}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  phone: e.target.value,
+                                })
+                              }
                             />
                           </div>
                           <div className="space-y-2">
@@ -876,7 +1110,14 @@ export default function PatientDashboard() {
                               id="dob"
                               type="date"
                               placeholder="Select your date of birth"
-                              defaultValue={(session.user as any).dateOfBirth ? new Date((session.user as any).dateOfBirth).toISOString().split('T')[0] : ''}
+                              value={formData.dateOfBirth}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  dateOfBirth: e.target.value,
+                                })
+                              }
+                              max={new Date().toISOString().split("T")[0]}
                             />
                           </div>
                         </div>
@@ -885,7 +1126,13 @@ export default function PatientDashboard() {
                           <Input
                             id="address"
                             placeholder="123 Healthcare Street"
-                            defaultValue={patientProfile?.address || ''}
+                            value={formData.address}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                address: e.target.value,
+                              })
+                            }
                           />
                         </div>
                         <div className="grid md:grid-cols-3 gap-4">
@@ -894,7 +1141,13 @@ export default function PatientDashboard() {
                             <Input
                               id="city"
                               placeholder="City"
-                              defaultValue={patientProfile?.city || ''}
+                              value={formData.city}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  city: e.target.value,
+                                })
+                              }
                             />
                           </div>
                           <div className="space-y-2">
@@ -902,7 +1155,13 @@ export default function PatientDashboard() {
                             <Input
                               id="state"
                               placeholder="State/Province"
-                              defaultValue={patientProfile?.state || ''}
+                              value={formData.state}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  state: e.target.value,
+                                })
+                              }
                             />
                           </div>
                           <div className="space-y-2">
@@ -910,21 +1169,29 @@ export default function PatientDashboard() {
                             <Input
                               id="postalCode"
                               placeholder="12345"
-                              defaultValue={patientProfile?.postalCode || ''}
+                              value={formData.postalCode}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  postalCode: e.target.value,
+                                })
+                              }
                             />
                           </div>
                         </div>
-                        <Button type="submit" disabled={isLoading}>
-                          {isLoading ? 'Saving...' : 'Save Changes'}
+                        <Button type="submit" disabled={isSaving}>
+                          {isSaving ? "Saving..." : "Save Changes"}
                         </Button>
                       </form>
                     )}
-                    </CardContent>
+                  </CardContent>
                 </Card>
 
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-xl font-semibold">Medical Information</CardTitle>
+                    <CardTitle className="text-xl font-semibold">
+                      Medical Information
+                    </CardTitle>
                     <CardDescription>
                       Your health information and medical history
                     </CardDescription>
@@ -935,22 +1202,41 @@ export default function PatientDashboard() {
                         <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
                       </div>
                     ) : (
-                      <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                      <form
+                        className="space-y-4"
+                        onSubmit={handleSaveMedicalInfo}
+                      >
                         <div className="space-y-2">
-                          <Label htmlFor="emergencyContact">Emergency Contact *</Label>
+                          <Label htmlFor="emergencyContact">
+                            Emergency Contact *
+                          </Label>
                           <Input
                             id="emergencyContact"
                             placeholder="John Doe"
-                            defaultValue={patientProfile?.emergencyContact || ''}
+                            value={formData.emergencyContact}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                emergencyContact: e.target.value,
+                              })
+                            }
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="emergencyPhone">Emergency Phone *</Label>
+                          <Label htmlFor="emergencyPhone">
+                            Emergency Phone *
+                          </Label>
                           <Input
                             id="emergencyPhone"
                             type="tel"
                             placeholder="+8801XXXXXXXXX"
-                            defaultValue={patientProfile?.emergencyPhone || ''}
+                            value={formData.emergencyPhone}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                emergencyPhone: e.target.value,
+                              })
+                            }
                           />
                         </div>
                         <div className="space-y-2">
@@ -958,7 +1244,13 @@ export default function PatientDashboard() {
                           <Input
                             id="bloodGroup"
                             placeholder="A+, B+, O+, AB+, etc."
-                            defaultValue={patientProfile?.bloodGroup || ''}
+                            value={formData.bloodGroup}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                bloodGroup: e.target.value,
+                              })
+                            }
                           />
                         </div>
                         <div className="space-y-2">
@@ -967,29 +1259,51 @@ export default function PatientDashboard() {
                             id="allergies"
                             placeholder="List any known allergies..."
                             rows={3}
-                            defaultValue={patientProfile?.allergies || ''}
+                            value={formData.allergies}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                allergies: e.target.value,
+                              })
+                            }
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="medicalConditions">Medical Conditions</Label>
+                          <Label htmlFor="medicalConditions">
+                            Medical Conditions
+                          </Label>
                           <Textarea
                             id="medicalConditions"
                             placeholder="List any medical conditions..."
                             rows={3}
-                            defaultValue={patientProfile?.medicalConditions || ''}
+                            value={formData.medicalConditions}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                medicalConditions: e.target.value,
+                              })
+                            }
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="medications">Current Medications</Label>
+                          <Label htmlFor="medications">
+                            Current Medications
+                          </Label>
                           <Textarea
                             id="medications"
                             placeholder="List any current medications..."
                             rows={3}
-                            defaultValue={patientProfile?.medications || ''}
+                            value={formData.medications}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                medications: e.target.value,
+                              })
+                            }
                           />
                         </div>
-                        <Button type="submit" disabled={isLoading}>
-                          {isLoading ? 'Saving...' : 'Save Medical Information'}
+                        <Button type="submit" disabled={isSaving}>
+                          {isSaving ? "Saving..." : "Save Medical Information"}
                         </Button>
                       </form>
                     )}
@@ -1001,7 +1315,9 @@ export default function PatientDashboard() {
               <div className="space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg font-semibold">Contact Information</CardTitle>
+                    <CardTitle className="text-lg font-semibold">
+                      Contact Information
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex items-start gap-3">
@@ -1009,27 +1325,35 @@ export default function PatientDashboard() {
                       <div className="flex-1">
                         <p className="font-semibold">PhysioConnect Clinic</p>
                         <p className="text-sm text-muted-foreground">
-                          123 Healthcare Street<br />
+                          123 Healthcare Street
+                          <br />
                           Medical District, MD 12345
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <Phone className="w-5 h-5 text-muted-foreground shrink-0" />
-                      <a href="tel:+8801XXXXXXXXX" className="text-sm text-primary hover:underline">
+                      <a
+                        href="tel:+8801XXXXXXXXX"
+                        className="text-sm text-primary hover:underline"
+                      >
                         +8801XXXXXXXXX
                       </a>
                     </div>
                     <div className="flex items-center gap-3">
                       <Mail className="w-5 h-5 text-muted-foreground shrink-0" />
-                      <a href="mailto:info@physioconnect.com" className="text-sm text-primary hover:underline">
+                      <a
+                        href="mailto:info@physioconnect.com"
+                        className="text-sm text-primary hover:underline"
+                      >
                         info@physioconnect.com
                       </a>
                     </div>
                     <div className="flex items-center gap-3">
                       <Clock className="w-5 h-5 text-muted-foreground shrink-0" />
                       <p className="text-sm text-muted-foreground">
-                        Mon-Fri: 8:00 AM - 8:00 PM<br />
+                        Mon-Fri: 8:00 AM - 8:00 PM
+                        <br />
                         Sat: 9:00 AM - 5:00 PM
                       </p>
                     </div>
@@ -1038,28 +1362,35 @@ export default function PatientDashboard() {
 
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg font-semibold">Need Help?</CardTitle>
+                    <CardTitle className="text-lg font-semibold">
+                      Need Help?
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <p className="text-sm text-muted-foreground mb-3">
-                      Have questions about your treatment or need to make changes?
+                      Have questions about your treatment or need to make
+                      changes?
                     </p>
                     <div className="space-y-2">
-                      <Link href="#">
-                        <Button variant="outline" className="w-full justify-start">
-                          Contact Support
-                        </Button>
-                      </Link>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start"
+                        onClick={() => setActiveTab("profile")}
+                      >
+                        Contact Support
+                      </Button>
                       <Link href="/book">
                         <Button className="w-full justify-start">
                           Book Another Appointment
                         </Button>
                       </Link>
-                      <Link href="/dashboard/profile">
-                        <Button variant="outline" className="w-full justify-start">
-                          Update Profile
-                        </Button>
-                      </Link>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start"
+                        onClick={() => setActiveTab("profile")}
+                      >
+                        Update Profile
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>

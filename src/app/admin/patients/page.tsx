@@ -204,7 +204,7 @@ export default function AdminPatientsPage() {
                 placeholder="Search patients..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 w-[300px]"
+                className="pl-8 w-75"
               />
             </div>
           </div>
@@ -330,7 +330,7 @@ export default function AdminPatientsPage() {
 
       {/* Patient Details Dialog */}
       <Dialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen}>
-        <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-225 max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <div className="flex items-center gap-4">
               <Avatar className="h-16 w-16">
@@ -394,7 +394,9 @@ export default function AdminPatientsPage() {
                         <p className="text-sm text-muted-foreground">Phone</p>
                         {selectedPatient.user.phone ? (
                           <a
-                            href={getWhatsAppLink(selectedPatient.user.phone) || "#"}
+                            href={
+                              getWhatsAppLink(selectedPatient.user.phone) || "#"
+                            }
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-2 text-green-600 hover:text-green-700 hover:underline"
@@ -613,7 +615,7 @@ function PatientsPageSkeleton() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <Skeleton className="h-8 w-64" />
-        <Skeleton className="h-10 w-[150px]" />
+        <Skeleton className="h-10 w-37.5" />
       </div>
       <Card>
         <CardHeader>

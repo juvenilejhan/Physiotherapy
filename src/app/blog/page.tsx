@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { BackButton } from "@/components/BackButton";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -70,12 +71,7 @@ export default function BlogPage() {
     <div className="min-h-screen bg-muted/50">
       <section className="bg-primary text-primary-foreground py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <Link
-            href="/"
-            className="inline-flex items-center text-sm text-primary-foreground/80 hover:text-primary-foreground mb-6 transition-colors"
-          >
-            ← Back to Home
-          </Link>
+          <BackButton className="inline-flex items-center text-sm text-primary-foreground/80 hover:text-primary-foreground mb-6 transition-colors" />
           <div className="max-w-3xl">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Blog</h1>
             <p className="text-lg opacity-90">Latest clinic news and guides.</p>
@@ -85,87 +81,100 @@ export default function BlogPage() {
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {loading ? (
-            // Loading skeleton
-            [1, 2, 3, 4, 5, 6].map((i) => (
-              <Card key={i} className="animate-pulse overflow-hidden">
-                <div className="aspect-video bg-muted"></div>
-                <CardHeader>
-                  <div className="h-6 bg-muted rounded w-20 mb-2"></div>
-                  <div className="h-6 bg-muted rounded w-full"></div>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-4 bg-muted rounded w-full mb-2"></div>
-                  <div className="h-4 bg-muted rounded w-3/4"></div>
-                </CardContent>
-              </Card>
-            ))
-          ) : blogs.length > 0 ? (
-            // Dynamic blogs from database
-            blogs.map((blog) => (
-              <Link key={blog.id} href={`/blog/${blog.slug}`} className="block">
-                <Card className="hover:shadow-lg transition-shadow overflow-hidden h-full">
-                  <div className="relative aspect-video bg-muted">
-                    {blog.featuredImage ? (
-                      <Image
-                        src={blog.featuredImage}
-                        alt={blog.title}
-                        fill
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-primary/20 to-primary/5">
-                        <FileText className="w-12 h-12 text-primary/40" />
-                      </div>
-                    )}
-                  </div>
+          {loading
+            ? // Loading skeleton
+              [1, 2, 3, 4, 5, 6].map((i) => (
+                <Card key={i} className="animate-pulse overflow-hidden">
+                  <div className="aspect-video bg-muted"></div>
                   <CardHeader>
-                    {blog.category && (
-                      <Badge className="w-fit mb-2">{blog.category}</Badge>
-                    )}
-                    <CardTitle className="line-clamp-2">{blog.title}</CardTitle>
+                    <div className="h-6 bg-muted rounded w-20 mb-2"></div>
+                    <div className="h-6 bg-muted rounded w-full"></div>
                   </CardHeader>
                   <CardContent>
-                    {blog.excerpt && (
-                      <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                        {blog.excerpt}
-                      </p>
-                    )}
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>
-                        {new Date(blog.publishedAt || blog.createdAt).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
-                      </span>
-                      {blog.author?.name && <span>By {blog.author.name}</span>}
-                    </div>
+                    <div className="h-4 bg-muted rounded w-full mb-2"></div>
+                    <div className="h-4 bg-muted rounded w-3/4"></div>
                   </CardContent>
                 </Card>
-              </Link>
-            ))
-          ) : (
-            // Fallback to static content
-            sampleArticles.map((a) => (
-              <Card key={a.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle>{a.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">{a.excerpt}</p>
-                  <div className="mt-4 flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">
-                      {a.date}
-                    </span>
-                    <Link href={`/blog/${a.id}`}>
-                      <Button variant="ghost">Read</Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          )}
+              ))
+            : blogs.length > 0
+              ? // Dynamic blogs from database
+                blogs.map((blog) => (
+                  <Link
+                    key={blog.id}
+                    href={`/blog/${blog.slug}`}
+                    className="block"
+                  >
+                    <Card className="hover:shadow-lg transition-shadow overflow-hidden h-full">
+                      <div className="relative aspect-video bg-muted">
+                        {blog.featuredImage ? (
+                          <Image
+                            src={blog.featuredImage}
+                            alt={blog.title}
+                            fill
+                            className="object-cover"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-primary/20 to-primary/5">
+                            <FileText className="w-12 h-12 text-primary/40" />
+                          </div>
+                        )}
+                      </div>
+                      <CardHeader>
+                        {blog.category && (
+                          <Badge className="w-fit mb-2">{blog.category}</Badge>
+                        )}
+                        <CardTitle className="line-clamp-2">
+                          {blog.title}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        {blog.excerpt && (
+                          <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+                            {blog.excerpt}
+                          </p>
+                        )}
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <span>
+                            {new Date(
+                              blog.publishedAt || blog.createdAt,
+                            ).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })}
+                          </span>
+                          {blog.author?.name && (
+                            <span>By {blog.author.name}</span>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))
+              : // Fallback to static content
+                sampleArticles.map((a) => (
+                  <Card
+                    key={a.id}
+                    className="hover:shadow-lg transition-shadow"
+                  >
+                    <CardHeader>
+                      <CardTitle>{a.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground">
+                        {a.excerpt}
+                      </p>
+                      <div className="mt-4 flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">
+                          {a.date}
+                        </span>
+                        <Link href={`/blog/${a.id}`}>
+                          <Button variant="ghost">Read</Button>
+                        </Link>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
         </div>
       </main>
     </div>

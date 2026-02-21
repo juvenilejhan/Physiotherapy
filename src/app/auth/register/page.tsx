@@ -18,6 +18,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Activity, Loader2, Check } from "lucide-react";
 import { toast } from "sonner";
+import { BackButton } from "@/components/BackButton";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -105,6 +106,18 @@ export default function RegisterPage() {
         return;
       }
 
+      const loginResult = await signIn("credentials", {
+        email: formData.email.toLowerCase().trim(),
+        password: formData.password,
+        redirect: false,
+      });
+
+      if (loginResult?.ok) {
+        toast.success("Registration successful! Redirecting to booking...");
+        router.push("/book");
+        return;
+      }
+
       toast.success("Registration successful! Please sign in to continue.");
       router.push("/auth/login");
     } catch (error) {
@@ -117,26 +130,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/50 p-4 py-8">
       <div className="w-full max-w-2xl">
-        {/* Back to Home Button */}
-        <Link
-          href="/"
-          className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6 transition-colors"
-        >
-          <svg
-            className="w-4 h-4 mr-1"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
-          Back to Home
-        </Link>
+        <BackButton isAuthPage={true} />
 
         {/* Logo */}
         <div className="flex items-center justify-center gap-2 mb-8">

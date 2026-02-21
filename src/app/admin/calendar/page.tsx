@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import {
+  ChevronLeft,
+  ChevronRight,
   Calendar as CalendarIcon,
   Clock,
   User,
@@ -13,18 +13,18 @@ import {
   Filter,
   MoreVertical,
   Edit,
-  Trash2
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+  Trash2,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -32,20 +32,31 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Skeleton } from '@/components/ui/skeleton';
-import { toast } from 'sonner';
-import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday, parseISO } from 'date-fns';
-import { formatBDT } from '@/lib/utils';
+} from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+import {
+  format,
+  addMonths,
+  subMonths,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameMonth,
+  isSameDay,
+  isToday,
+  parseISO,
+} from "date-fns";
+import { formatBDT } from "@/lib/utils";
 
 interface Appointment {
   id: string;
@@ -84,32 +95,38 @@ export default function AdminCalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [staff, setStaff] = useState<StaffMember[]>([]);
-  const [selectedStaff, setSelectedStaff] = useState<string>('all');
+  const [selectedStaff, setSelectedStaff] = useState<string>("all");
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [dayAppointments, setDayAppointments] = useState<Appointment[]>([]);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
 
   // New appointment dialog state
-  const [newAppointmentDialogOpen, setNewAppointmentDialogOpen] = useState(false);
+  const [newAppointmentDialogOpen, setNewAppointmentDialogOpen] =
+    useState(false);
   const [services, setServices] = useState<any[]>([]);
   const [newAppointmentForm, setNewAppointmentForm] = useState({
-    patientId: '',
-    serviceId: '',
-    staffId: '',
-    date: '',
-    time: '',
-    notes: '',
+    patientId: "",
+    serviceId: "",
+    staffId: "",
+    date: "",
+    time: "",
+    notes: "",
   });
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/login');
+    if (status === "unauthenticated") {
+      router.push("/auth/login");
       return;
     }
 
-    if (session?.user?.role && !['SUPER_ADMIN', 'CLINIC_MANAGER', 'DOCTOR', 'RECEPTIONIST'].includes(session.user.role)) {
-      router.push('/dashboard');
+    if (
+      session?.user?.role &&
+      !["SUPER_ADMIN", "CLINIC_MANAGER", "DOCTOR", "RECEPTIONIST"].includes(
+        session.user.role,
+      )
+    ) {
+      router.push("/dashboard");
       return;
     }
 
@@ -119,24 +136,32 @@ export default function AdminCalendarPage() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      
+
       const startOfCurrentMonth = startOfMonth(currentDate);
       const endOfCurrentMonth = endOfMonth(currentDate);
 
       const [appointmentsRes, staffRes, servicesRes] = await Promise.all([
-        fetch(`/api/admin/appointments?startDate=${startOfCurrentMonth.toISOString()}&endDate=${endOfCurrentMonth.toISOString()}`),
-        fetch('/api/admin/staff'),
-        fetch('/api/services'),
+        fetch(
+          `/api/admin/appointments?startDate=${startOfCurrentMonth.toISOString()}&endDate=${endOfCurrentMonth.toISOString()}`,
+        ),
+        fetch("/api/admin/staff"),
+        fetch("/api/services"),
       ]);
 
       if (appointmentsRes.ok) {
         const data = await appointmentsRes.json();
-        setAppointments(data);
+        setAppointments(
+          Array.isArray(data)
+            ? data
+            : Array.isArray(data?.appointments)
+              ? data.appointments
+              : [],
+        );
       }
-      
+
       if (staffRes.ok) {
         const data = await staffRes.json();
-        setStaff(data);
+        setStaff(Array.isArray(data) ? data : []);
       }
 
       if (servicesRes.ok) {
@@ -144,8 +169,8 @@ export default function AdminCalendarPage() {
         setServices(data.services || []);
       }
     } catch (error) {
-      console.error('Error fetching calendar data:', error);
-      toast.error('Failed to load calendar data');
+      console.error("Error fetching calendar data:", error);
+      toast.error("Failed to load calendar data");
     } finally {
       setLoading(false);
     }
@@ -153,8 +178,8 @@ export default function AdminCalendarPage() {
 
   const handleDateClick = (date: Date) => {
     setSelectedDate(date);
-    const dayApps = appointments.filter(apt => 
-      isSameDay(new Date(apt.appointmentDate), date)
+    const dayApps = appointments.filter((apt) =>
+      isSameDay(new Date(apt.appointmentDate), date),
     );
     setDayAppointments(dayApps);
     setDetailsDialogOpen(true);
@@ -162,11 +187,11 @@ export default function AdminCalendarPage() {
 
   const handleNewAppointment = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
-      const response = await fetch('/api/appointments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/appointments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           patientId: newAppointmentForm.patientId,
           serviceId: newAppointmentForm.serviceId,
@@ -177,35 +202,37 @@ export default function AdminCalendarPage() {
       });
 
       if (response.ok) {
-        toast.success('Appointment created successfully');
+        toast.success("Appointment created successfully");
         setNewAppointmentDialogOpen(false);
         resetNewAppointmentForm();
         fetchData();
       } else {
-        toast.error('Failed to create appointment');
+        toast.error("Failed to create appointment");
       }
     } catch (error) {
-      console.error('Error creating appointment:', error);
-      toast.error('An error occurred');
+      console.error("Error creating appointment:", error);
+      toast.error("An error occurred");
     }
   };
 
   const resetNewAppointmentForm = () => {
     setNewAppointmentForm({
-      patientId: '',
-      serviceId: '',
-      staffId: '',
-      date: '',
-      time: '',
-      notes: '',
+      patientId: "",
+      serviceId: "",
+      staffId: "",
+      date: "",
+      time: "",
+      notes: "",
     });
   };
 
   const getAppointmentsForDate = (date: Date) => {
-    return appointments.filter(apt => {
+    return appointments.filter((apt) => {
       const aptDate = new Date(apt.appointmentDate);
-      return isSameDay(aptDate, date) &&
-        (selectedStaff === 'all' || apt.staff?.id === selectedStaff);
+      return (
+        isSameDay(aptDate, date) &&
+        (selectedStaff === "all" || apt.staff?.id === selectedStaff)
+      );
     });
   };
 
@@ -215,13 +242,13 @@ export default function AdminCalendarPage() {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      PENDING: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-      CONFIRMED: 'bg-green-100 text-green-800 border-green-200',
-      COMPLETED: 'bg-blue-100 text-blue-800 border-blue-200',
-      CANCELLED: 'bg-red-100 text-red-800 border-red-200',
-      'NO_SHOW': 'bg-gray-100 text-gray-800 border-gray-200',
+      PENDING: "bg-yellow-100 text-yellow-800 border-yellow-200",
+      CONFIRMED: "bg-green-100 text-green-800 border-green-200",
+      COMPLETED: "bg-blue-100 text-blue-800 border-blue-200",
+      CANCELLED: "bg-red-100 text-red-800 border-red-200",
+      NO_SHOW: "bg-gray-100 text-gray-800 border-gray-200",
     };
-    return colors[status] || 'bg-gray-100 text-gray-800 border-gray-200';
+    return colors[status] || "bg-gray-100 text-gray-800 border-gray-200";
   };
 
   if (loading) {
@@ -233,9 +260,7 @@ export default function AdminCalendarPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Calendar</h2>
-          <p className="text-muted-foreground">
-            View and manage appointments
-          </p>
+          <p className="text-muted-foreground">View and manage appointments</p>
         </div>
         <div className="flex items-center gap-2">
           <Select value={selectedStaff} onValueChange={setSelectedStaff}>
@@ -246,21 +271,26 @@ export default function AdminCalendarPage() {
             <SelectContent>
               <SelectItem value="all">All Staff</SelectItem>
               {staff.map((s) => (
-                <SelectItem key={s.id} value={s.id}>{s.user.name}</SelectItem>
+                <SelectItem key={s.id} value={s.id}>
+                  {s.user.name}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <Dialog open={newAppointmentDialogOpen} onOpenChange={(open) => {
-            setNewAppointmentDialogOpen(open);
-            if (!open) resetNewAppointmentForm();
-          }}>
+          <Dialog
+            open={newAppointmentDialogOpen}
+            onOpenChange={(open) => {
+              setNewAppointmentDialogOpen(open);
+              if (!open) resetNewAppointmentForm();
+            }}
+          >
             <DialogTrigger asChild>
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
                 New Appointment
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px]">
+            <DialogContent className="sm:max-w-150">
               <DialogHeader>
                 <DialogTitle>Create New Appointment</DialogTitle>
                 <DialogDescription>
@@ -275,7 +305,12 @@ export default function AdminCalendarPage() {
                       id="patient"
                       type="email"
                       value={newAppointmentForm.patientId}
-                      onChange={(e) => setNewAppointmentForm({ ...newAppointmentForm, patientId: e.target.value })}
+                      onChange={(e) =>
+                        setNewAppointmentForm({
+                          ...newAppointmentForm,
+                          patientId: e.target.value,
+                        })
+                      }
                       placeholder="patient@example.com"
                       required
                     />
@@ -284,7 +319,12 @@ export default function AdminCalendarPage() {
                     <Label htmlFor="service">Service</Label>
                     <Select
                       value={newAppointmentForm.serviceId}
-                      onValueChange={(value) => setNewAppointmentForm({ ...newAppointmentForm, serviceId: value })}
+                      onValueChange={(value) =>
+                        setNewAppointmentForm({
+                          ...newAppointmentForm,
+                          serviceId: value,
+                        })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select service" />
@@ -292,7 +332,8 @@ export default function AdminCalendarPage() {
                       <SelectContent>
                         {services.map((service) => (
                           <SelectItem key={service.id} value={service.id}>
-                            {service.name} - {formatBDT(service.price)} ({service.duration} min)
+                            {service.name} - {formatBDT(service.price)} (
+                            {service.duration} min)
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -302,14 +343,21 @@ export default function AdminCalendarPage() {
                     <Label htmlFor="staff">Staff</Label>
                     <Select
                       value={newAppointmentForm.staffId}
-                      onValueChange={(value) => setNewAppointmentForm({ ...newAppointmentForm, staffId: value })}
+                      onValueChange={(value) =>
+                        setNewAppointmentForm({
+                          ...newAppointmentForm,
+                          staffId: value,
+                        })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select staff" />
                       </SelectTrigger>
                       <SelectContent>
                         {staff.map((s) => (
-                          <SelectItem key={s.id} value={s.id}>{s.user.name}</SelectItem>
+                          <SelectItem key={s.id} value={s.id}>
+                            {s.user.name}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -321,7 +369,12 @@ export default function AdminCalendarPage() {
                         id="date"
                         type="date"
                         value={newAppointmentForm.date}
-                        onChange={(e) => setNewAppointmentForm({ ...newAppointmentForm, date: e.target.value })}
+                        onChange={(e) =>
+                          setNewAppointmentForm({
+                            ...newAppointmentForm,
+                            date: e.target.value,
+                          })
+                        }
                         required
                       />
                     </div>
@@ -331,7 +384,12 @@ export default function AdminCalendarPage() {
                         id="time"
                         type="time"
                         value={newAppointmentForm.time}
-                        onChange={(e) => setNewAppointmentForm({ ...newAppointmentForm, time: e.target.value })}
+                        onChange={(e) =>
+                          setNewAppointmentForm({
+                            ...newAppointmentForm,
+                            time: e.target.value,
+                          })
+                        }
                         required
                       />
                     </div>
@@ -341,7 +399,12 @@ export default function AdminCalendarPage() {
                     <Textarea
                       id="notes"
                       value={newAppointmentForm.notes}
-                      onChange={(e) => setNewAppointmentForm({ ...newAppointmentForm, notes: e.target.value })}
+                      onChange={(e) =>
+                        setNewAppointmentForm({
+                          ...newAppointmentForm,
+                          notes: e.target.value,
+                        })
+                      }
                       rows={3}
                       placeholder="Additional notes..."
                     />
@@ -361,7 +424,7 @@ export default function AdminCalendarPage() {
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <CalendarIcon className="h-5 w-5" />
-              {format(currentDate, 'MMMM yyyy')}
+              {format(currentDate, "MMMM yyyy")}
             </CardTitle>
             <div className="flex items-center gap-2">
               <Button
@@ -389,8 +452,11 @@ export default function AdminCalendarPage() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-7 gap-2">
-            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-              <div key={day} className="text-center font-medium text-sm text-muted-foreground py-2">
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+              <div
+                key={day}
+                className="text-center font-medium text-sm text-muted-foreground py-2"
+              >
                 {day}
               </div>
             ))}
@@ -405,16 +471,18 @@ export default function AdminCalendarPage() {
                   onClick={() => handleDateClick(date)}
                   className={`
                     min-h-25 border rounded-lg p-2 cursor-pointer transition-colors
-                    ${isCurrentMonth ? 'bg-background' : 'bg-muted/30'}
-                    ${isDayToday ? 'border-primary' : 'border-border'}
+                    ${isCurrentMonth ? "bg-background" : "bg-muted/30"}
+                    ${isDayToday ? "border-primary" : "border-border"}
                     hover:bg-accent/50
                   `}
                 >
-                  <div className={`
+                  <div
+                    className={`
                     text-sm font-medium mb-1
-                    ${isDayToday ? 'bg-primary text-primary-foreground w-7 h-7 rounded-full flex items-center justify-center' : ''}
-                  `}>
-                    {format(date, 'd')}
+                    ${isDayToday ? "bg-primary text-primary-foreground w-7 h-7 rounded-full flex items-center justify-center" : ""}
+                  `}
+                  >
+                    {format(date, "d")}
                   </div>
                   <div className="space-y-1">
                     {dayAppointments.slice(0, 3).map((apt) => (
@@ -425,7 +493,9 @@ export default function AdminCalendarPage() {
                           ${getStatusColor(apt.status)}
                         `}
                       >
-                        <div className="font-medium">{format(new Date(apt.appointmentDate), 'h:mm a')}</div>
+                        <div className="font-medium">
+                          {format(new Date(apt.appointmentDate), "h:mm a")}
+                        </div>
                         <div className="truncate">{apt.user.name}</div>
                       </div>
                     ))}
@@ -444,10 +514,10 @@ export default function AdminCalendarPage() {
 
       {/* Day Details Dialog */}
       <Dialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen}>
-        <DialogContent className="sm:max-w-[700px] max-h-[80vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-175 max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {selectedDate && format(selectedDate, 'MMMM dd, yyyy')}
+              {selectedDate && format(selectedDate, "MMMM dd, yyyy")}
             </DialogTitle>
             <DialogDescription>
               Appointments scheduled for this day
@@ -469,7 +539,7 @@ export default function AdminCalendarPage() {
                       <div className="flex items-center gap-2 mb-2">
                         <Clock className="h-4 w-4" />
                         <span className="font-semibold">
-                          {format(new Date(apt.appointmentDate), 'h:mm a')}
+                          {format(new Date(apt.appointmentDate), "h:mm a")}
                         </span>
                         <Badge variant="outline">{apt.status}</Badge>
                       </div>
@@ -477,17 +547,22 @@ export default function AdminCalendarPage() {
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4" />
                           <span className="font-medium">{apt.user.name}</span>
-                          <span className="text-muted-foreground">({apt.user.email})</span>
+                          <span className="text-muted-foreground">
+                            ({apt.user.email})
+                          </span>
                         </div>
                         <div>
-                          <span className="font-medium">Service:</span> {apt.service.name}
+                          <span className="font-medium">Service:</span>{" "}
+                          {apt.service.name}
                         </div>
                         <div>
-                          <span className="font-medium">Staff:</span> {apt.staff?.user.name || 'Unassigned'}
+                          <span className="font-medium">Staff:</span>{" "}
+                          {apt.staff?.user.name || "Unassigned"}
                         </div>
                         {apt.notes && (
                           <div>
-                            <span className="font-medium">Notes:</span> {apt.notes}
+                            <span className="font-medium">Notes:</span>{" "}
+                            {apt.notes}
                           </div>
                         )}
                       </div>

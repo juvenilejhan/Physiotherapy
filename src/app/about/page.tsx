@@ -2,11 +2,20 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { BackButton } from "@/components/BackButton";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Award, Users, Heart, Target, CheckCircle, Star } from "lucide-react";
+import {
+  ArrowRight,
+  Award,
+  Users,
+  Heart,
+  Target,
+  CheckCircle,
+  Star,
+} from "lucide-react";
 
 interface Settings {
   clinicName?: string;
@@ -51,12 +60,14 @@ export default function AboutPage() {
     {
       icon: Heart,
       title: "Patient-Centered Care",
-      description: "Every treatment plan is tailored to your unique needs and goals.",
+      description:
+        "Every treatment plan is tailored to your unique needs and goals.",
     },
     {
       icon: Award,
       title: "Clinical Excellence",
-      description: "Evidence-based practices and continuous professional development.",
+      description:
+        "Evidence-based practices and continuous professional development.",
     },
     {
       icon: Users,
@@ -75,19 +86,17 @@ export default function AboutPage() {
       {/* Hero Section */}
       <section className="bg-primary text-primary-foreground py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <Link
-            href="/"
-            className="inline-flex items-center text-sm text-primary-foreground/80 hover:text-primary-foreground mb-6 transition-colors"
-          >
-            ← Back to Home
-          </Link>
+          <BackButton className="inline-flex items-center text-sm text-primary-foreground/80 hover:text-primary-foreground mb-6 transition-colors" />
           <div className="max-w-3xl">
-            <Badge variant="secondary" className="mb-4">About Us</Badge>
+            <Badge variant="secondary" className="mb-4">
+              About Us
+            </Badge>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               {settings?.clinicName || "PhysioConnect"}
             </h1>
             <p className="text-lg opacity-90">
-              {settings?.description || "Dedicated to providing best-in-class physiotherapy care. Our mission is to help patients recover and regain independence using evidence-based practices and a patient-centered approach."}
+              {settings?.description ||
+                "Dedicated to providing best-in-class physiotherapy care. Our mission is to help patients recover and regain independence using evidence-based practices and a patient-centered approach."}
             </p>
           </div>
         </div>
@@ -112,15 +121,21 @@ export default function AboutPage() {
             <div className="flex gap-8 pt-4">
               <div>
                 <div className="text-3xl font-bold text-primary">10+</div>
-                <div className="text-sm text-muted-foreground">Years Experience</div>
+                <div className="text-sm text-muted-foreground">
+                  Years Experience
+                </div>
               </div>
               <div>
                 <div className="text-3xl font-bold text-primary">5000+</div>
-                <div className="text-sm text-muted-foreground">Patients Treated</div>
+                <div className="text-sm text-muted-foreground">
+                  Patients Treated
+                </div>
               </div>
               <div>
                 <div className="text-3xl font-bold text-primary">98%</div>
-                <div className="text-sm text-muted-foreground">Satisfaction Rate</div>
+                <div className="text-sm text-muted-foreground">
+                  Satisfaction Rate
+                </div>
               </div>
             </div>
           </div>
@@ -140,18 +155,24 @@ export default function AboutPage() {
             <Badge>Our Values</Badge>
             <h2 className="text-3xl font-bold mt-4">What We Stand For</h2>
             <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
-              Our core values guide everything we do, from initial consultation to your full recovery.
+              Our core values guide everything we do, from initial consultation
+              to your full recovery.
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {values.map((value, index) => (
-              <Card key={index} className="text-center hover:shadow-lg transition-shadow">
+              <Card
+                key={index}
+                className="text-center hover:shadow-lg transition-shadow"
+              >
                 <CardContent className="pt-6">
                   <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                     <value.icon className="w-6 h-6 text-primary" />
                   </div>
                   <h3 className="font-semibold mb-2">{value.title}</h3>
-                  <p className="text-sm text-muted-foreground">{value.description}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {value.description}
+                  </p>
                 </CardContent>
               </Card>
             ))}
@@ -164,51 +185,57 @@ export default function AboutPage() {
             <Badge>Our Team</Badge>
             <h2 className="text-3xl font-bold mt-4">Meet Our Specialists</h2>
             <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
-              Our experienced team is here to help you on your journey to recovery.
+              Our experienced team is here to help you on your journey to
+              recovery.
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {specialists.length > 0 ? (
-              specialists.slice(0, 4).map((specialist) => (
-                <Link key={specialist.id} href={`/specialists/${specialist.id}`}>
-                  <Card className="text-center hover:shadow-lg transition-shadow cursor-pointer h-full">
-                    <CardContent className="pt-6">
-                      <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden">
-                        {specialist.user.image ? (
-                          <Image
-                            src={specialist.user.image}
-                            alt={specialist.user.name || "Specialist"}
-                            width={80}
-                            height={80}
-                            className="object-cover w-full h-full"
-                          />
-                        ) : (
-                          <Users className="w-10 h-10 text-primary" />
-                        )}
-                      </div>
-                      <h3 className="font-semibold">{specialist.user.name}</h3>
-                      <p className="text-sm text-muted-foreground">{specialist.specialization}</p>
-                      {specialist.experience && (
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {specialist.experience} years experience
+            {specialists.length > 0
+              ? specialists.slice(0, 4).map((specialist) => (
+                  <Link
+                    key={specialist.id}
+                    href={`/specialists/${specialist.id}`}
+                  >
+                    <Card className="text-center hover:shadow-lg transition-shadow cursor-pointer h-full">
+                      <CardContent className="pt-6">
+                        <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden">
+                          {specialist.user.image ? (
+                            <Image
+                              src={specialist.user.image}
+                              alt={specialist.user.name || "Specialist"}
+                              width={80}
+                              height={80}
+                              className="object-cover w-full h-full"
+                            />
+                          ) : (
+                            <Users className="w-10 h-10 text-primary" />
+                          )}
+                        </div>
+                        <h3 className="font-semibold">
+                          {specialist.user.name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          {specialist.specialization}
                         </p>
-                      )}
+                        {specialist.experience && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {specialist.experience} years experience
+                          </p>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))
+              : // Placeholder cards
+                [1, 2, 3, 4].map((i) => (
+                  <Card key={i} className="text-center animate-pulse">
+                    <CardContent className="pt-6">
+                      <div className="w-20 h-20 bg-muted rounded-full mx-auto mb-4"></div>
+                      <div className="h-5 bg-muted rounded w-3/4 mx-auto mb-2"></div>
+                      <div className="h-4 bg-muted rounded w-1/2 mx-auto"></div>
                     </CardContent>
                   </Card>
-                </Link>
-              ))
-            ) : (
-              // Placeholder cards
-              [1, 2, 3, 4].map((i) => (
-                <Card key={i} className="text-center animate-pulse">
-                  <CardContent className="pt-6">
-                    <div className="w-20 h-20 bg-muted rounded-full mx-auto mb-4"></div>
-                    <div className="h-5 bg-muted rounded w-3/4 mx-auto mb-2"></div>
-                    <div className="h-4 bg-muted rounded w-1/2 mx-auto"></div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
+                ))}
           </div>
           <div className="text-center">
             <Link href="/specialists">
@@ -225,7 +252,9 @@ export default function AboutPage() {
           <div className="grid lg:grid-cols-2 gap-8 items-center">
             <div className="space-y-6">
               <Badge>Why Choose Us</Badge>
-              <h2 className="text-3xl font-bold">Your Recovery Is Our Priority</h2>
+              <h2 className="text-3xl font-bold">
+                Your Recovery Is Our Priority
+              </h2>
               <ul className="space-y-4">
                 {[
                   "State-of-the-art equipment and facilities",
@@ -256,7 +285,8 @@ export default function AboutPage() {
         <section className="text-center space-y-6 py-8">
           <h2 className="text-3xl font-bold">Ready to Start Your Recovery?</h2>
           <p className="text-muted-foreground max-w-xl mx-auto">
-            Book an appointment today and take the first step towards a pain-free life.
+            Book an appointment today and take the first step towards a
+            pain-free life.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/book">

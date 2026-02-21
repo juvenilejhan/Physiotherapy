@@ -304,7 +304,7 @@ export default function PaymentsPage() {
                         <TableHead>Method</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Date</TableHead>
-                        <TableHead className="w-[70px]"></TableHead>
+                        <TableHead className="w-17.5"></TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>

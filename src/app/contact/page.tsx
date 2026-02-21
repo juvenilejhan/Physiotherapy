@@ -8,7 +8,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Phone, Mail, MapPin, MessageCircle, Clock, Send, CheckCircle } from "lucide-react";
+import {
+  Phone,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Clock,
+  Send,
+  CheckCircle,
+} from "lucide-react";
+import { BackButton } from "@/components/BackButton";
 
 interface Settings {
   clinicName?: string;
@@ -36,7 +45,9 @@ function formatPhoneForWhatsApp(phone: string): string {
   return digits;
 }
 
-const WHATSAPP_MESSAGE = encodeURIComponent("Hello! I have some pain/discomfort and would like to consult with a physiotherapist. Can you help?");
+const WHATSAPP_MESSAGE = encodeURIComponent(
+  "Hello! I have some pain/discomfort and would like to consult with a physiotherapist. Can you help?",
+);
 
 export default function ContactPage() {
   const [settings, setSettings] = useState<Settings | null>(null);
@@ -89,17 +100,17 @@ export default function ContactPage() {
       {/* Hero Section */}
       <section className="bg-primary text-primary-foreground py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <Link
-            href="/"
-            className="inline-flex items-center text-sm text-primary-foreground/80 hover:text-primary-foreground mb-6 transition-colors"
-          >
-            ← Back to Home
-          </Link>
+          <BackButton className="inline-flex items-center text-sm text-primary-foreground/80 hover:text-primary-foreground mb-6 transition-colors" />
           <div className="max-w-3xl">
-            <Badge variant="secondary" className="mb-4">Contact Us</Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Get In Touch</h1>
+            <Badge variant="secondary" className="mb-4">
+              Contact Us
+            </Badge>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Get In Touch
+            </h1>
             <p className="text-lg opacity-90">
-              Have questions or ready to start your recovery journey? We&apos;re here to help.
+              Have questions or ready to start your recovery journey? We&apos;re
+              here to help.
             </p>
           </div>
         </div>
@@ -117,9 +128,12 @@ export default function ContactPage() {
                 {submitSuccess ? (
                   <div className="flex flex-col items-center justify-center py-8 text-center">
                     <CheckCircle className="w-16 h-16 text-green-500 mb-4" />
-                    <h3 className="text-xl font-semibold mb-2">Message Sent!</h3>
+                    <h3 className="text-xl font-semibold mb-2">
+                      Message Sent!
+                    </h3>
                     <p className="text-muted-foreground">
-                      Thank you for contacting us. We&apos;ll get back to you shortly.
+                      Thank you for contacting us. We&apos;ll get back to you
+                      shortly.
                     </p>
                   </div>
                 ) : (
@@ -131,7 +145,9 @@ export default function ContactPage() {
                           id="name"
                           placeholder="Your name"
                           value={formData.name}
-                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          onChange={(e) =>
+                            setFormData({ ...formData, name: e.target.value })
+                          }
                           required
                         />
                       </div>
@@ -142,7 +158,9 @@ export default function ContactPage() {
                           type="email"
                           placeholder="your@email.com"
                           value={formData.email}
-                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          onChange={(e) =>
+                            setFormData({ ...formData, email: e.target.value })
+                          }
                           required
                         />
                       </div>
@@ -155,7 +173,9 @@ export default function ContactPage() {
                           type="tel"
                           placeholder="Your phone number"
                           value={formData.phone}
-                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                          onChange={(e) =>
+                            setFormData({ ...formData, phone: e.target.value })
+                          }
                         />
                       </div>
                       <div className="space-y-2">
@@ -164,7 +184,12 @@ export default function ContactPage() {
                           id="subject"
                           placeholder="How can we help?"
                           value={formData.subject}
-                          onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              subject: e.target.value,
+                            })
+                          }
                           required
                         />
                       </div>
@@ -176,11 +201,17 @@ export default function ContactPage() {
                         placeholder="Tell us about your condition or inquiry..."
                         rows={5}
                         value={formData.message}
-                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, message: e.target.value })
+                        }
                         required
                       />
                     </div>
-                    <Button type="submit" className="w-full md:w-auto" disabled={isSubmitting}>
+                    <Button
+                      type="submit"
+                      className="w-full md:w-auto"
+                      disabled={isSubmitting}
+                    >
                       {isSubmitting ? "Sending..." : "Send Message"}
                       <Send className="ml-2 w-4 h-4" />
                     </Button>
@@ -210,7 +241,9 @@ export default function ContactPage() {
                 <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
                   <MapPin className="w-4 h-4 text-primary" />
                   <span>
-                    {settings?.address || "123 Health Street"}, {settings?.city || "Dhaka"}, {settings?.state || ""} {settings?.postalCode || "1205"}
+                    {settings?.address || "123 Health Street"},{" "}
+                    {settings?.city || "Dhaka"}, {settings?.state || ""}{" "}
+                    {settings?.postalCode || "1205"}
                   </span>
                 </div>
               </CardContent>
@@ -273,7 +306,8 @@ export default function ContactPage() {
                     <p className="text-sm text-muted-foreground">
                       {settings?.address || "123 Health Street"}
                       <br />
-                      {settings?.city || "Dhaka"}, {settings?.state || ""} {settings?.postalCode || "1205"}
+                      {settings?.city || "Dhaka"}, {settings?.state || ""}{" "}
+                      {settings?.postalCode || "1205"}
                     </p>
                   </div>
                 </div>
@@ -292,7 +326,9 @@ export default function ContactPage() {
                 <ul className="space-y-2">
                   {businessHours.map((schedule, index) => (
                     <li key={index} className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">{schedule.day}</span>
+                      <span className="text-muted-foreground">
+                        {schedule.day}
+                      </span>
                       <span className="font-medium">{schedule.hours}</span>
                     </li>
                   ))}

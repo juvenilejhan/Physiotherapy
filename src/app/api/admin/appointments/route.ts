@@ -1,38 +1,38 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { db } from '@/lib/db';
-import { hasPermission } from '@/lib/rbac';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { hasPermission } from "@/lib/rbac";
 
 // GET - List all appointments
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const user = await db.user.findUnique({
       where: { email: session.user.email },
     });
 
-    if (!user || !user.role || !hasPermission(user.role, 'appointments:view')) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!user || !user.role || !hasPermission(user.role, "appointments:view")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const searchParams = req.nextUrl.searchParams;
-    const status = searchParams.get('status');
-    const startDate = searchParams.get('startDate');
-    const endDate = searchParams.get('endDate');
-    const search = searchParams.get('search');
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '20');
+    const status = searchParams.get("status");
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
+    const search = searchParams.get("search");
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "20");
     const skip = (page - 1) * limit;
 
     const where: any = {};
 
-    if (status && status !== 'all') {
+    if (status && status !== "all") {
       where.status = status;
     }
 
@@ -49,9 +49,9 @@ export async function GET(req: NextRequest) {
     // Search filter
     if (search) {
       where.OR = [
-        { user: { name: { contains: search, mode: 'insensitive' } } },
-        { user: { email: { contains: search, mode: 'insensitive' } } },
-        { service: { name: { contains: search, mode: 'insensitive' } } },
+        { user: { name: { contains: search, mode: "insensitive" } } },
+        { user: { email: { contains: search, mode: "insensitive" } } },
+        { service: { name: { contains: search, mode: "insensitive" } } },
       ];
     }
 
@@ -62,9 +62,7 @@ export async function GET(req: NextRequest) {
       where,
       skip,
       take: limit,
-      orderBy: {
-        appointmentDate: 'desc',
-      },
+      orderBy: [{ createdAt: "desc" }, { appointmentDate: "desc" }],
       include: {
         user: {
           select: {
@@ -106,7 +104,10 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error fetching appointments:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error fetching appointments:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

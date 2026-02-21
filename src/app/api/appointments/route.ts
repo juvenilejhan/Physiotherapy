@@ -25,10 +25,7 @@ export async function GET(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -71,7 +68,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching appointments:", error);
     return NextResponse.json(
       { error: "Failed to fetch appointments" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -86,7 +83,7 @@ export async function POST(request: NextRequest) {
     if (!validationResult.success) {
       return NextResponse.json(
         { error: validationResult.error.issues[0].message },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -107,7 +104,7 @@ export async function POST(request: NextRequest) {
     if (!session?.user && (!guestName || !guestEmail || !guestPhone)) {
       return NextResponse.json(
         { error: "Guest bookings require name, email, and phone" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -118,10 +115,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!service) {
-      return NextResponse.json(
-        { error: "Service not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Service not found" }, { status: 404 });
     }
 
     // Calculate end time
@@ -142,6 +136,19 @@ export async function POST(request: NextRequest) {
     if (session?.user) {
       userId = (session.user as any).id;
       userRole = (session.user as any).role;
+
+      // Ensure patient profile exists for authenticated patients
+      if (userRole === "PATIENT") {
+        const existingProfile = await db.patientProfile.findUnique({
+          where: { userId },
+        });
+
+        if (!existingProfile) {
+          await db.patientProfile.create({
+            data: { userId },
+          });
+        }
+      }
     } else {
       // For guest users, create or find a temporary user account
       const existingGuest = await db.user.findUnique({
@@ -203,8 +210,11 @@ export async function POST(request: NextRequest) {
 
     if (conflictingAppointment) {
       return NextResponse.json(
-        { error: "This time slot is no longer available. Please choose another time." },
-        { status: 409 }
+        {
+          error:
+            "This time slot is no longer available. Please choose another time.",
+        },
+        { status: 409 },
       );
     }
 
@@ -252,13 +262,13 @@ export async function POST(request: NextRequest) {
         message: "Appointment booked successfully",
         appointment,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Error creating appointment:", error);
     return NextResponse.json(
       { error: "Failed to create appointment" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

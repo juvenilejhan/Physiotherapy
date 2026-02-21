@@ -50,12 +50,14 @@ export function formatBDPhone(phone: string): string {
  * @param phone - Phone number in any common format
  * @returns Normalized phone string or null if invalid
  */
-export function normalizeBDPhone(phone: string | null | undefined): string | null {
+export function normalizeBDPhone(
+  phone: string | null | undefined,
+): string | null {
   if (!phone) return null;
 
   // Remove all non-digit characters except leading +
   let digits = phone.replace(/[^\d+]/g, "");
-  
+
   // Remove leading + for processing
   if (digits.startsWith("+")) {
     digits = digits.substring(1);
@@ -65,7 +67,7 @@ export function normalizeBDPhone(phone: string | null | undefined): string | nul
   // +8801XXXXXXXXX -> 8801XXXXXXXXX
   // 8801XXXXXXXXX  -> 8801XXXXXXXXX
   // 01XXXXXXXXX    -> 1XXXXXXXXX
-  
+
   if (digits.startsWith("880")) {
     // Already has country code: 8801XXXXXXXXX
     digits = digits.substring(3);
@@ -75,7 +77,7 @@ export function normalizeBDPhone(phone: string | null | undefined): string | nul
   }
 
   // Now digits should be: 1XXXXXXXXX (10 digits starting with 1)
-  
+
   // Validate: must be 10 digits and start with valid operator code (13-19)
   if (digits.length !== 10 || !digits.startsWith("1")) {
     // Return original if can't normalize (might be landline or foreign)
@@ -85,7 +87,7 @@ export function normalizeBDPhone(phone: string | null | undefined): string | nul
   // Check for valid Bangladeshi mobile operator prefix (13-19)
   const operatorCode = digits.substring(1, 2);
   const validOperators = ["3", "4", "5", "6", "7", "8", "9"];
-  
+
   if (!validOperators.includes(operatorCode)) {
     return phone;
   }
@@ -102,7 +104,11 @@ export function normalizeBDPhone(phone: string | null | undefined): string | nul
 export function isValidBDPhone(phone: string | null | undefined): boolean {
   if (!phone) return false;
   const normalized = normalizeBDPhone(phone);
-  return normalized !== null && normalized.startsWith("+880") && normalized.length === 14;
+  return (
+    normalized !== null &&
+    normalized.startsWith("+880") &&
+    normalized.length === 14
+  );
 }
 
 /**
@@ -111,19 +117,22 @@ export function isValidBDPhone(phone: string | null | undefined): boolean {
  * @param message - Optional pre-filled message
  * @returns WhatsApp URL or null if invalid phone
  */
-export function getWhatsAppLink(phone: string | null | undefined, message?: string): string | null {
+export function getWhatsAppLink(
+  phone: string | null | undefined,
+  message?: string,
+): string | null {
   if (!phone) return null;
-  
+
   const normalized = normalizeBDPhone(phone);
   if (!normalized) return null;
-  
+
   // Remove + sign for WhatsApp API
   const phoneNumber = normalized.replace("+", "");
-  
+
   let url = `https://wa.me/${phoneNumber}`;
   if (message) {
     url += `?text=${encodeURIComponent(message)}`;
   }
-  
+
   return url;
 }

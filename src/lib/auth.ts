@@ -45,7 +45,7 @@ export const authOptions: NextAuthOptions = {
 
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
-          user.password
+          user.password,
         );
 
         if (!isPasswordValid) {
@@ -59,6 +59,8 @@ export const authOptions: NextAuthOptions = {
           image: user.image,
           role: user.role,
           accountType: user.accountType,
+          phone: user.phone,
+          dateOfBirth: user.dateOfBirth?.toISOString() || null,
         };
       },
     }),
@@ -79,6 +81,8 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.role = (user as any).role;
         token.accountType = (user as any).accountType;
+        token.phone = (user as any).phone;
+        token.dateOfBirth = (user as any).dateOfBirth;
       }
 
       // Update token when session is updated
@@ -93,6 +97,8 @@ export const authOptions: NextAuthOptions = {
         (session.user as any).id = token.id;
         (session.user as any).role = token.role;
         (session.user as any).accountType = token.accountType;
+        (session.user as any).phone = token.phone;
+        (session.user as any).dateOfBirth = token.dateOfBirth;
       }
       return session;
     },
@@ -123,11 +129,12 @@ export const authOptions: NextAuthOptions = {
               name: user.name,
               image: user.image,
               role: UserRole.PATIENT,
-              accountType: account?.provider === "google"
-                ? AccountType.GOOGLE
-                : account?.provider === "facebook"
-                ? AccountType.FACEBOOK
-                : AccountType.CREDENTIALS,
+              accountType:
+                account?.provider === "google"
+                  ? AccountType.GOOGLE
+                  : account?.provider === "facebook"
+                    ? AccountType.FACEBOOK
+                    : AccountType.CREDENTIALS,
               emailVerified: true,
             },
           });
@@ -149,6 +156,8 @@ declare module "next-auth" {
   interface User {
     role: UserRole;
     accountType: AccountType;
+    phone?: string | null;
+    dateOfBirth?: string | null;
   }
 
   interface Session {
@@ -159,6 +168,8 @@ declare module "next-auth" {
       image?: string | null;
       role: UserRole;
       accountType: AccountType;
+      phone?: string | null;
+      dateOfBirth?: string | null;
     };
   }
 }
@@ -168,5 +179,7 @@ declare module "next-auth/jwt" {
     id: string;
     role: UserRole;
     accountType: AccountType;
+    phone?: string | null;
+    dateOfBirth?: string | null;
   }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
@@ -238,8 +238,25 @@ export default function AdminLayout({
   const pathname = usePathname();
   const { data: session } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const userRole = session?.user?.role || "PATIENT";
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-background">
+        <main className="min-h-screen">
+          <div className="p-4 md:p-6 max-w-full overflow-x-hidden">
+            {children}
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background" suppressHydrationWarning>
@@ -286,7 +303,7 @@ export default function AdminLayout({
       </header>
 
       {/* Desktop Header */}
-      <header className="hidden lg:flex fixed top-0 right-0 z-40 h-16 w-[calc(100%-16rem)] border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 items-center justify-between px-6">
+      <header className="hidden lg:flex fixed top-0 right-0 z-40 h-16 w-[calc(100%-16rem)] border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 items-center justify-between px-6">
         <div className="flex items-center gap-4">
           <h1 className="text-lg font-semibold">
             {navItems
