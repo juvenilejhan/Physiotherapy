@@ -68,6 +68,9 @@ export async function GET(req: NextRequest) {
       id: settings.id,
       clinicName: settings.name,
       logo: settings.logo,
+      clinicImage: settings.clinicImage,
+      heroImage: settings.heroImage,
+      teamImage: settings.teamImage,
       email: settings.email,
       phone: settings.phone,
       address: settings.address,
@@ -114,6 +117,9 @@ export async function PATCH(req: NextRequest) {
     const {
       name,
       clinicName,
+      clinicImage,
+      heroImage,
+      teamImage,
       description,
       email,
       phone,
@@ -129,6 +135,9 @@ export async function PATCH(req: NextRequest) {
     // Accept either 'name' or 'clinicName' from frontend
     if (clinicName !== undefined) updateData.name = clinicName;
     if (name !== undefined) updateData.name = name;
+    if (clinicImage !== undefined) updateData.clinicImage = clinicImage;
+    if (heroImage !== undefined) updateData.heroImage = heroImage;
+    if (teamImage !== undefined) updateData.teamImage = teamImage;
     if (email !== undefined) updateData.email = email;
     if (phone !== undefined) updateData.phone = normalizeBDPhone(phone);
     if (address !== undefined) updateData.address = address;
@@ -176,7 +185,10 @@ export async function PATCH(req: NextRequest) {
   } catch (error) {
     console.error("Error updating settings:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      {
+        error: "Internal server error",
+        details: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 },
     );
   }

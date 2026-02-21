@@ -40,6 +40,9 @@ import Image from "next/image";
 
 interface ClinicSettings {
   clinicName: string;
+  clinicImage?: string;
+  heroImage?: string;
+  teamImage?: string;
   email: string;
   phone: string;
   address: string;
@@ -120,6 +123,9 @@ export default function Home() {
   // Default values as fallback
   const defaultSettings: ClinicSettings = {
     clinicName: "PhysioConnect",
+    clinicImage: "/images/clinic-exterior.jpg",
+    heroImage: "/images/hero-banner.jpg",
+    teamImage: "/images/about-team.jpg",
     email: "info@physioconnect.com",
     phone: "(555) 123-4567",
     address: "123 Healthcare Plaza",
@@ -506,7 +512,7 @@ export default function Home() {
               <div className="relative hidden lg:block">
                 <div className="aspect-square rounded-3xl overflow-hidden shadow-lg">
                   <Image
-                    src="/images/hero-banner.jpg"
+                    src={settings.heroImage || "/images/hero-banner.jpg"}
                     alt="Modern Physiotherapy Clinic"
                     width={600}
                     height={600}
@@ -679,8 +685,8 @@ export default function Home() {
 
             <div className="mb-12 rounded-2xl overflow-hidden shadow-lg">
               <Image
-                src="/images/about-team.jpg"
-                alt="PhysioConnect Team"
+                src={settings.teamImage || "/images/about-team.jpg"}
+                alt={`${settings.clinicName} Team`}
                 width={1200}
                 height={400}
                 className="object-cover w-full h-auto"
@@ -1137,7 +1143,7 @@ export default function Home() {
                 <div className="flex items-start gap-4">
                   <Clock className="w-6 h-6 text-primary shrink-0 mt-1" />
                   <div>
-                    <p className="font-semibold">Hours</p>
+                    <p className="font-semibold">Service Hours</p>
                     <div className="text-muted-foreground text-sm space-y-0.5">
                       <p>
                         Mon:{" "}
@@ -1172,8 +1178,8 @@ export default function Home() {
             </div>
             <div className="relative rounded-2xl overflow-hidden shadow-xl">
               <Image
-                src="/images/clinic-exterior.jpg"
-                alt="PhysioConnect Clinic Exterior"
+                src={settings.clinicImage || "/images/clinic-exterior.jpg"}
+                alt={`${settings.clinicName} Clinic Exterior`}
                 width={600}
                 height={500}
                 className="object-cover w-full h-full"
@@ -1252,27 +1258,6 @@ export default function Home() {
                   <Mail className="w-5 h-5 text-primary shrink-0" />
                   <span className="text-muted-foreground">
                     {settings.email}
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Clock className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground text-sm">
-                    Mon: {settings.workingHours?.monday || "8:00 AM - 6:00 PM"}
-                    <br />
-                    Tue: {settings.workingHours?.tuesday || "8:00 AM - 6:00 PM"}
-                    <br />
-                    Wed:{" "}
-                    {settings.workingHours?.wednesday || "8:00 AM - 6:00 PM"}
-                    <br />
-                    Thu:{" "}
-                    {settings.workingHours?.thursday || "8:00 AM - 6:00 PM"}
-                    <br />
-                    Fri: {settings.workingHours?.friday || "8:00 AM - 6:00 PM"}
-                    <br />
-                    Sat:{" "}
-                    {settings.workingHours?.saturday || "9:00 AM - 2:00 PM"}
-                    <br />
-                    Sun: {settings.workingHours?.sunday || "Closed"}
                   </span>
                 </li>
               </ul>

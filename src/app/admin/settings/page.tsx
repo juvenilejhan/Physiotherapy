@@ -11,6 +11,7 @@ import {
   Clock,
   Save,
   User,
+  ImageIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +34,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 // Time options for dropdowns
 const timeOptions = [
@@ -93,6 +95,9 @@ const combineHours = (start: string, end: string): string => {
 interface ClinicSettings {
   id: string;
   clinicName: string;
+  clinicImage?: string;
+  heroImage?: string;
+  teamImage?: string;
   email: string;
   phone: string;
   address: string;
@@ -120,6 +125,9 @@ export default function AdminSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     clinicName: "",
+    clinicImage: "",
+    heroImage: "",
+    teamImage: "",
     email: "",
     phone: "",
     address: "",
@@ -178,6 +186,9 @@ export default function AdminSettingsPage() {
         const sun = parseHours(data.workingHours?.sunday);
         setFormData({
           clinicName: data.clinicName || "",
+          clinicImage: data.clinicImage || "",
+          heroImage: data.heroImage || "",
+          teamImage: data.teamImage || "",
           email: data.email || "",
           phone: data.phone || "",
           address: data.address || "",
@@ -220,6 +231,9 @@ export default function AdminSettingsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           clinicName: formData.clinicName,
+          clinicImage: formData.clinicImage,
+          heroImage: formData.heroImage,
+          teamImage: formData.teamImage,
           email: formData.email,
           phone: formData.phone,
           address: formData.address,
@@ -253,7 +267,10 @@ export default function AdminSettingsPage() {
         toast.success("Settings saved successfully");
         fetchSettings();
       } else {
-        toast.error("Failed to save settings");
+        const errorData = await response.json();
+        toast.error(
+          errorData.details || errorData.error || "Failed to save settings",
+        );
       }
     } catch (error) {
       console.error("Error saving settings:", error);
@@ -337,6 +354,60 @@ export default function AdminSettingsPage() {
                   }
                   placeholder="Brief description of your clinic..."
                   rows={3}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label className="flex items-center gap-2">
+                  <ImageIcon className="h-4 w-4" />
+                  Clinic Image
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  This image will be displayed on the landing page in the Visit
+                  Us section
+                </p>
+                <ImageUpload
+                  value={formData.clinicImage}
+                  onChange={(url) =>
+                    setFormData({ ...formData, clinicImage: url })
+                  }
+                  folder="clinic"
+                  placeholder="Upload clinic exterior image"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label className="flex items-center gap-2">
+                  <ImageIcon className="h-4 w-4" />
+                  Hero Banner Image
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  This image will be displayed in the hero section at the top of
+                  the landing page
+                </p>
+                <ImageUpload
+                  value={formData.heroImage}
+                  onChange={(url) =>
+                    setFormData({ ...formData, heroImage: url })
+                  }
+                  folder="clinic"
+                  placeholder="Upload hero banner image"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label className="flex items-center gap-2">
+                  <ImageIcon className="h-4 w-4" />
+                  Team Image
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  This image will be displayed in the About section showing your
+                  team
+                </p>
+                <ImageUpload
+                  value={formData.teamImage}
+                  onChange={(url) =>
+                    setFormData({ ...formData, teamImage: url })
+                  }
+                  folder="clinic"
+                  placeholder="Upload team photo"
                 />
               </div>
             </CardContent>

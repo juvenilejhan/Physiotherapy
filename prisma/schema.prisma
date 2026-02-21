@@ -481,6 +481,9 @@ model ClinicSettings {
   id                   String   @id @default(cuid())
   name                 String
   logo                 String?
+  clinicImage          String?  // Clinic exterior/building image
+  heroImage            String?  // Hero banner image
+  teamImage            String?  // About team image
   email                String
   phone                String
   address              String

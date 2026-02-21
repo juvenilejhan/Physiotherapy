@@ -10,6 +10,9 @@ export async function GET() {
     if (!settings) {
       return NextResponse.json({
         clinicName: "PhysioConnect Clinic",
+        clinicImage: "/images/clinic-exterior.jpg",
+        heroImage: "/images/hero-banner.jpg",
+        teamImage: "/images/about-team.jpg",
         email: "contact@physioconnect.com",
         phone: "+8801XXXXXXXXX",
         address: "123 Health Street",
@@ -45,6 +48,9 @@ export async function GET() {
     // Return only public information
     return NextResponse.json({
       clinicName: settings.name,
+      clinicImage: settings.clinicImage || "/images/clinic-exterior.jpg",
+      heroImage: settings.heroImage || "/images/hero-banner.jpg",
+      teamImage: settings.teamImage || "/images/about-team.jpg",
       email: settings.email,
       phone: settings.phone,
       address: settings.address,
