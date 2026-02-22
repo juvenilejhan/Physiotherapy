@@ -356,24 +356,21 @@ export default function AdminSettingsPage() {
                   rows={3}
                 />
               </div>
-              <div className="grid gap-2">
-                <Label className="flex items-center gap-2">
-                  <ImageIcon className="h-4 w-4" />
-                  Clinic Image
-                </Label>
-                <p className="text-sm text-muted-foreground">
-                  This image will be displayed on the landing page in the Visit
-                  Us section
-                </p>
-                <ImageUpload
-                  value={formData.clinicImage}
-                  onChange={(url) =>
-                    setFormData({ ...formData, clinicImage: url })
-                  }
-                  folder="clinic"
-                  placeholder="Upload clinic exterior image"
-                />
-              </div>
+            </CardContent>
+          </Card>
+
+          {/* Images & Branding */}
+          <Card className="md:col-span-2">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ImageIcon className="h-5 w-5" />
+                Images & Branding
+              </CardTitle>
+              <CardDescription>
+                Upload images for your clinic's website presence
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
               <div className="grid gap-2">
                 <Label className="flex items-center gap-2">
                   <ImageIcon className="h-4 w-4" />
@@ -390,6 +387,24 @@ export default function AdminSettingsPage() {
                   }
                   folder="clinic"
                   placeholder="Upload hero banner image"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label className="flex items-center gap-2">
+                  <ImageIcon className="h-4 w-4" />
+                  Clinic Image
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  This image will be displayed on the landing page in the Visit
+                  Us section
+                </p>
+                <ImageUpload
+                  value={formData.clinicImage}
+                  onChange={(url) =>
+                    setFormData({ ...formData, clinicImage: url })
+                  }
+                  folder="clinic"
+                  placeholder="Upload clinic exterior image"
                 />
               </div>
               <div className="grid gap-2">

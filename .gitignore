@@ -51,3 +51,9 @@ prisma/migrations/
 *.log
 dev.log
 server.log
+# temporary/problematic files
+nul
+$null
+3001
+{
+create-video.js

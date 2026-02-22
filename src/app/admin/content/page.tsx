@@ -13,6 +13,7 @@ import {
   Image as ImageIcon,
   LayoutGrid,
   List,
+  Play,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,18 +55,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { format } from "date-fns";
-import { formatBDT } from "@/lib/utils";
 import { ImageUpload } from "@/components/ui/image-upload";
 
-interface Service {
+interface ExerciseVideo {
   id: string;
-  name: string;
+  title: string;
   description: string;
-  duration: number;
-  price: number;
+  thumbnail: string;
+  duration: string;
+  difficulty: "Beginner" | "Intermediate" | "Advanced";
   category: string;
-  isActive: boolean;
-  image?: string;
+  bodyParts: string[];
+  videoUrl: string;
+  featured: boolean;
 }
 
 interface BlogPost {
@@ -91,28 +93,38 @@ interface GalleryItem {
   category: string;
 }
 
+const DIFFICULTY_COLORS = {
+  Beginner: "bg-green-100 text-green-800",
+  Intermediate: "bg-yellow-100 text-yellow-800",
+  Advanced: "bg-red-100 text-red-800",
+};
+
 export default function AdminContentPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [services, setServices] = useState<Service[]>([]);
+  const [videos, setVideos] = useState<ExerciseVideo[]>([]);
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("services");
+  const [activeTab, setActiveTab] = useState("videos");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Service dialog state
-  const [serviceDialogOpen, setServiceDialogOpen] = useState(false);
-  const [editMode, setEditMode] = useState(false);
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const [serviceForm, setServiceForm] = useState({
-    name: "",
+  // Video dialog state
+  const [videoDialogOpen, setVideoDialogOpen] = useState(false);
+  const [videoEditMode, setVideoEditMode] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<ExerciseVideo | null>(
+    null,
+  );
+  const [videoForm, setVideoForm] = useState({
+    title: "",
     description: "",
+    thumbnail: "",
     duration: "",
-    price: "",
-    category: "ORTHOPEDIC",
-    isActive: true,
-    image: "",
+    difficulty: "Beginner" as const,
+    category: "",
+    bodyParts: "",
+    videoUrl: "",
+    featured: false,
   });
 
   // Blog dialog state
@@ -161,15 +173,32 @@ export default function AdminContentPage() {
   const fetchContent = async () => {
     try {
       setLoading(true);
-      const [servicesRes, blogsRes, galleryRes] = await Promise.all([
-        fetch("/api/admin/content/services"),
+      const [videosRes, blogsRes, galleryRes] = await Promise.all([
+        fetch("/api/admin/content/videos"),
         fetch("/api/admin/content/blogs"),
         fetch("/api/admin/content/gallery"),
       ]);
 
-      if (servicesRes.ok) setServices(await servicesRes.json());
-      if (blogsRes.ok) setBlogs(await blogsRes.json());
-      if (galleryRes.ok) setGallery(await galleryRes.json());
+      if (videosRes.ok) {
+        setVideos(await videosRes.json());
+      } else {
+        const error = await videosRes.json();
+        console.error("Error fetching videos:", error);
+      }
+
+      if (blogsRes.ok) {
+        setBlogs(await blogsRes.json());
+      } else {
+        const error = await blogsRes.json();
+        console.error("Error fetching blogs:", error);
+      }
+
+      if (galleryRes.ok) {
+        setGallery(await galleryRes.json());
+      } else {
+        const error = await galleryRes.json();
+        console.error("Error fetching gallery:", error);
+      }
     } catch (error) {
       console.error("Error fetching content:", error);
       toast.error("Failed to fetch content");
@@ -178,92 +207,111 @@ export default function AdminContentPage() {
     }
   };
 
-  const handleServiceSubmit = async (e: React.FormEvent) => {
+  const handleVideoSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const url = editMode
-        ? `/api/admin/content/services/${selectedService?.id}`
-        : "/api/admin/content/services";
-      const method = editMode ? "PATCH" : "POST";
+      if (videoEditMode && !selectedVideo?.id) {
+        toast.error(
+          "Video ID is missing. Please select a video to edit again.",
+        );
+        return;
+      }
+
+      const url = videoEditMode
+        ? `/api/admin/content/videos/${selectedVideo?.id}`
+        : "/api/admin/content/videos";
+      const method = videoEditMode ? "PATCH" : "POST";
+
+      const bodyParts = videoForm.bodyParts
+        .split(",")
+        .map((part) => part.trim())
+        .filter((part) => part);
 
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...serviceForm,
-          duration: parseInt(serviceForm.duration),
-          price: parseFloat(serviceForm.price),
+          ...videoForm,
+          bodyParts,
         }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
         toast.success(
-          editMode
-            ? "Service updated successfully"
-            : "Service created successfully",
+          videoEditMode
+            ? "Video updated successfully"
+            : "Video created successfully",
         );
-        setServiceDialogOpen(false);
-        resetServiceForm();
+        setVideoDialogOpen(false);
+        resetVideoForm();
         fetchContent();
       } else {
-        toast.error("Failed to save service");
+        const errorMessage = data.error || "Failed to save video";
+        console.error("API Error:", errorMessage);
+        toast.error(errorMessage);
       }
     } catch (error) {
-      console.error("Error saving service:", error);
+      console.error("Error saving video:", error);
       toast.error("An error occurred");
     }
   };
 
-  const handleEditService = (service: Service) => {
-    setSelectedService(service);
-    setEditMode(true);
-    setServiceForm({
-      name: service.name,
-      description: service.description,
-      duration: service.duration.toString(),
-      price: service.price.toString(),
-      category: service.category,
-      isActive: service.isActive,
-      image: service.image || "",
+  const handleEditVideo = (video: ExerciseVideo) => {
+    setSelectedVideo(video);
+    setVideoEditMode(true);
+    setVideoForm({
+      title: video.title,
+      description: video.description,
+      thumbnail: video.thumbnail,
+      duration: video.duration,
+      difficulty: video.difficulty,
+      category: video.category,
+      bodyParts: video.bodyParts.join(", "),
+      videoUrl: video.videoUrl,
+      featured: video.featured,
     });
-    setServiceDialogOpen(true);
+    setVideoDialogOpen(true);
   };
 
-  const handleDeleteService = async (serviceId: string) => {
-    if (!confirm("Are you sure you want to delete this service?")) {
+  const handleDeleteVideo = async (videoId: string) => {
+    if (!confirm("Are you sure you want to delete this video?")) {
       return;
     }
 
     try {
-      const response = await fetch(`/api/admin/content/services/${serviceId}`, {
+      const response = await fetch(`/api/admin/content/videos/${videoId}`, {
         method: "DELETE",
       });
 
       if (response.ok) {
-        toast.success("Service deleted successfully");
+        toast.success("Video deleted successfully");
         fetchContent();
       } else {
-        toast.error("Failed to delete service");
+        toast.error("Failed to delete video");
       }
     } catch (error) {
-      console.error("Error deleting service:", error);
+      console.error("Error deleting video:", error);
       toast.error("An error occurred");
     }
   };
 
-  const resetServiceForm = () => {
-    setServiceForm({
-      name: "",
+  const resetVideoForm = () => {
+    setVideoForm({
+      title: "",
       description: "",
+      thumbnail: "",
       duration: "",
-      price: "",
-      category: "ORTHOPEDIC",
-      isActive: true,
-      image: "",
+      difficulty: "Beginner",
+      category: "",
+      bodyParts: "",
+      videoUrl: "",
+      featured: false,
     });
-    setEditMode(false);
-    setSelectedService(null);
+    setVideoEditMode(false);
+    setSelectedVideo(null);
   };
 
   const handleBlogSubmit = async (e: React.FormEvent) => {
@@ -453,6 +501,13 @@ export default function AdminContentPage() {
     setSelectedGalleryItem(null);
   };
 
+  const filteredVideos = videos.filter(
+    (video) =>
+      video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      video.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      video.category.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
   if (loading) {
     return <ContentPageSkeleton />;
   }
@@ -465,174 +520,220 @@ export default function AdminContentPage() {
             Content Management
           </h2>
           <p className="text-muted-foreground">
-            Manage services, blog posts, and gallery
+            Manage exercise videos, blog posts, and gallery
           </p>
         </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="services">Services</TabsTrigger>
+          <TabsTrigger value="videos">Exercise Videos</TabsTrigger>
           <TabsTrigger value="blogs">Blog Posts</TabsTrigger>
           <TabsTrigger value="gallery">Gallery</TabsTrigger>
         </TabsList>
 
-        {/* Services Tab */}
-        <TabsContent value="services" className="space-y-4">
+        {/* Exercise Videos Tab */}
+        <TabsContent value="videos" className="space-y-4">
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>Services</CardTitle>
+                  <CardTitle>Exercise Videos</CardTitle>
                   <CardDescription>
-                    Manage clinic services and pricing
+                    Manage exercise videos and tutorials
                   </CardDescription>
                 </div>
                 <Dialog
-                  open={serviceDialogOpen}
+                  open={videoDialogOpen}
                   onOpenChange={(open) => {
-                    setServiceDialogOpen(open);
-                    if (!open) resetServiceForm();
+                    setVideoDialogOpen(open);
+                    if (!open) resetVideoForm();
                   }}
                 >
                   <DialogTrigger asChild>
-                    <Button onClick={() => setEditMode(false)}>
+                    <Button onClick={resetVideoForm}>
                       <Plus className="mr-2 h-4 w-4" />
-                      Add Service
+                      Add Video
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-150">
+                  <DialogContent className="sm:max-w-175 max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle>
-                        {editMode ? "Edit Service" : "Add New Service"}
+                        {videoEditMode ? "Edit Video" : "Add New Video"}
                       </DialogTitle>
                       <DialogDescription>
-                        {editMode
-                          ? "Update service information"
-                          : "Add a new service to the clinic"}
+                        {videoEditMode
+                          ? "Update video information"
+                          : "Add a new exercise video"}
                       </DialogDescription>
                     </DialogHeader>
-                    <form onSubmit={handleServiceSubmit}>
+                    <form onSubmit={handleVideoSubmit}>
                       <div className="grid gap-4 py-4">
                         <div className="grid gap-2">
-                          <Label htmlFor="serviceName">Service Name</Label>
+                          <Label htmlFor="videoTitle">Title *</Label>
                           <Input
-                            id="serviceName"
-                            value={serviceForm.name}
+                            id="videoTitle"
+                            value={videoForm.title}
                             onChange={(e) =>
-                              setServiceForm({
-                                ...serviceForm,
-                                name: e.target.value,
+                              setVideoForm({
+                                ...videoForm,
+                                title: e.target.value,
                               })
                             }
+                            placeholder="e.g., Lower Back Pain Relief"
                             required
                           />
                         </div>
                         <div className="grid gap-2">
-                          <Label htmlFor="description">Description</Label>
+                          <Label htmlFor="videoDescription">
+                            Description *
+                          </Label>
                           <Textarea
-                            id="description"
-                            value={serviceForm.description}
+                            id="videoDescription"
+                            value={videoForm.description}
                             onChange={(e) =>
-                              setServiceForm({
-                                ...serviceForm,
+                              setVideoForm({
+                                ...videoForm,
                                 description: e.target.value,
                               })
                             }
                             rows={3}
+                            placeholder="Brief description of the exercise"
                             required
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="videoUrl">Video URL *</Label>
+                          <Input
+                            id="videoUrl"
+                            value={videoForm.videoUrl}
+                            onChange={(e) =>
+                              setVideoForm({
+                                ...videoForm,
+                                videoUrl: e.target.value,
+                              })
+                            }
+                            placeholder="e.g., https://youtube.com/embed/..."
+                            required
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label>Thumbnail Image</Label>
+                          <ImageUpload
+                            value={videoForm.thumbnail}
+                            onChange={(url) =>
+                              setVideoForm({
+                                ...videoForm,
+                                thumbnail: url,
+                              })
+                            }
+                            folder="videos"
+                            placeholder="Upload or paste thumbnail URL"
                           />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                           <div className="grid gap-2">
-                            <Label htmlFor="duration">Duration (minutes)</Label>
+                            <Label htmlFor="duration">Duration *</Label>
                             <Input
                               id="duration"
-                              type="number"
-                              min="15"
-                              step="15"
-                              value={serviceForm.duration}
+                              value={videoForm.duration}
                               onChange={(e) =>
-                                setServiceForm({
-                                  ...serviceForm,
+                                setVideoForm({
+                                  ...videoForm,
                                   duration: e.target.value,
                                 })
                               }
+                              placeholder="e.g., 10:30"
                               required
                             />
                           </div>
                           <div className="grid gap-2">
-                            <Label htmlFor="price">Price (BDT)</Label>
-                            <Input
-                              id="price"
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              value={serviceForm.price}
-                              onChange={(e) =>
-                                setServiceForm({
-                                  ...serviceForm,
-                                  price: e.target.value,
+                            <Label htmlFor="difficulty">Difficulty *</Label>
+                            <Select
+                              value={videoForm.difficulty}
+                              onValueChange={(value) =>
+                                setVideoForm({
+                                  ...videoForm,
+                                  difficulty: value as
+                                    | "Beginner"
+                                    | "Intermediate"
+                                    | "Advanced",
                                 })
                               }
-                              required
-                            />
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Beginner">
+                                  Beginner
+                                </SelectItem>
+                                <SelectItem value="Intermediate">
+                                  Intermediate
+                                </SelectItem>
+                                <SelectItem value="Advanced">
+                                  Advanced
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
                           </div>
                         </div>
                         <div className="grid gap-2">
-                          <Label htmlFor="category">Category</Label>
-                          <Select
-                            value={serviceForm.category}
-                            onValueChange={(value) =>
-                              setServiceForm({
-                                ...serviceForm,
-                                category: value,
+                          <Label htmlFor="category">Category *</Label>
+                          <Input
+                            id="category"
+                            value={videoForm.category}
+                            onChange={(e) =>
+                              setVideoForm({
+                                ...videoForm,
+                                category: e.target.value,
                               })
                             }
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="ORTHOPEDIC">
-                                Orthopedic
-                              </SelectItem>
-                              <SelectItem value="NEUROLOGICAL">
-                                Neurological
-                              </SelectItem>
-                              <SelectItem value="SPORTS">
-                                Sports Injury
-                              </SelectItem>
-                              <SelectItem value="PEDIATRIC">
-                                Pediatric
-                              </SelectItem>
-                              <SelectItem value="CARDIOPULMONARY">
-                                Cardiopulmonary
-                              </SelectItem>
-                              <SelectItem value="GERIATRIC">
-                                Geriatric
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
+                            placeholder="e.g., Back Pain, Neck & Shoulder"
+                            required
+                          />
                         </div>
                         <div className="grid gap-2">
-                          <Label>Service Image</Label>
-                          <ImageUpload
-                            value={serviceForm.image}
-                            onChange={(url) =>
-                              setServiceForm({
-                                ...serviceForm,
-                                image: url,
+                          <Label htmlFor="bodyParts">
+                            Body Parts (comma-separated)
+                          </Label>
+                          <Input
+                            id="bodyParts"
+                            value={videoForm.bodyParts}
+                            onChange={(e) =>
+                              setVideoForm({
+                                ...videoForm,
+                                bodyParts: e.target.value,
                               })
                             }
-                            folder="services"
-                            placeholder="Upload or paste image URL"
+                            placeholder="e.g., Back, Lower Back, Spine"
                           />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            id="videoFeatured"
+                            checked={videoForm.featured}
+                            onChange={(e) =>
+                              setVideoForm({
+                                ...videoForm,
+                                featured: e.target.checked,
+                              })
+                            }
+                            className="h-4 w-4"
+                            aria-label="Featured video"
+                          />
+                          <Label
+                            htmlFor="videoFeatured"
+                            className="cursor-pointer"
+                          >
+                            Mark as featured
+                          </Label>
                         </div>
                       </div>
                       <DialogFooter>
                         <Button type="submit">
-                          {editMode ? "Update" : "Create Service"}
+                          {videoEditMode ? "Update Video" : "Create Video"}
                         </Button>
                       </DialogFooter>
                     </form>
@@ -641,37 +742,70 @@ export default function AdminContentPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {services.length === 0 ? (
-                  <p className="text-center text-muted-foreground py-8">
-                    No services found
-                  </p>
-                ) : (
-                  services.map((service) => (
+              <div className="mb-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search videos..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              {filteredVideos.length === 0 ? (
+                <p className="text-center text-muted-foreground py-8">
+                  {videos.length === 0
+                    ? "No exercise videos yet"
+                    : "No videos match your search"}
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  {filteredVideos.map((video) => (
                     <div
-                      key={service.id}
-                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
+                      key={video.id}
+                      className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
                     >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold">{service.name}</h3>
-                          <Badge
-                            variant={service.isActive ? "default" : "secondary"}
-                          >
-                            {service.isActive ? "Active" : "Inactive"}
-                          </Badge>
-                          <Badge variant="outline">{service.category}</Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {service.description}
-                        </p>
-                        <div className="flex gap-4 mt-2 text-sm">
-                          <span className="text-muted-foreground">
-                            Duration: {service.duration} min
-                          </span>
-                          <span className="font-semibold">
-                            {formatBDT(service.price)}
-                          </span>
+                      <div className="flex gap-4 flex-1">
+                        {video.thumbnail && (
+                          <div className="flex-shrink-0">
+                            <div className="relative w-24 h-24 rounded-lg overflow-hidden bg-muted">
+                              <img
+                                src={video.thumbnail}
+                                alt={video.title}
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                <Play className="h-6 w-6 text-white" />
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        <div className="flex-1">
+                          <div className="flex items-start gap-2 mb-1">
+                            <h3 className="font-semibold">{video.title}</h3>
+                            {video.featured && (
+                              <Badge variant="default">Featured</Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            {video.description}
+                          </p>
+                          <div className="flex gap-2 mb-2">
+                            <Badge
+                              variant="outline"
+                              className={DIFFICULTY_COLORS[video.difficulty]}
+                            >
+                              {video.difficulty}
+                            </Badge>
+                            <Badge variant="secondary">{video.category}</Badge>
+                          </div>
+                          <div className="flex gap-4 text-sm text-muted-foreground">
+                            <span>{video.duration}</span>
+                            {video.bodyParts.length > 0 && (
+                              <span>{video.bodyParts.join(", ")}</span>
+                            )}
+                          </div>
                         </div>
                       </div>
                       <DropdownMenu>
@@ -683,14 +817,14 @@ export default function AdminContentPage() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuItem
-                            onClick={() => handleEditService(service)}
+                            onClick={() => handleEditVideo(video)}
                           >
                             <Edit className="mr-2 h-4 w-4" />
                             Edit
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
-                            onClick={() => handleDeleteService(service.id)}
+                            onClick={() => handleDeleteVideo(video.id)}
                             className="text-destructive"
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
@@ -699,9 +833,9 @@ export default function AdminContentPage() {
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
-                  ))
-                )}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

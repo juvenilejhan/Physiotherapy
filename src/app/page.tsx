@@ -356,6 +356,7 @@ export default function Home() {
     { name: "Home", href: "/#home" },
     { name: "Services", href: "/services" },
     { name: "Specialists", href: "/specialists" },
+    { name: "Videos", href: "/videos" },
     { name: "Blog", href: "/blog" },
     { name: "Contact", href: "/contact" },
   ];

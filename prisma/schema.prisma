@@ -307,6 +307,27 @@ model GalleryItem {
   @@index([isActive])
 }
 
+model ExerciseVideo {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  thumbnail   String?
+  duration    String
+  difficulty  String // 'Beginner', 'Intermediate', 'Advanced'
+  category    String
+  bodyParts   String? // JSON array or comma-separated
+  videoUrl    String
+  featured    Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([difficulty])
+  @@index([category])
+  @@index([featured])
+  @@index([isActive])
+}
+
 // ============================================
 // APPOINTMENT MANAGEMENT
 // ============================================

@@ -80,6 +80,12 @@ const navItems: NavItem[] = [
     roles: ["SUPER_ADMIN", "CLINIC_MANAGER", "RECEPTIONIST"],
   },
   {
+    title: "Services",
+    href: "/admin/services",
+    icon: FileText,
+    roles: ["SUPER_ADMIN", "CLINIC_MANAGER"],
+  },
+  {
     title: "Content",
     href: "/admin/content",
     icon: FileText,
