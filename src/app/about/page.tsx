@@ -20,6 +20,7 @@ import {
 interface Settings {
   clinicName?: string;
   description?: string;
+  teamImage?: string;
 }
 
 interface Specialist {
@@ -141,7 +142,7 @@ export default function AboutPage() {
           </div>
           <div className="relative h-80 lg:h-96 rounded-2xl overflow-hidden shadow-lg">
             <Image
-              src="/images/about-team.jpg"
+              src={settings?.teamImage || "/images/about-team.jpg"}
               alt="Our Team"
               fill
               className="object-cover"

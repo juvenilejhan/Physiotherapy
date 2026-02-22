@@ -35,7 +35,17 @@ interface Settings {
   postalCode?: string;
   country?: string;
   description?: string;
-  businessHours?: string;
+  clinicImage?: string;
+  teamImage?: string;
+  workingHours?: {
+    monday?: string;
+    tuesday?: string;
+    wednesday?: string;
+    thursday?: string;
+    friday?: string;
+    saturday?: string;
+    sunday?: string;
+  };
 }
 
 interface Specialist {
@@ -111,10 +121,33 @@ export default function ContactPage() {
 
   const phoneNumber = settings?.phone || "(555) 123-4567";
 
+  // Dynamic business hours from settings
   const businessHours = [
-    { day: "Monday - Friday", hours: "8:00 AM - 8:00 PM" },
-    { day: "Saturday", hours: "9:00 AM - 5:00 PM" },
-    { day: "Sunday", hours: "Closed" },
+    {
+      day: "Monday",
+      hours: settings?.workingHours?.monday || "8:00 AM - 6:00 PM",
+    },
+    {
+      day: "Tuesday",
+      hours: settings?.workingHours?.tuesday || "8:00 AM - 6:00 PM",
+    },
+    {
+      day: "Wednesday",
+      hours: settings?.workingHours?.wednesday || "8:00 AM - 6:00 PM",
+    },
+    {
+      day: "Thursday",
+      hours: settings?.workingHours?.thursday || "8:00 AM - 6:00 PM",
+    },
+    {
+      day: "Friday",
+      hours: settings?.workingHours?.friday || "8:00 AM - 6:00 PM",
+    },
+    {
+      day: "Saturday",
+      hours: settings?.workingHours?.saturday || "9:00 AM - 2:00 PM",
+    },
+    { day: "Sunday", hours: settings?.workingHours?.sunday || "Closed" },
   ];
 
   const values = [
@@ -156,9 +189,8 @@ export default function ContactPage() {
               {settings?.clinicName || "PhysioConnect"}
             </h1>
             <p className="text-lg opacity-90">
-              Get in touch with us or learn more about our mission to provide
-              best-in-class physiotherapy care through evidence-based practices
-              and a patient-centered approach.
+              {settings?.description ||
+                "Get in touch with us or learn more about our mission to provide best-in-class physiotherapy care through evidence-based practices and a patient-centered approach."}
             </p>
           </div>
         </div>
@@ -472,7 +504,7 @@ export default function ContactPage() {
             </div>
             <div className="relative h-80 lg:h-96 rounded-2xl overflow-hidden shadow-lg">
               <Image
-                src="/images/about-team.jpg"
+                src={settings?.teamImage || "/images/about-team.jpg"}
                 alt="Our Team"
                 fill
                 className="object-cover"
@@ -603,7 +635,7 @@ export default function ContactPage() {
             </div>
             <div className="relative h-64 lg:h-80 rounded-2xl overflow-hidden shadow-lg">
               <Image
-                src="/images/clinic-exterior.jpg"
+                src={settings?.clinicImage || "/images/clinic-exterior.jpg"}
                 alt="Our Clinic"
                 fill
                 className="object-cover"
