@@ -37,6 +37,16 @@ import { toast } from "sonner";
 import { BackButton } from "@/components/BackButton";
 import { format, addDays, isWeekend } from "date-fns";
 
+interface Settings {
+  clinicName?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+}
+
 interface Service {
   id: string;
   name: string;
@@ -100,6 +110,7 @@ export default function BookingPage() {
   // Data lists
   const [services, setServices] = useState<Service[]>([]);
   const [specialists, setSpecialists] = useState<Specialist[]>([]);
+  const [settings, setSettings] = useState<Settings | null>(null);
 
   // Errors
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -107,6 +118,7 @@ export default function BookingPage() {
   // Fetch services on mount
   useEffect(() => {
     fetchServices();
+    fetchSettings();
   }, []);
 
   // Fetch specialists when service is selected
@@ -132,6 +144,18 @@ export default function BookingPage() {
       }
     } catch (error) {
       toast.error("Failed to load services");
+    }
+  };
+
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch("/api/public/settings");
+      if (response.ok) {
+        const data = await response.json();
+        setSettings(data);
+      }
+    } catch (error) {
+      console.error("Failed to load settings");
     }
   };
 
@@ -992,21 +1016,29 @@ export default function BookingPage() {
                     <div className="flex items-start gap-3">
                       <MapPin className="w-4 h-4 text-muted-foreground mt-1" />
                       <div>
-                        <p className="font-semibold">PhysioConnect Clinic</p>
+                        <p className="font-semibold">
+                          {settings?.clinicName || "PhysioConnect Clinic"}
+                        </p>
                         <p className="text-sm text-muted-foreground">
-                          123 Healthcare Street
+                          {settings?.address || "123 Healthcare Street"}
                           <br />
-                          Medical District, MD 12345
+                          {settings?.city || "Medical District"},{" "}
+                          {settings?.state || "MD"}{" "}
+                          {settings?.postalCode || "12345"}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <Phone className="w-4 h-4 text-muted-foreground" />
-                      <p className="text-sm">+8801XXXXXXXXX</p>
+                      <p className="text-sm">
+                        {settings?.phone || "+8801XXXXXXXXX"}
+                      </p>
                     </div>
                     <div className="flex items-center gap-3">
                       <Mail className="w-4 h-4 text-muted-foreground" />
-                      <p className="text-sm">info@physioconnect.com</p>
+                      <p className="text-sm">
+                        {settings?.email || "info@physioconnect.com"}
+                      </p>
                     </div>
                   </CardContent>
                 </Card>

@@ -102,6 +102,25 @@ interface PatientProfile {
   country?: string | null;
 }
 
+interface Settings {
+  clinicName?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  workingHours?: {
+    monday?: string;
+    tuesday?: string;
+    wednesday?: string;
+    thursday?: string;
+    friday?: string;
+    saturday?: string;
+    sunday?: string;
+  };
+}
+
 export default function PatientDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -110,6 +129,7 @@ export default function PatientDashboard() {
   const [patientProfile, setPatientProfile] = useState<PatientProfile | null>(
     null,
   );
+  const [settings, setSettings] = useState<Settings | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
@@ -135,6 +155,7 @@ export default function PatientDashboard() {
     if (status === "authenticated" && session?.user) {
       fetchData();
     }
+    fetchSettings();
   }, [status, session]);
 
   // Update form data when profile or session changes
@@ -184,6 +205,18 @@ export default function PatientDashboard() {
       toast.error("Failed to load your data");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch("/api/public/settings");
+      if (response.ok) {
+        const data = await response.json();
+        setSettings(data);
+      }
+    } catch (error) {
+      console.error("Failed to load settings");
     }
   };
 
@@ -377,7 +410,9 @@ export default function PatientDashboard() {
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-3">
               <Activity className="w-8 h-8 text-primary" />
-              <span className="text-xl font-bold">PhysioConnect</span>
+              <span className="text-xl font-bold">
+                {settings?.clinicName || "PhysioConnect"}
+              </span>
             </div>
 
             <div className="flex items-center gap-2 sm:gap-4">
@@ -1323,38 +1358,45 @@ export default function PatientDashboard() {
                     <div className="flex items-start gap-3">
                       <MapPin className="w-5 h-5 text-muted-foreground shrink-0" />
                       <div className="flex-1">
-                        <p className="font-semibold">PhysioConnect Clinic</p>
+                        <p className="font-semibold">
+                          {settings?.clinicName || "PhysioConnect Clinic"}
+                        </p>
                         <p className="text-sm text-muted-foreground">
-                          123 Healthcare Street
+                          {settings?.address || "123 Healthcare Street"}
                           <br />
-                          Medical District, MD 12345
+                          {settings?.city || "Medical District"},{" "}
+                          {settings?.state || "MD"}{" "}
+                          {settings?.postalCode || "12345"}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <Phone className="w-5 h-5 text-muted-foreground shrink-0" />
                       <a
-                        href="tel:+8801XXXXXXXXX"
+                        href={`tel:${settings?.phone || "+8801XXXXXXXXX"}`}
                         className="text-sm text-primary hover:underline"
                       >
-                        +8801XXXXXXXXX
+                        {settings?.phone || "+8801XXXXXXXXX"}
                       </a>
                     </div>
                     <div className="flex items-center gap-3">
                       <Mail className="w-5 h-5 text-muted-foreground shrink-0" />
                       <a
-                        href="mailto:info@physioconnect.com"
+                        href={`mailto:${settings?.email || "info@physioconnect.com"}`}
                         className="text-sm text-primary hover:underline"
                       >
-                        info@physioconnect.com
+                        {settings?.email || "info@physioconnect.com"}
                       </a>
                     </div>
                     <div className="flex items-center gap-3">
                       <Clock className="w-5 h-5 text-muted-foreground shrink-0" />
                       <p className="text-sm text-muted-foreground">
-                        Mon-Fri: 8:00 AM - 8:00 PM
+                        Mon-Fri:{" "}
+                        {settings?.workingHours?.monday || "8:00 AM - 6:00 PM"}
                         <br />
-                        Sat: 9:00 AM - 5:00 PM
+                        Sat:{" "}
+                        {settings?.workingHours?.saturday ||
+                          "9:00 AM - 2:00 PM"}
                       </p>
                     </div>
                   </CardContent>

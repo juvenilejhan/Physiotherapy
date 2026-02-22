@@ -49,6 +49,8 @@ interface Service {
   id: string;
   name: string;
   description: string;
+  conditions?: string;
+  benefits?: string;
   duration: number;
   price: number;
   category: string;
@@ -68,6 +70,8 @@ export default function AdminServicesPage() {
   const [serviceForm, setServiceForm] = useState({
     name: "",
     description: "",
+    conditions: "",
+    benefits: "",
     duration: "",
     price: "",
     category: "ORTHOPEDIC",
@@ -150,6 +154,8 @@ export default function AdminServicesPage() {
     setServiceForm({
       name: service.name,
       description: service.description,
+      conditions: service.conditions || "",
+      benefits: service.benefits || "",
       duration: service.duration.toString(),
       price: service.price.toString(),
       category: service.category,
@@ -185,6 +191,8 @@ export default function AdminServicesPage() {
     setServiceForm({
       name: "",
       description: "",
+      conditions: "",
+      benefits: "",
       duration: "",
       price: "",
       category: "ORTHOPEDIC",
@@ -288,6 +296,36 @@ export default function AdminServicesPage() {
                     }
                     rows={3}
                     required
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="conditions">
+                    Conditions Treated (comma-separated)
+                  </Label>
+                  <Input
+                    id="conditions"
+                    value={serviceForm.conditions}
+                    onChange={(e) =>
+                      setServiceForm({
+                        ...serviceForm,
+                        conditions: e.target.value,
+                      })
+                    }
+                    placeholder="e.g., Back Pain, Joint Pain, Sports Injuries"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="benefits">Benefits (comma-separated)</Label>
+                  <Input
+                    id="benefits"
+                    value={serviceForm.benefits}
+                    onChange={(e) =>
+                      setServiceForm({
+                        ...serviceForm,
+                        benefits: e.target.value,
+                      })
+                    }
+                    placeholder="e.g., Pain Relief, Improved Mobility, Faster Recovery"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
