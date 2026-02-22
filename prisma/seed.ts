@@ -1,4 +1,10 @@
-import { PrismaClient, UserRole, AccountType, AppointmentStatus, AppointmentType } from "@prisma/client";
+import {
+  PrismaClient,
+  UserRole,
+  AccountType,
+  AppointmentStatus,
+  AppointmentType,
+} from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -324,9 +330,12 @@ async function main() {
     {
       name: "Orthopedic Physiotherapy",
       slug: "orthopedic-physiotherapy",
-      description: "Specialized treatment for musculoskeletal conditions, sports injuries, and post-operative rehabilitation. Our expert therapists use evidence-based techniques to restore function and relieve pain.",
-      conditions: "Sports Injuries, Joint Pain, Post-Surgery Recovery, Arthritis, Back Pain",
-      benefits: "Pain relief, Improved mobility, Faster recovery, Personalized treatment plans",
+      description:
+        "Specialized treatment for musculoskeletal conditions, sports injuries, and post-operative rehabilitation. Our expert therapists use evidence-based techniques to restore function and relieve pain.",
+      conditions:
+        "Sports Injuries, Joint Pain, Post-Surgery Recovery, Arthritis, Back Pain",
+      benefits:
+        "Pain relief, Improved mobility, Faster recovery, Personalized treatment plans",
       duration: 60,
       price: 120,
       category: "ORTHOPEDIC",
@@ -336,9 +345,12 @@ async function main() {
     {
       name: "Neurological Physiotherapy",
       slug: "neurological-physiotherapy",
-      description: "Comprehensive care for neurological conditions to improve mobility and quality of life. We work with patients recovering from strokes, spinal cord injuries, and other neurological conditions.",
-      conditions: "Stroke Recovery, Parkinson's, Spinal Cord Injury, Multiple Sclerosis",
-      benefits: "Enhanced mobility, Independence, Improved quality of life, Neuroplasticity support",
+      description:
+        "Comprehensive care for neurological conditions to improve mobility and quality of life. We work with patients recovering from strokes, spinal cord injuries, and other neurological conditions.",
+      conditions:
+        "Stroke Recovery, Parkinson's, Spinal Cord Injury, Multiple Sclerosis",
+      benefits:
+        "Enhanced mobility, Independence, Improved quality of life, Neuroplasticity support",
       duration: 60,
       price: 130,
       category: "NEUROLOGICAL",
@@ -348,9 +360,11 @@ async function main() {
     {
       name: "Sports Injury Rehabilitation",
       slug: "sports-injury-rehabilitation",
-      description: "Expert care for athletes at all levels, from injury prevention to return-to-sport programs. Our therapists understand the unique demands of athletic performance.",
+      description:
+        "Expert care for athletes at all levels, from injury prevention to return-to-sport programs. Our therapists understand the unique demands of athletic performance.",
       conditions: "ACL Tears, Tennis Elbow, Rotator Cuff, Sprains and Strains",
-      benefits: "Safe return to sport, Injury prevention, Performance optimization, Education",
+      benefits:
+        "Safe return to sport, Injury prevention, Performance optimization, Education",
       duration: 45,
       price: 100,
       category: "SPORTS",
@@ -360,9 +374,12 @@ async function main() {
     {
       name: "Pediatric Physiotherapy",
       slug: "pediatric-physiotherapy",
-      description: "Specialized treatment for children, helping them achieve developmental milestones and optimal function. We create fun, engaging treatment plans that kids enjoy.",
-      conditions: "Developmental Delays, Cerebral Palsy, Scoliosis, Sports injuries in children",
-      benefits: "Age-appropriate care, Family involvement, Progress tracking, Fun environment",
+      description:
+        "Specialized treatment for children, helping them achieve developmental milestones and optimal function. We create fun, engaging treatment plans that kids enjoy.",
+      conditions:
+        "Developmental Delays, Cerebral Palsy, Scoliosis, Sports injuries in children",
+      benefits:
+        "Age-appropriate care, Family involvement, Progress tracking, Fun environment",
       duration: 45,
       price: 90,
       category: "PEDIATRIC",
@@ -372,9 +389,11 @@ async function main() {
     {
       name: "Cardiopulmonary Rehabilitation",
       slug: "cardiopulmonary-rehabilitation",
-      description: "Comprehensive programs for heart and lung conditions to improve endurance and breathing. Our evidence-based approach helps patients regain cardiovascular fitness.",
+      description:
+        "Comprehensive programs for heart and lung conditions to improve endurance and breathing. Our evidence-based approach helps patients regain cardiovascular fitness.",
       conditions: "Heart Disease, COPD, Asthma, Post-cardiac surgery",
-      benefits: "Improved endurance, Better breathing, Reduced symptoms, Education",
+      benefits:
+        "Improved endurance, Better breathing, Reduced symptoms, Education",
       duration: 60,
       price: 110,
       category: "CARDIOPULMONARY",
@@ -384,9 +403,11 @@ async function main() {
     {
       name: "Geriatric Physiotherapy",
       slug: "geriatric-physiotherapy",
-      description: "Specialized care for older adults to maintain mobility, independence, and prevent falls. We focus on improving balance, strength, and overall function.",
+      description:
+        "Specialized care for older adults to maintain mobility, independence, and prevent falls. We focus on improving balance, strength, and overall function.",
       conditions: "Balance Issues, Arthritis, Osteoporosis, Fall prevention",
-      benefits: "Improved balance, Increased strength, Fall prevention, Independence",
+      benefits:
+        "Improved balance, Increased strength, Fall prevention, Independence",
       duration: 45,
       price: 95,
       category: "GERIATRIC",
@@ -437,7 +458,7 @@ async function main() {
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
-  
+
   const nextWeek = new Date(today);
   nextWeek.setDate(nextWeek.getDate() + 7);
 
@@ -559,7 +580,8 @@ async function main() {
   const blogPostsData = [
     {
       title: "The Benefits of Early Physiotherapy Intervention",
-      excerpt: "Learn why seeking physiotherapy early can lead to faster recovery and better long-term outcomes.",
+      excerpt:
+        "Learn why seeking physiotherapy early can lead to faster recovery and better long-term outcomes.",
       content: `# The Benefits of Early Physiotherapy Intervention
 
 Early intervention in physiotherapy can significantly impact recovery outcomes. When patients seek treatment soon after an injury or onset of symptoms, they often experience:
@@ -578,7 +600,8 @@ Don't wait! If you're experiencing pain or limited mobility, consult a physiothe
     },
     {
       title: "5 Tips for Preventing Sports Injuries",
-      excerpt: "Professional advice from our sports medicine specialists on staying injury-free.",
+      excerpt:
+        "Professional advice from our sports medicine specialists on staying injury-free.",
       content: `# 5 Tips for Preventing Sports Injuries
 
 As sports physiotherapists, we see many injuries that could have been prevented. Here are our top tips:
@@ -598,7 +621,8 @@ Prevention is always better than cure. Stay safe and enjoy your sport!`,
     },
     {
       title: "Understanding Your Treatment Plan",
-      excerpt: "A guide to what to expect during your physiotherapy journey with us.",
+      excerpt:
+        "A guide to what to expect during your physiotherapy journey with us.",
       content: `# Understanding Your Treatment Plan
 
 Your treatment plan is designed specifically for you based on your condition, goals, and lifestyle.
@@ -619,7 +643,8 @@ We believe in empowering our patients with knowledge and tools to take control o
     },
     {
       title: "Managing Back Pain: A Complete Guide",
-      excerpt: "Expert advice on understanding, treating, and preventing chronic back pain.",
+      excerpt:
+        "Expert advice on understanding, treating, and preventing chronic back pain.",
       content: `# Managing Back Pain: A Complete Guide
 
 Back pain affects millions of people worldwide. Here's what you need to know about managing it effectively.
@@ -650,10 +675,21 @@ Our team specializes in evidence-based treatments for back pain. Book a consulta
     },
   ];
 
+  // Helper function to generate URL-safe slugs
+  const generateSlug = (title: string): string => {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, "") // Remove special characters
+      .replace(/\s+/g, "-") // Replace spaces with hyphens
+      .replace(/-+/g, "-") // Remove multiple consecutive hyphens
+      .trim();
+  };
+
   for (const blog of blogPostsData) {
+    const slug = generateSlug(blog.title);
     await prisma.blogPost.upsert({
       where: {
-        slug: blog.title.toLowerCase().replace(/\s+/g, '-'),
+        slug,
       },
       update: {
         isPublished: blog.isPublished,
@@ -663,7 +699,7 @@ Our team specializes in evidence-based treatments for back pain. Book a consulta
       },
       create: {
         title: blog.title,
-        slug: blog.title.toLowerCase().replace(/\s+/g, '-'),
+        slug,
         excerpt: blog.excerpt,
         content: blog.content,
         authorId: blog.authorId,
@@ -728,11 +764,11 @@ Our team specializes in evidence-based treatments for back pain. Book a consulta
   for (const item of galleryItemsData) {
     await prisma.galleryItem.upsert({
       where: {
-        id: `gallery-${item.title.toLowerCase().replace(/\s+/g, '-')}`,
+        id: `gallery-${item.title.toLowerCase().replace(/\s+/g, "-")}`,
       },
       update: {},
       create: {
-        id: `gallery-${item.title.toLowerCase().replace(/\s+/g, '-')}`,
+        id: `gallery-${item.title.toLowerCase().replace(/\s+/g, "-")}`,
         title: item.title,
         description: item.description,
         url: item.url,
@@ -794,7 +830,10 @@ Our team specializes in evidence-based treatments for back pain. Book a consulta
       status: "COMPLETED",
       paymentMethod: "credit_card",
       paidAt: lastWeek,
-      gatewayResponse: JSON.stringify({ success: true, paymentGateway: "stripe" }),
+      gatewayResponse: JSON.stringify({
+        success: true,
+        paymentGateway: "stripe",
+      }),
     },
     {
       userId: createdPatients[1].user.id,
@@ -804,7 +843,10 @@ Our team specializes in evidence-based treatments for back pain. Book a consulta
       status: "COMPLETED",
       paymentMethod: "credit_card",
       paidAt: lastWeek,
-      gatewayResponse: JSON.stringify({ success: true, paymentGateway: "stripe" }),
+      gatewayResponse: JSON.stringify({
+        success: true,
+        paymentGateway: "stripe",
+      }),
     },
     {
       userId: createdPatients[2].user.id,
@@ -814,7 +856,10 @@ Our team specializes in evidence-based treatments for back pain. Book a consulta
       status: "COMPLETED",
       paymentMethod: "debit_card",
       paidAt: lastWeek,
-      gatewayResponse: JSON.stringify({ success: true, paymentGateway: "stripe" }),
+      gatewayResponse: JSON.stringify({
+        success: true,
+        paymentGateway: "stripe",
+      }),
     },
     // Pending payment for upcoming appointment
     {
@@ -845,7 +890,11 @@ Our team specializes in evidence-based treatments for back pain. Book a consulta
       status: "FAILED",
       paymentMethod: "credit_card",
       paidAt: null,
-      gatewayResponse: JSON.stringify({ success: false, error: "Insufficient funds", paymentGateway: "stripe" }),
+      gatewayResponse: JSON.stringify({
+        success: false,
+        error: "Insufficient funds",
+        paymentGateway: "stripe",
+      }),
     },
     // Refunded payment
     {
@@ -855,7 +904,11 @@ Our team specializes in evidence-based treatments for back pain. Book a consulta
       status: "REFUNDED",
       paymentMethod: "credit_card",
       paidAt: new Date(lastWeek.getTime() - 2 * 24 * 60 * 60 * 1000), // 2 days before lastWeek
-      gatewayResponse: JSON.stringify({ success: true, paymentGateway: "stripe", refundId: "re_123456" }),
+      gatewayResponse: JSON.stringify({
+        success: true,
+        paymentGateway: "stripe",
+        refundId: "re_123456",
+      }),
     },
     // Partially refunded payment
     {
@@ -865,7 +918,11 @@ Our team specializes in evidence-based treatments for back pain. Book a consulta
       status: "PARTIALLY_REFUNDED",
       paymentMethod: "credit_card",
       paidAt: new Date(lastWeek.getTime() - 5 * 24 * 60 * 60 * 1000), // 5 days before lastWeek
-      gatewayResponse: JSON.stringify({ success: true, paymentGateway: "stripe", refundAmount: 50 }),
+      gatewayResponse: JSON.stringify({
+        success: true,
+        paymentGateway: "stripe",
+        refundAmount: 50,
+      }),
     },
     // Additional payments for more variety
     {
@@ -875,7 +932,10 @@ Our team specializes in evidence-based treatments for back pain. Book a consulta
       status: "COMPLETED",
       paymentMethod: "credit_card",
       paidAt: new Date(lastWeek.getTime() - 3 * 24 * 60 * 60 * 1000),
-      gatewayResponse: JSON.stringify({ success: true, paymentGateway: "stripe" }),
+      gatewayResponse: JSON.stringify({
+        success: true,
+        paymentGateway: "stripe",
+      }),
     },
     {
       userId: createdPatients[2].user.id,
@@ -884,7 +944,10 @@ Our team specializes in evidence-based treatments for back pain. Book a consulta
       status: "COMPLETED",
       paymentMethod: "paypal",
       paidAt: new Date(lastWeek.getTime() - 4 * 24 * 60 * 60 * 1000),
-      gatewayResponse: JSON.stringify({ success: true, paymentGateway: "paypal" }),
+      gatewayResponse: JSON.stringify({
+        success: true,
+        paymentGateway: "paypal",
+      }),
     },
     {
       userId: createdPatients[3].user.id,
@@ -893,7 +956,10 @@ Our team specializes in evidence-based treatments for back pain. Book a consulta
       status: "COMPLETED",
       paymentMethod: "debit_card",
       paidAt: new Date(lastWeek.getTime() - 1 * 24 * 60 * 60 * 1000),
-      gatewayResponse: JSON.stringify({ success: true, paymentGateway: "stripe" }),
+      gatewayResponse: JSON.stringify({
+        success: true,
+        paymentGateway: "stripe",
+      }),
     },
     {
       userId: createdPatients[4].user.id,
@@ -914,7 +980,9 @@ Our team specializes in evidence-based treatments for back pain. Book a consulta
       });
 
       if (!appointment) {
-        console.log(`⚠️  Appointment ${paymentData.appointmentId} not found, skipping payment`);
+        console.log(
+          `⚠️  Appointment ${paymentData.appointmentId} not found, skipping payment`,
+        );
         continue;
       }
     }
@@ -942,11 +1010,11 @@ Our team specializes in evidence-based treatments for back pain. Book a consulta
   console.log("\n" + "=".repeat(60));
   console.log("📧 LOGIN CREDENTIALS");
   console.log("=".repeat(60));
-  
+
   console.log("\n🔐 ADMIN ACCOUNT:");
   console.log("   Email: admin@physioconnect.com");
   console.log("   Password: admin123");
-  
+
   console.log("\n👨‍⚕️ SPECIALISTS (password: password123):");
   for (const staff of staffUsers) {
     console.log(`   - ${staff.user.name}`);

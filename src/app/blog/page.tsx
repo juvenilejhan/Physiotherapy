@@ -99,57 +99,60 @@ export default function BlogPage() {
             : blogs.length > 0
               ? // Dynamic blogs from database
                 blogs.map((blog) => (
-                  <Link
+                  <Card
                     key={blog.id}
-                    href={`/blog/${blog.slug}`}
-                    className="block"
+                    className="hover:shadow-lg transition-shadow overflow-hidden h-full flex flex-col"
                   >
-                    <Card className="hover:shadow-lg transition-shadow overflow-hidden h-full">
-                      <div className="relative aspect-video bg-muted">
-                        {blog.featuredImage ? (
-                          <Image
-                            src={blog.featuredImage}
-                            alt={blog.title}
-                            fill
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-primary/20 to-primary/5">
-                            <FileText className="w-12 h-12 text-primary/40" />
-                          </div>
+                    <div className="relative aspect-video bg-muted">
+                      {blog.featuredImage ? (
+                        <Image
+                          src={blog.featuredImage}
+                          alt={blog.title}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-primary/20 to-primary/5">
+                          <FileText className="w-12 h-12 text-primary/40" />
+                        </div>
+                      )}
+                    </div>
+                    <CardHeader>
+                      {blog.category && (
+                        <Badge className="w-fit mb-2">{blog.category}</Badge>
+                      )}
+                      <CardTitle className="line-clamp-2">
+                        {blog.title}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="grow flex flex-col">
+                      {blog.excerpt && (
+                        <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
+                          {blog.excerpt}
+                        </p>
+                      )}
+                      <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
+                        <span>
+                          {new Date(
+                            blog.publishedAt || blog.createdAt,
+                          ).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </span>
+                        {blog.author?.name && (
+                          <span>By {blog.author.name}</span>
                         )}
                       </div>
-                      <CardHeader>
-                        {blog.category && (
-                          <Badge className="w-fit mb-2">{blog.category}</Badge>
-                        )}
-                        <CardTitle className="line-clamp-2">
-                          {blog.title}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        {blog.excerpt && (
-                          <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                            {blog.excerpt}
-                          </p>
-                        )}
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <span>
-                            {new Date(
-                              blog.publishedAt || blog.createdAt,
-                            ).toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            })}
-                          </span>
-                          {blog.author?.name && (
-                            <span>By {blog.author.name}</span>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </Link>
+                      <Link href={`/blog/${blog.slug}`} className="mt-auto">
+                        <Button className="w-full" variant="default">
+                          Read Article
+                          <ArrowRight className="ml-2 w-4 h-4" />
+                        </Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
                 ))
               : // Fallback to static content
                 sampleArticles.map((a) => (

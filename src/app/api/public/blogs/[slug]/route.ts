@@ -58,7 +58,7 @@ export async function GET(
       comments: blog.comments,
     };
 
-    return NextResponse.json({ blog: formattedBlog }, { status: 200 });
+    return NextResponse.json(formattedBlog, { status: 200 });
   } catch (error) {
     console.error("Error fetching blog post:", error);
     return NextResponse.json(

@@ -15,7 +15,6 @@ import { Separator } from "@/components/ui/separator";
 import {
   Calendar,
   Clock,
-  ArrowLeft,
   ArrowRight,
   CheckCircle,
   Phone,
@@ -125,16 +124,8 @@ export default function ServiceDetailPage() {
       {/* Header */}
       <section className="bg-primary text-primary-foreground py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex gap-4 mb-6">
+          <div className="mb-6">
             <BackButton className="inline-flex items-center text-sm text-primary-foreground/80 hover:text-primary-foreground mb-0 transition-colors" />
-            <span className="text-primary-foreground/50">•</span>
-            <Link
-              href="/services"
-              className="inline-flex items-center text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4 mr-1" />
-              Back to Services
-            </Link>
           </div>
           <Badge className="mb-4">{service.category.replace("_", " ")}</Badge>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
