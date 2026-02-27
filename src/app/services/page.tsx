@@ -235,6 +235,7 @@ export default function ServicesPage() {
                   categoryColors[service.category] ||
                   "bg-gray-500/10 text-gray-600 border-gray-500/20";
                 const imageUrl =
+                  service.image ||
                   categoryImages[service.category] ||
                   "/images/service-orthopedic.jpg";
 

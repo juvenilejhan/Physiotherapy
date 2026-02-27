@@ -144,10 +144,12 @@ export async function POST(req: NextRequest) {
 
     // Get service details if serviceId is provided (for doctors)
     let consultationFee = 0;
-    let selectedService = null;
+    let selectedService: { id: string; name: string; price: number } | null =
+      null;
     if (serviceId && role === "DOCTOR") {
       selectedService = await db.service.findUnique({
         where: { id: serviceId },
+        select: { id: true, name: true, price: true },
       });
       if (selectedService) {
         consultationFee = selectedService.price;

@@ -256,7 +256,7 @@ export default function AdminServicesPage() {
               Add Service
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-150">
+          <DialogContent className="sm:max-w-150 max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
                 {editMode ? "Edit Service" : "Add New Service"}

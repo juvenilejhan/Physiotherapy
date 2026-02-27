@@ -26,13 +26,24 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    const { name, description, duration, price, category, isActive, image } =
-      body;
+    const {
+      name,
+      description,
+      conditions,
+      benefits,
+      duration,
+      price,
+      category,
+      isActive,
+      image,
+    } = body;
 
     const updateData: any = {};
 
     if (name !== undefined) updateData.name = name;
     if (description !== undefined) updateData.description = description;
+    if (conditions !== undefined) updateData.conditions = conditions || null;
+    if (benefits !== undefined) updateData.benefits = benefits || null;
     if (duration !== undefined) updateData.duration = parseInt(duration);
     if (price !== undefined) updateData.price = parseFloat(price);
     if (category !== undefined) updateData.category = category;

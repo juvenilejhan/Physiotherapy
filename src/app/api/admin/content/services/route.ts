@@ -70,8 +70,17 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { name, description, duration, price, category, isActive, image } =
-      body;
+    const {
+      name,
+      description,
+      conditions,
+      benefits,
+      duration,
+      price,
+      category,
+      isActive,
+      image,
+    } = body;
 
     if (!name || !description || !duration || !price) {
       return NextResponse.json(
@@ -91,6 +100,8 @@ export async function POST(req: NextRequest) {
         name,
         slug,
         description,
+        conditions: conditions || null,
+        benefits: benefits || null,
         duration: parseInt(duration),
         price: parseFloat(price),
         category: category || "GENERAL",
