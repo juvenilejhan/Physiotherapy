@@ -68,19 +68,44 @@ interface Specialist {
   }[];
 }
 
+interface ClinicSettings {
+  clinicName: string;
+  address: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+}
+
 export default function SpecialistDetailPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
 
   const [specialist, setSpecialist] = useState<Specialist | null>(null);
+  const [clinicSettings, setClinicSettings] = useState<ClinicSettings | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (id) {
       fetchSpecialistDetails();
+      fetchClinicSettings();
     }
   }, [id]);
+
+  const fetchClinicSettings = async () => {
+    try {
+      const response = await fetch("/api/public/settings");
+      const data = await response.json();
+      if (response.ok) {
+        setClinicSettings(data);
+      }
+    } catch (error) {
+      console.error("Failed to load clinic settings");
+    }
+  };
 
   const fetchSpecialistDetails = async () => {
     setIsLoading(true);
@@ -377,11 +402,15 @@ export default function SpecialistDetailPage() {
                 <div className="flex items-start gap-3">
                   <MapPin className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                   <div className="text-sm">
-                    <p className="font-medium">PhysioConnect Clinic</p>
+                    <p className="font-medium">
+                      {clinicSettings?.clinicName || "PhysioConnect Clinic"}
+                    </p>
                     <p className="text-muted-foreground">
-                      123 Healthcare Street
+                      {clinicSettings?.address || "123 Healthcare Street"}
                       <br />
-                      Medical District, MD 12345
+                      {clinicSettings
+                        ? `${clinicSettings.city}, ${clinicSettings.state} ${clinicSettings.postalCode}`
+                        : "Medical District, MD 12345"}
                     </p>
                   </div>
                 </div>
