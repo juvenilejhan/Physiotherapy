@@ -25,13 +25,20 @@ export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const role = searchParams.get("role");
 
+    const staffRoles = [
+      "SUPER_ADMIN",
+      "CLINIC_MANAGER",
+      "DOCTOR",
+      "RECEPTIONIST",
+    ];
+
     const where: any = {
-      NOT: {
-        role: "PATIENT",
+      role: {
+        in: staffRoles,
       },
     };
 
-    if (role) {
+    if (role && staffRoles.includes(role)) {
       where.role = role;
     }
 
