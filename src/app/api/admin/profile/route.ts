@@ -136,8 +136,15 @@ export async function PUT(request: NextRequest) {
 
     const userId = (session.user as any).id;
     const body = await request.json();
-    const { name, phone, dateOfBirth, bio, specialization, qualifications } =
-      body;
+    const {
+      name,
+      phone,
+      dateOfBirth,
+      bio,
+      specialization,
+      qualifications,
+      image,
+    } = body;
 
     // Update user info
     const updatedUser = await db.user.update({
@@ -146,6 +153,7 @@ export async function PUT(request: NextRequest) {
         name,
         phone,
         dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
+        image: image || null,
       },
       select: {
         id: true,

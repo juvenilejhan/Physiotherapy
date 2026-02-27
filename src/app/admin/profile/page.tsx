@@ -32,9 +32,11 @@ import {
   Briefcase,
   CheckCircle,
   CalendarDays,
+  Camera,
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 interface UserProfile {
   id: string;
@@ -118,6 +120,7 @@ export default function AdminProfilePage() {
     bio: "",
     specialization: "",
     qualifications: "",
+    image: "",
   });
 
   useEffect(() => {
@@ -143,6 +146,7 @@ export default function AdminProfilePage() {
         bio: data.staffProfile?.bio || "",
         specialization: data.staffProfile?.specialization || "",
         qualifications: data.staffProfile?.qualifications || "",
+        image: data.user.image || "",
       });
     } catch (error) {
       toast.error("Failed to load profile");
@@ -232,12 +236,37 @@ export default function AdminProfilePage() {
         <Card className="md:col-span-1">
           <CardContent className="pt-6">
             <div className="flex flex-col items-center text-center">
-              <Avatar className="h-24 w-24 mb-4">
-                <AvatarImage src={user.image || ""} alt={user.name} />
-                <AvatarFallback className="text-2xl">
-                  {user.name?.charAt(0).toUpperCase() || "U"}
-                </AvatarFallback>
-              </Avatar>
+              <div className="relative mb-4">
+                <Avatar className="h-24 w-24">
+                  <AvatarImage
+                    src={isEditing ? formData.image || "" : user.image || ""}
+                    alt={user.name}
+                  />
+                  <AvatarFallback className="text-2xl">
+                    {user.name?.charAt(0).toUpperCase() || "U"}
+                  </AvatarFallback>
+                </Avatar>
+                {isEditing && (
+                  <div className="absolute -bottom-2 -right-2">
+                    <label
+                      htmlFor="profile-image-upload"
+                      className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-colors"
+                    >
+                      <Camera className="h-4 w-4" />
+                    </label>
+                  </div>
+                )}
+              </div>
+              {isEditing && (
+                <div className="w-full mb-4">
+                  <ImageUpload
+                    value={formData.image}
+                    onChange={(url) => setFormData({ ...formData, image: url })}
+                    folder="staff"
+                    placeholder="Upload profile photo"
+                  />
+                </div>
+              )}
               <h2 className="text-xl font-semibold">{user.name}</h2>
               <p className="text-sm text-muted-foreground mb-2">{user.email}</p>
               <Badge className={roleBadgeColors[user.role] || "bg-gray-100"}>
