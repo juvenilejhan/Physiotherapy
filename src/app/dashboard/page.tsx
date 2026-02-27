@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -131,7 +131,7 @@ interface Settings {
   };
 }
 
-export default function PatientDashboard() {
+function PatientDashboardContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -1576,5 +1576,19 @@ export default function PatientDashboard() {
         </Tabs>
       </main>
     </div>
+  );
+}
+
+export default function PatientDashboard() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-muted/50">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      }
+    >
+      <PatientDashboardContent />
+    </Suspense>
   );
 }
