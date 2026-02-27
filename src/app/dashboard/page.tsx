@@ -464,7 +464,12 @@ export default function PatientDashboard() {
             </div>
 
             <div className="flex items-center gap-2 sm:gap-4">
-              <Button variant="ghost" size="icon" asChild title="Back to Website">
+              <Button
+                variant="ghost"
+                size="icon"
+                asChild
+                title="Back to Website"
+              >
                 <Link href="/">
                   <Home className="h-5 w-5" />
                 </Link>
