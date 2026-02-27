@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -55,6 +55,7 @@ import {
   isToday,
 } from "date-fns";
 import { toast } from "sonner";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 interface Appointment {
   id: string;
@@ -100,6 +101,14 @@ interface PatientProfile {
   state?: string | null;
   postalCode?: string | null;
   country?: string | null;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+    phone?: string | null;
+    dateOfBirth?: string | null;
+    image?: string | null;
+  };
 }
 
 interface Settings {
@@ -133,6 +142,8 @@ export default function PatientDashboard() {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isSavingImage, setIsSavingImage] = useState(false);
+  const [isEditingPhoto, setIsEditingPhoto] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [formData, setFormData] = useState({
     name: "",
@@ -149,6 +160,7 @@ export default function PatientDashboard() {
     allergies: "",
     medicalConditions: "",
     medications: "",
+    image: "",
   });
 
   // Fetch appointments and profile on mount
@@ -192,6 +204,7 @@ export default function PatientDashboard() {
         allergies: patientProfile.allergies || "",
         medicalConditions: patientProfile.medicalConditions || "",
         medications: patientProfile.medications || "",
+        image: patientProfile.user?.image || (session.user as any).image || "",
       });
     }
   }, [session?.user, patientProfile]);
@@ -279,6 +292,7 @@ export default function PatientDashboard() {
           state: formData.state,
           postalCode: formData.postalCode,
           country: formData.country,
+          image: formData.image,
         }),
       });
 
@@ -294,6 +308,32 @@ export default function PatientDashboard() {
       toast.error("Failed to save personal information");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  // Handle profile image save
+  const handleSaveProfileImage = async () => {
+    setIsSavingImage(true);
+    try {
+      const response = await fetch("/api/patient/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: formData.image }),
+      });
+
+      if (response.ok) {
+        toast.success("Profile photo updated successfully");
+        setIsEditingPhoto(false);
+        fetchData();
+      } else {
+        const data = await response.json();
+        toast.error(data.error || "Failed to update profile photo");
+      }
+    } catch (error) {
+      console.error("Error saving profile photo:", error);
+      toast.error("Failed to save profile photo");
+    } finally {
+      setIsSavingImage(false);
     }
   };
 
@@ -429,6 +469,10 @@ export default function PatientDashboard() {
               </Button>
               <div className="flex items-center gap-2">
                 <Avatar className="h-8 w-8 bg-primary/10 text-primary">
+                  <AvatarImage
+                    src={formData.image || (session.user as any).image || ""}
+                    alt={session.user.name || ""}
+                  />
                   <AvatarFallback>
                     {session.user.name?.charAt(0) || "U"}
                   </AvatarFallback>
@@ -1355,6 +1399,74 @@ export default function PatientDashboard() {
 
               {/* Sidebar - Contact Information */}
               <div className="space-y-6">
+                {/* Profile Photo Card */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg font-semibold">
+                      Profile Photo
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex flex-col items-center">
+                    <Avatar className="h-24 w-24 mb-4">
+                      <AvatarImage
+                        src={formData.image || ""}
+                        alt={session.user.name || ""}
+                      />
+                      <AvatarFallback className="text-2xl">
+                        {session.user.name?.charAt(0) || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    {isEditingPhoto ? (
+                      <>
+                        <div className="w-full">
+                          <ImageUpload
+                            value={formData.image}
+                            onChange={(url) =>
+                              setFormData({ ...formData, image: url })
+                            }
+                            folder="patients"
+                            placeholder="Upload profile photo"
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-2 text-center">
+                          Upload a photo. Max 5MB.
+                        </p>
+                        <div className="flex gap-2 w-full mt-4">
+                          <Button
+                            variant="outline"
+                            className="flex-1"
+                            onClick={() => setIsEditingPhoto(false)}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            className="flex-1"
+                            onClick={handleSaveProfileImage}
+                            disabled={isSavingImage}
+                          >
+                            {isSavingImage ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Saving...
+                              </>
+                            ) : (
+                              "Save Photo"
+                            )}
+                          </Button>
+                        </div>
+                      </>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        className="w-full mt-2"
+                        onClick={() => setIsEditingPhoto(true)}
+                      >
+                        Change Photo
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg font-semibold">

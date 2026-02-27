@@ -23,18 +23,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Only allow staff to upload
-    if (
-      !["SUPER_ADMIN", "CLINIC_MANAGER", "DOCTOR", "RECEPTIONIST"].includes(
-        session.user.role || "",
-      )
-    ) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
     const folder = (formData.get("folder") as string) || "general";
+
+    // Staff can upload to any folder, patients can only upload to 'patients' folder (profile photos)
+    const isStaff = [
+      "SUPER_ADMIN",
+      "CLINIC_MANAGER",
+      "DOCTOR",
+      "RECEPTIONIST",
+    ].includes(session.user.role || "");
+    const isPatient = session.user.role === "PATIENT";
+
+    if (!isStaff && !isPatient) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    // Patients can only upload to the 'patients' folder
+    if (isPatient && folder !== "patients") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });

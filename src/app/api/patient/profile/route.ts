@@ -9,10 +9,7 @@ export async function GET(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get or create patient profile
@@ -37,6 +34,7 @@ export async function GET(request: NextRequest) {
         name: true,
         phone: true,
         dateOfBirth: true,
+        image: true,
       },
     });
 
@@ -47,33 +45,36 @@ export async function GET(request: NextRequest) {
     const upcomingAppointments = await db.appointment.count({
       where: {
         userId: (session.user as any).id,
-        status: 'CONFIRMED',
+        status: "CONFIRMED",
         appointmentDate: { gte: new Date() },
       },
     });
     const completedAppointments = await db.appointment.count({
       where: {
         userId: (session.user as any).id,
-        status: 'COMPLETED',
+        status: "COMPLETED",
       },
     });
 
-    return NextResponse.json({
-      profile: {
-        ...profile,
-        user: user,
+    return NextResponse.json(
+      {
+        profile: {
+          ...profile,
+          user: user,
+        },
+        stats: {
+          totalAppointments,
+          upcomingAppointments,
+          completedAppointments,
+        },
       },
-      stats: {
-        totalAppointments,
-        upcomingAppointments,
-        completedAppointments,
-      },
-    }, { status: 200 });
+      { status: 200 },
+    );
   } catch (error) {
     console.error("Error fetching patient profile:", error);
     return NextResponse.json(
       { error: "Failed to fetch profile" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -83,10 +84,7 @@ export async function PATCH(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -140,6 +138,7 @@ export async function PATCH(request: NextRequest) {
         name: body.name || undefined,
         phone: normalizeBDPhone(body.phone) || undefined,
         dateOfBirth: body.dateOfBirth ? new Date(body.dateOfBirth) : undefined,
+        image: body.image !== undefined ? body.image : undefined,
       },
     });
 
@@ -157,13 +156,13 @@ export async function PATCH(request: NextRequest) {
           },
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error updating patient profile:", error);
     return NextResponse.json(
       { error: "Failed to update profile" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
