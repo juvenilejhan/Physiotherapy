@@ -20,6 +20,7 @@ import {
   CreditCard,
   BarChart3,
   Video,
+  Home,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -167,11 +168,11 @@ function SidebarContent({
 
       <div className="border-t p-4">
         <Link
-          href="/dashboard"
+          href="/"
           className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
         >
-          <User className="h-5 w-5" />
-          <span>Back to Patient Portal</span>
+          <Home className="h-5 w-5" />
+          <span>Back to Website</span>
         </Link>
       </div>
     </div>
@@ -186,10 +187,12 @@ function UserMenu() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage
-              src={session?.user?.image || ""}
-              alt={session?.user?.name || ""}
-            />
+            {session?.user?.image && (
+              <AvatarImage
+                src={session.user.image}
+                alt={session?.user?.name || ""}
+              />
+            )}
             <AvatarFallback>
               {session?.user?.name?.charAt(0).toUpperCase() || "U"}
             </AvatarFallback>
