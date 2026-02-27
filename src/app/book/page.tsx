@@ -152,11 +152,20 @@ export default function BookingPage() {
   // Errors
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/auth/login?callbackUrl=" + encodeURIComponent("/book"));
+    }
+  }, [status, router]);
+
   // Fetch services on mount
   useEffect(() => {
-    fetchServices();
-    fetchSettings();
-  }, []);
+    if (status === "authenticated") {
+      fetchServices();
+      fetchSettings();
+    }
+  }, [status]);
 
   // Fetch specialists when service is selected
   useEffect(() => {
@@ -376,6 +385,20 @@ export default function BookingPage() {
     ];
     return steps.indexOf(step) + 1;
   };
+
+  // Show loading while checking authentication
+  if (status === "loading" || status === "unauthenticated") {
+    return (
+      <div className="min-h-screen bg-muted/50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">
+            {status === "loading" ? "Loading..." : "Redirecting to login..."}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-muted/50 py-8 px-4">
