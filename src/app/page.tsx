@@ -353,7 +353,7 @@ export default function Home() {
   ];
 
   const navLinks = [
-    { name: "Home", href: "/#home" },
+    { name: "Home", href: "/" },
     { name: "Services", href: "/services" },
     { name: "Specialists", href: "/specialists" },
     { name: "Videos", href: "/videos" },
@@ -361,18 +361,29 @@ export default function Home() {
     { name: "Contact", href: "/contact" },
   ];
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Navigation */}
       <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 border-b">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-2">
+            <Link
+              href="/"
+              onClick={(e) => {
+                if (window.location.pathname === "/") {
+                  e.preventDefault();
+                  scrollToTop();
+                }
+              }}
+              className="flex items-center gap-2"
+            >
               <Activity className="w-8 h-8 text-primary" />
-              <Link href="/#home" className="text-2xl font-bold">
-                {settings.clinicName}
-              </Link>
-            </div>
+              <span className="text-2xl font-bold">{settings.clinicName}</span>
+            </Link>
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-8">
@@ -380,6 +391,15 @@ export default function Home() {
                 <Link
                   key={link.name}
                   href={link.href}
+                  onClick={(e) => {
+                    if (
+                      link.name === "Home" &&
+                      window.location.pathname === "/"
+                    ) {
+                      e.preventDefault();
+                      scrollToTop();
+                    }
+                  }}
                   className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
                 >
                   {link.name}
@@ -421,7 +441,15 @@ export default function Home() {
                   key={link.name}
                   href={link.href}
                   className="block text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    if (
+                      link.name === "Home" &&
+                      window.location.pathname === "/"
+                    ) {
+                      scrollToTop();
+                    }
+                  }}
                 >
                   {link.name}
                 </Link>

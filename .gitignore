@@ -57,3 +57,6 @@ $null
 3001
 {
 create-video.js
+# secrets
+.env
+client_secret_*.json

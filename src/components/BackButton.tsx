@@ -7,9 +7,14 @@ import { useEffect, useState } from "react";
 interface BackButtonProps {
   className?: string;
   isAuthPage?: boolean; // If true, always go home when not authenticated
+  href?: string; // If specified, always navigate to this URL
 }
 
-export function BackButton({ className, isAuthPage = false }: BackButtonProps) {
+export function BackButton({
+  className,
+  isAuthPage = false,
+  href,
+}: BackButtonProps) {
   const router = useRouter();
   const { status } = useSession();
   const [canGoBack, setCanGoBack] = useState(false);
@@ -20,6 +25,12 @@ export function BackButton({ className, isAuthPage = false }: BackButtonProps) {
   }, []);
 
   const handleBack = () => {
+    // If href is specified, always navigate to that URL
+    if (href) {
+      router.push(href);
+      return;
+    }
+
     // On auth pages (login/register), always go to home
     // This prevents going back to protected pages after logout
     if (isAuthPage) {

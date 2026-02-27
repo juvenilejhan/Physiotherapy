@@ -5,6 +5,110 @@ import { db } from "@/lib/db";
 import { hasPermission } from "@/lib/rbac";
 import { normalizeBDPhone } from "@/lib/utils";
 
+// Helper function to convert 12-hour format to 24-hour format
+function convertTo24Hour(time12h: string): string {
+  if (!time12h || time12h === "Closed") return "";
+
+  const match = time12h.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (!match) return "";
+
+  let hours = parseInt(match[1]);
+  const minutes = match[2];
+  const period = match[3].toUpperCase();
+
+  if (period === "PM" && hours !== 12) {
+    hours += 12;
+  } else if (period === "AM" && hours === 12) {
+    hours = 0;
+  }
+
+  return `${hours.toString().padStart(2, "0")}:${minutes}`;
+}
+
+// Helper function to sync clinic working hours to all staff schedules
+async function syncStaffSchedules(workingHours: Record<string, string>) {
+  const dayMapping: Record<string, number> = {
+    sunday: 0,
+    monday: 1,
+    tuesday: 2,
+    wednesday: 3,
+    thursday: 4,
+    friday: 5,
+    saturday: 6,
+  };
+
+  // Get all staff profiles
+  const staffProfiles = await db.staffProfile.findMany({
+    select: { id: true },
+  });
+
+  if (staffProfiles.length === 0) return;
+
+  // Process each day of the week
+  for (const [day, hours] of Object.entries(workingHours)) {
+    const dayOfWeek = dayMapping[day.toLowerCase()];
+    if (dayOfWeek === undefined) continue;
+
+    const isClosed = !hours || hours === "Closed";
+
+    // Parse start and end time from "9:00 AM - 5:00 PM" format
+    let startTime = "";
+    let endTime = "";
+
+    if (!isClosed) {
+      const parts = hours.split(" - ");
+      if (parts.length === 2) {
+        startTime = convertTo24Hour(parts[0].trim());
+        endTime = convertTo24Hour(parts[1].trim());
+      }
+    }
+
+    // Update or create schedule for each staff member
+    for (const staff of staffProfiles) {
+      // Find existing schedule for this day
+      const existingSchedule = await db.staffSchedule.findFirst({
+        where: {
+          staffId: staff.id,
+          dayOfWeek,
+        },
+      });
+
+      if (isClosed) {
+        // If closed, mark as unavailable or delete
+        if (existingSchedule) {
+          await db.staffSchedule.update({
+            where: { id: existingSchedule.id },
+            data: { isAvailable: false },
+          });
+        }
+      } else if (startTime && endTime) {
+        if (existingSchedule) {
+          // Update existing schedule
+          await db.staffSchedule.update({
+            where: { id: existingSchedule.id },
+            data: {
+              startTime,
+              endTime,
+              isAvailable: true,
+            },
+          });
+        } else {
+          // Create new schedule
+          await db.staffSchedule.create({
+            data: {
+              staffId: staff.id,
+              dayOfWeek,
+              startTime,
+              endTime,
+              isAvailable: true,
+            },
+          });
+        }
+      }
+    }
+  }
+}
+
 // GET - Get clinic settings
 export async function GET(req: NextRequest) {
   try {
@@ -179,6 +283,15 @@ export async function PATCH(req: NextRequest) {
       settings = await db.clinicSettings.create({
         data: updateData,
       });
+    }
+
+    // Sync working hours to all staff schedules if working hours were updated
+    if (workingHours !== undefined) {
+      const hoursObj =
+        typeof workingHours === "object"
+          ? workingHours
+          : JSON.parse(workingHours);
+      await syncStaffSchedules(hoursObj);
     }
 
     return NextResponse.json(settings);

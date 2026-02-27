@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -124,6 +124,7 @@ interface Settings {
 export default function PatientDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [patientProfile, setPatientProfile] = useState<PatientProfile | null>(
@@ -157,6 +158,17 @@ export default function PatientDashboard() {
     }
     fetchSettings();
   }, [status, session]);
+
+  // Check for booking success notification
+  useEffect(() => {
+    if (searchParams.get("booking") === "success") {
+      toast.success(
+        "Appointment booked successfully! Check your upcoming appointments.",
+      );
+      // Clean up URL
+      router.replace("/dashboard", { scroll: false });
+    }
+  }, [searchParams, router]);
 
   // Update form data when profile or session changes
   useEffect(() => {
@@ -321,12 +333,7 @@ export default function PatientDashboard() {
 
   // Handle sign out
   const handleSignOut = async () => {
-    const response = await fetch("/api/auth/signout", {
-      method: "POST",
-    });
-    if (response.ok) {
-      router.push("/auth/login");
-    }
+    await signOut({ callbackUrl: "/auth/login" });
   };
 
   if (status === "loading" || !session?.user) {

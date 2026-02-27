@@ -96,8 +96,8 @@ export default function LoginPage() {
     }
   };
 
-  const handleSocialLogin = (provider: string) => {
-    toast.info(`${provider} login will be available soon`);
+  const handleSocialLogin = (provider: "google" | "facebook") => {
+    signIn(provider, { callbackUrl: "/dashboard" });
   };
 
   return (
@@ -213,7 +213,7 @@ export default function LoginPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => handleSocialLogin("Google")}
+                onClick={() => handleSocialLogin("google")}
                 disabled={isLoading}
               >
                 <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -239,7 +239,7 @@ export default function LoginPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => handleSocialLogin("Facebook")}
+                onClick={() => handleSocialLogin("facebook")}
                 disabled={isLoading}
               >
                 <svg

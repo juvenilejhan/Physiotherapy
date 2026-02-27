@@ -68,16 +68,26 @@ interface StaffMember {
   qualification?: string;
   experience?: number;
   bio?: string;
+  consultationFee?: number;
   services: Array<{
     id: string;
+    serviceId: string;
     name: string;
+    price: number;
   }>;
+}
+
+interface Service {
+  id: string;
+  name: string;
+  price: number;
 }
 
 export default function StaffManagementPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [staff, setStaff] = useState<StaffMember[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -87,7 +97,7 @@ export default function StaffManagementPage() {
     name: "",
     email: "",
     role: "DOCTOR",
-    specialty: "",
+    serviceId: "",
     qualification: "",
     experience: "",
     bio: "",
@@ -109,7 +119,20 @@ export default function StaffManagementPage() {
     }
 
     fetchStaff();
+    fetchServices();
   }, [session, status, router]);
+
+  const fetchServices = async () => {
+    try {
+      const response = await fetch("/api/services");
+      if (response.ok) {
+        const data = await response.json();
+        setServices(data.services || []);
+      }
+    } catch (error) {
+      console.error("Error fetching services:", error);
+    }
+  };
 
   const fetchStaff = async () => {
     try {
@@ -176,7 +199,7 @@ export default function StaffManagementPage() {
       name: staffMember.user.name,
       email: staffMember.user.email,
       role: staffMember.user.role,
-      specialty: staffMember.specialty || "",
+      serviceId: staffMember.services[0]?.serviceId || "",
       qualification: staffMember.qualification || "",
       experience: staffMember.experience?.toString() || "",
       bio: staffMember.bio || "",
@@ -212,7 +235,7 @@ export default function StaffManagementPage() {
       name: "",
       email: "",
       role: "DOCTOR",
-      specialty: "",
+      serviceId: "",
       qualification: "",
       experience: "",
       bio: "",
@@ -228,7 +251,9 @@ export default function StaffManagementPage() {
       staffMember.user.email
         .toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
-      staffMember.specialty?.toLowerCase().includes(searchQuery.toLowerCase()),
+      staffMember.services?.some((s) =>
+        s.name.toLowerCase().includes(searchQuery.toLowerCase()),
+      ),
   );
 
   const getRoleBadgeVariant = (role: string) => {
@@ -363,17 +388,24 @@ export default function StaffManagementPage() {
                 {formData.role === "DOCTOR" && (
                   <>
                     <div className="grid gap-2">
-                      <Label htmlFor="specialty">Specialty</Label>
-                      <Input
-                        id="specialty"
-                        value={formData.specialty}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            specialty: e.target.value,
-                          })
+                      <Label htmlFor="serviceId">Specialty (Service)</Label>
+                      <Select
+                        value={formData.serviceId}
+                        onValueChange={(value) =>
+                          setFormData({ ...formData, serviceId: value })
                         }
-                      />
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a service" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {services.map((service) => (
+                            <SelectItem key={service.id} value={service.id}>
+                              {service.name} - ${service.price}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="qualification">Qualification</Label>
@@ -453,7 +485,7 @@ export default function StaffManagementPage() {
                   <TableHead>Role</TableHead>
                   <TableHead>Specialty</TableHead>
                   <TableHead>Experience</TableHead>
-                  <TableHead>Services</TableHead>
+                  <TableHead>Consultation Fee</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -494,29 +526,21 @@ export default function StaffManagementPage() {
                           {staffMember.user.role.replace("_", " ")}
                         </Badge>
                       </TableCell>
-                      <TableCell>{staffMember.specialty || "-"}</TableCell>
+                      <TableCell>
+                        {staffMember.services[0]?.name ||
+                          staffMember.specialty ||
+                          "-"}
+                      </TableCell>
                       <TableCell>
                         {staffMember.experience
                           ? `${staffMember.experience} years`
                           : "-"}
                       </TableCell>
                       <TableCell>
-                        <div className="flex gap-1 flex-wrap">
-                          {staffMember.services.slice(0, 2).map((service) => (
-                            <Badge
-                              key={service.id}
-                              variant="outline"
-                              className="text-xs"
-                            >
-                              {service.name}
-                            </Badge>
-                          ))}
-                          {staffMember.services.length > 2 && (
-                            <Badge variant="outline" className="text-xs">
-                              +{staffMember.services.length - 2}
-                            </Badge>
-                          )}
-                        </div>
+                        {staffMember.user.role === "DOCTOR" &&
+                        staffMember.services[0]?.price
+                          ? `$${staffMember.services[0].price.toFixed(2)}`
+                          : "-"}
                       </TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>

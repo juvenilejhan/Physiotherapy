@@ -35,7 +35,7 @@ import {
 import { formatBDT } from "@/lib/utils";
 import { toast } from "sonner";
 import { BackButton } from "@/components/BackButton";
-import { format, addDays, isWeekend } from "date-fns";
+import { format, addDays, getDay } from "date-fns";
 
 interface Settings {
   clinicName?: string;
@@ -45,6 +45,15 @@ interface Settings {
   city?: string;
   state?: string;
   postalCode?: string;
+  workingHours?: {
+    monday?: string;
+    tuesday?: string;
+    wednesday?: string;
+    thursday?: string;
+    friday?: string;
+    saturday?: string;
+    sunday?: string;
+  };
 }
 
 interface Service {
@@ -76,6 +85,34 @@ type BookingStep =
   | "datetime"
   | "details"
   | "confirm";
+
+// Helper function to check if a date is closed based on clinic working hours
+const isDayClosed = (
+  date: Date,
+  workingHours?: Settings["workingHours"],
+): boolean => {
+  if (!workingHours) {
+    // Default: weekends are closed
+    const day = getDay(date);
+    return day === 0 || day === 6;
+  }
+
+  const dayNames = [
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+  ] as const;
+
+  const dayOfWeek = getDay(date);
+  const dayName = dayNames[dayOfWeek];
+  const hours = workingHours[dayName];
+
+  return !hours || hours === "Closed";
+};
 
 export default function BookingPage() {
   const router = useRouter();
@@ -309,8 +346,15 @@ export default function BookingPage() {
         return;
       }
 
-      toast.success("Appointment booked successfully!");
-      router.push(session ? "/dashboard" : "/");
+      // Redirect to dashboard with success notification for logged-in users
+      if (session) {
+        router.push("/dashboard?booking=success");
+      } else {
+        toast.success(
+          "Appointment booked successfully! Check your email for confirmation.",
+        );
+        router.push("/");
+      }
     } catch (error) {
       toast.error("An error occurred. Please try again.");
       setIsLoading(false);
@@ -570,19 +614,22 @@ export default function BookingPage() {
                         const isSelected =
                           selectedDate &&
                           date.toDateString() === selectedDate.toDateString();
-                        const isWeekendDay = isWeekend(date);
+                        const isClosed = isDayClosed(
+                          date,
+                          settings?.workingHours,
+                        );
                         const isPast =
                           date < new Date(new Date().setHours(0, 0, 0, 0));
 
                         return (
                           <button
                             key={date.toISOString()}
-                            disabled={isPast || isWeekendDay}
+                            disabled={isPast || isClosed}
                             onClick={() =>
-                              !isPast && !isWeekendDay && setSelectedDate(date)
+                              !isPast && !isClosed && setSelectedDate(date)
                             }
                             className={`p-3 text-center rounded-lg border transition-all
-                              ${isPast || isWeekendDay ? "opacity-30 cursor-not-allowed" : "hover:border-primary"}
+                              ${isPast || isClosed ? "opacity-30 cursor-not-allowed" : "hover:border-primary"}
                               ${isSelected ? "bg-primary text-primary-foreground border-primary" : ""}
                             `}
                           >

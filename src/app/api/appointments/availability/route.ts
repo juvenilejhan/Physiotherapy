@@ -1,6 +1,63 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
+// Helper function to convert 12-hour format to 24-hour format
+function convertTo24Hour(time12h: string): string {
+  if (!time12h || time12h === "Closed") return "";
+
+  const match = time12h.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (!match) return "";
+
+  let hours = parseInt(match[1]);
+  const minutes = match[2];
+  const period = match[3].toUpperCase();
+
+  if (period === "PM" && hours !== 12) {
+    hours += 12;
+  } else if (period === "AM" && hours === 12) {
+    hours = 0;
+  }
+
+  return `${hours.toString().padStart(2, "0")}:${minutes}`;
+}
+
+// Get clinic working hours for a specific day
+async function getClinicWorkingHours(
+  dayOfWeek: number,
+): Promise<{ startTime: string; endTime: string } | null> {
+  const dayNames = [
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+  ];
+  const dayName = dayNames[dayOfWeek];
+
+  const clinicSettings = await db.clinicSettings.findFirst();
+  if (!clinicSettings || !clinicSettings.workingHours) return null;
+
+  const workingHours =
+    typeof clinicSettings.workingHours === "string"
+      ? JSON.parse(clinicSettings.workingHours)
+      : clinicSettings.workingHours;
+
+  const hours = workingHours[dayName];
+  if (!hours || hours === "Closed") return null;
+
+  const parts = hours.split(" - ");
+  if (parts.length !== 2) return null;
+
+  const startTime = convertTo24Hour(parts[0].trim());
+  const endTime = convertTo24Hour(parts[1].trim());
+
+  if (!startTime || !endTime) return null;
+
+  return { startTime, endTime };
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -11,7 +68,7 @@ export async function GET(request: NextRequest) {
     if (!date || !serviceId) {
       return NextResponse.json(
         { error: "Date and service ID are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -25,10 +82,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!service) {
-      return NextResponse.json(
-        { error: "Service not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Service not found" }, { status: 404 });
     }
 
     const serviceDuration = service.duration; // in minutes
@@ -36,26 +90,25 @@ export async function GET(request: NextRequest) {
     // Get staff schedule for the day
     const dayOfWeek = selectedDate.getDay();
 
-    const staffScheduleQuery: any = {
-      dayOfWeek: dayOfWeek,
-      isAvailable: true,
-      effectiveFrom: { lte: selectedDate },
-      OR: [{ effectiveTo: null }, { effectiveTo: { gte: selectedDate } }],
-    };
+    // Always use clinic working hours as the primary source of truth
+    let workingSchedules: Array<{
+      startTime: string;
+      endTime: string;
+      breakStart?: string | null;
+      breakEnd?: string | null;
+    }> = [];
 
-    if (staffId) {
-      staffScheduleQuery.staffId = staffId;
+    // First, get clinic working hours (primary source)
+    const clinicHours = await getClinicWorkingHours(dayOfWeek);
+    if (clinicHours) {
+      workingSchedules = [clinicHours];
     }
 
-    const schedules = await db.staffSchedule.findMany({
-      where: staffScheduleQuery,
-    });
-
-    if (schedules.length === 0) {
+    if (workingSchedules.length === 0) {
       return NextResponse.json({ availableSlots: [] }, { status: 200 });
     }
 
-    // Get existing appointments for the day
+    // Get existing appointments for the day for the specific staff
     const appointmentsQuery: any = {
       appointmentDate: {
         gte: selectedDate,
@@ -80,7 +133,7 @@ export async function GET(request: NextRequest) {
     // Generate available time slots using a Set to ensure uniqueness
     const availableSlotsSet = new Set<string>();
 
-    for (const schedule of schedules) {
+    for (const schedule of workingSchedules) {
       const startHour = parseInt(schedule.startTime.split(":")[0]);
       const startMinute = parseInt(schedule.startTime.split(":")[1]);
       const endHour = parseInt(schedule.endTime.split(":")[0]);
@@ -94,10 +147,12 @@ export async function GET(request: NextRequest) {
       let breakEnd = 0;
 
       if (schedule.breakStart && schedule.breakEnd) {
-        breakStart = parseInt(schedule.breakStart.split(":")[0]) * 60 +
-                     parseInt(schedule.breakStart.split(":")[1]);
-        breakEnd = parseInt(schedule.breakEnd.split(":")[0]) * 60 +
-                   parseInt(schedule.breakEnd.split(":")[1]);
+        breakStart =
+          parseInt(schedule.breakStart.split(":")[0]) * 60 +
+          parseInt(schedule.breakStart.split(":")[1]);
+        breakEnd =
+          parseInt(schedule.breakEnd.split(":")[0]) * 60 +
+          parseInt(schedule.breakEnd.split(":")[1]);
       }
 
       while (currentTime + serviceDuration <= endTime) {
@@ -128,10 +183,12 @@ export async function GET(request: NextRequest) {
             return false;
           }
 
-          const aptStart = parseInt(apt.startTime.split(":")[0]) * 60 +
-                           parseInt(apt.startTime.split(":")[1]);
-          const aptEnd = parseInt(apt.endTime.split(":")[0]) * 60 +
-                         parseInt(apt.endTime.split(":")[1]);
+          const aptStart =
+            parseInt(apt.startTime.split(":")[0]) * 60 +
+            parseInt(apt.startTime.split(":")[1]);
+          const aptEnd =
+            parseInt(apt.endTime.split(":")[0]) * 60 +
+            parseInt(apt.endTime.split(":")[1]);
 
           // Check for overlap
           return (
@@ -155,13 +212,13 @@ export async function GET(request: NextRequest) {
         availableSlots: Array.from(availableSlotsSet).sort(),
         serviceDuration,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error fetching availability:", error);
     return NextResponse.json(
       { error: "Failed to fetch availability" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

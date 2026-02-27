@@ -1,33 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { db } from '@/lib/db';
-import { hasPermission } from '@/lib/rbac';
-import { hash } from 'bcryptjs';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { hasPermission } from "@/lib/rbac";
+import { hash } from "bcryptjs";
 
 // GET - List all staff
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const user = await db.user.findUnique({
       where: { email: session.user.email },
     });
 
-    if (!user || !user.role || !hasPermission(user.role, 'staff:view')) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!user || !user.role || !hasPermission(user.role, "staff:view")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const searchParams = req.nextUrl.searchParams;
-    const role = searchParams.get('role');
+    const role = searchParams.get("role");
 
     const where: any = {
       NOT: {
-        role: 'PATIENT',
+        role: "PATIENT",
       },
     };
 
@@ -40,16 +40,20 @@ export async function GET(req: NextRequest) {
       include: {
         staffProfile: {
           include: {
-            services: true,
+            services: {
+              include: {
+                service: true,
+              },
+            },
           },
         },
       },
       orderBy: {
-        name: 'asc',
+        name: "asc",
       },
     });
 
-    const formattedStaff = staff.map(s => ({
+    const formattedStaff = staff.map((s) => ({
       id: s.id,
       user: {
         id: s.id,
@@ -61,13 +65,23 @@ export async function GET(req: NextRequest) {
       qualification: s.staffProfile?.qualifications,
       experience: s.staffProfile?.experience,
       bio: s.staffProfile?.bio,
-      services: s.staffProfile?.services || [],
+      consultationFee: s.staffProfile?.consultationFee,
+      services:
+        s.staffProfile?.services?.map((ss) => ({
+          id: ss.id,
+          serviceId: ss.serviceId,
+          name: ss.service.name,
+          price: ss.service.price,
+        })) || [],
     }));
 
     return NextResponse.json(formattedStaff);
   } catch (error) {
-    console.error('Error fetching staff:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error fetching staff:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
 
@@ -75,25 +89,38 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const user = await db.user.findUnique({
       where: { email: session.user.email },
     });
 
-    if (!user || !user.role || !hasPermission(user.role, 'staff:create')) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!user || !user.role || !hasPermission(user.role, "staff:create")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const body = await req.json();
-    const { name, email, role, password, specialization, qualifications, experience, bio } = body;
+    const {
+      name,
+      email,
+      role,
+      password,
+      specialization,
+      qualifications,
+      experience,
+      bio,
+      serviceId,
+    } = body;
 
     // Validation
     if (!name || !email || !role || !password) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 },
+      );
     }
 
     // Check if user already exists
@@ -102,7 +129,22 @@ export async function POST(req: NextRequest) {
     });
 
     if (existingUser) {
-      return NextResponse.json({ error: 'User with this email already exists' }, { status: 400 });
+      return NextResponse.json(
+        { error: "User with this email already exists" },
+        { status: 400 },
+      );
+    }
+
+    // Get service details if serviceId is provided (for doctors)
+    let consultationFee = 0;
+    let selectedService = null;
+    if (serviceId && role === "DOCTOR") {
+      selectedService = await db.service.findUnique({
+        where: { id: serviceId },
+      });
+      if (selectedService) {
+        consultationFee = selectedService.price;
+      }
     }
 
     // Hash password
@@ -115,20 +157,36 @@ export async function POST(req: NextRequest) {
         email,
         password: hashedPassword,
         role,
-        staffProfile: role !== 'PATIENT' ? {
-          create: {
-            specialization,
-            qualifications,
-            experience: experience ? parseInt(experience) : null,
-            bio,
-            consultationFee: 0,
-          },
-        } : undefined,
+        staffProfile:
+          role !== "PATIENT"
+            ? {
+                create: {
+                  specialization: selectedService?.name || specialization,
+                  qualifications,
+                  experience: experience ? parseInt(experience) : null,
+                  bio,
+                  consultationFee,
+                  ...(serviceId && role === "DOCTOR"
+                    ? {
+                        services: {
+                          create: {
+                            serviceId,
+                          },
+                        },
+                      }
+                    : {}),
+                },
+              }
+            : undefined,
       },
       include: {
         staffProfile: {
           include: {
-            services: true,
+            services: {
+              include: {
+                service: true,
+              },
+            },
           },
         },
       },
@@ -146,12 +204,22 @@ export async function POST(req: NextRequest) {
       qualification: newStaff.staffProfile?.qualifications,
       experience: newStaff.staffProfile?.experience,
       bio: newStaff.staffProfile?.bio,
-      services: newStaff.staffProfile?.services || [],
+      consultationFee: newStaff.staffProfile?.consultationFee,
+      services:
+        newStaff.staffProfile?.services?.map((ss) => ({
+          id: ss.id,
+          serviceId: ss.serviceId,
+          name: ss.service.name,
+          price: ss.service.price,
+        })) || [],
     };
 
     return NextResponse.json(formattedStaff, { status: 201 });
   } catch (error) {
-    console.error('Error creating staff:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error creating staff:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

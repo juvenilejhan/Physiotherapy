@@ -113,8 +113,8 @@ export default function RegisterPage() {
       });
 
       if (loginResult?.ok) {
-        toast.success("Registration successful! Redirecting to booking...");
-        router.push("/book");
+        toast.success("Registration successful! Welcome to PhysioConnect.");
+        router.push("/dashboard");
         return;
       }
 
@@ -352,7 +352,7 @@ export default function RegisterPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => signIn("google")}
+                onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
                 disabled={isLoading}
               >
                 <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -378,7 +378,9 @@ export default function RegisterPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => signIn("facebook")}
+                onClick={() =>
+                  signIn("facebook", { callbackUrl: "/dashboard" })
+                }
                 disabled={isLoading}
               >
                 <svg

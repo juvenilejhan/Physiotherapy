@@ -56,6 +56,26 @@ interface StaffMember {
   bio?: string;
 }
 
+interface ClinicSettings {
+  clinicName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  workingHours: {
+    monday: string;
+    tuesday: string;
+    wednesday: string;
+    thursday: string;
+    friday: string;
+    saturday: string;
+    sunday: string;
+  };
+}
+
 export default function ServiceDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -63,9 +83,13 @@ export default function ServiceDetailPage() {
 
   const [service, setService] = useState<Service | null>(null);
   const [staff, setStaff] = useState<StaffMember[]>([]);
+  const [clinicSettings, setClinicSettings] = useState<ClinicSettings | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    fetchClinicSettings();
     if (slug) {
       fetchServiceDetails();
     }
@@ -95,6 +119,64 @@ export default function ServiceDetailPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const fetchClinicSettings = async () => {
+    try {
+      const response = await fetch("/api/public/settings");
+      const data = await response.json();
+      if (response.ok) {
+        setClinicSettings(data);
+      }
+    } catch (error) {
+      console.error("Failed to load clinic settings");
+    }
+  };
+
+  // Group working hours for display
+  const getGroupedWorkingHours = () => {
+    if (!clinicSettings?.workingHours) return [];
+    const hours = clinicSettings.workingHours;
+    const days = [
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+      "sunday",
+    ] as const;
+    const groups: { label: string; hours: string }[] = [];
+
+    let currentGroup: { days: string[]; hours: string } | null = null;
+
+    for (const day of days) {
+      const dayHours = hours[day] || "Closed";
+      if (currentGroup && currentGroup.hours === dayHours) {
+        currentGroup.days.push(day);
+      } else {
+        if (currentGroup) {
+          const label =
+            currentGroup.days.length > 1
+              ? `${currentGroup.days[0].charAt(0).toUpperCase() + currentGroup.days[0].slice(1)} - ${currentGroup.days[currentGroup.days.length - 1].charAt(0).toUpperCase() + currentGroup.days[currentGroup.days.length - 1].slice(1)}`
+              : currentGroup.days[0].charAt(0).toUpperCase() +
+                currentGroup.days[0].slice(1);
+          groups.push({ label, hours: currentGroup.hours });
+        }
+        currentGroup = { days: [day], hours: dayHours };
+      }
+    }
+
+    if (currentGroup) {
+      const label =
+        currentGroup.days.length > 1
+          ? `${currentGroup.days[0].charAt(0).toUpperCase() + currentGroup.days[0].slice(1)} - ${currentGroup.days[currentGroup.days.length - 1].charAt(0).toUpperCase() + currentGroup.days[currentGroup.days.length - 1].slice(1)}`
+          : currentGroup.days[0].charAt(0).toUpperCase() +
+            currentGroup.days[0].slice(1);
+      groups.push({ label, hours: currentGroup.hours });
+    }
+
+    return groups;
   };
 
   if (isLoading) {
@@ -301,7 +383,7 @@ export default function ServiceDetailPage() {
                   <div>
                     <p className="text-sm font-medium">Call Us</p>
                     <p className="text-sm text-muted-foreground">
-                      (555) 123-4567
+                      {clinicSettings?.phone || "(555) 123-4567"}
                     </p>
                   </div>
                 </div>
@@ -310,7 +392,7 @@ export default function ServiceDetailPage() {
                   <div>
                     <p className="text-sm font-medium">Email Us</p>
                     <p className="text-sm text-muted-foreground">
-                      info@physioconnect.com
+                      {clinicSettings?.email || "info@physioconnect.com"}
                     </p>
                   </div>
                 </div>
@@ -319,9 +401,11 @@ export default function ServiceDetailPage() {
                   <div>
                     <p className="text-sm font-medium">Visit Us</p>
                     <p className="text-sm text-muted-foreground">
-                      123 Healthcare Street
+                      {clinicSettings?.address || "123 Healthcare Street"}
                       <br />
-                      Medical District, MD 12345
+                      {clinicSettings
+                        ? `${clinicSettings.city}, ${clinicSettings.state} ${clinicSettings.postalCode}`
+                        : "Medical District, MD 12345"}
                     </p>
                   </div>
                 </div>
@@ -334,18 +418,12 @@ export default function ServiceDetailPage() {
                 <CardTitle>Working Hours</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Monday - Friday</span>
-                  <span className="font-medium">8:00 AM - 8:00 PM</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Saturday</span>
-                  <span className="font-medium">9:00 AM - 5:00 PM</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Sunday</span>
-                  <span className="font-medium">Closed</span>
-                </div>
+                {getGroupedWorkingHours().map((group, index) => (
+                  <div key={index} className="flex justify-between">
+                    <span className="text-muted-foreground">{group.label}</span>
+                    <span className="font-medium">{group.hours}</span>
+                  </div>
+                ))}
               </CardContent>
             </Card>
           </div>
