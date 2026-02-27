@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { signIn, getSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,8 @@ import { BackButton } from "@/components/BackButton";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || null;
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -75,18 +77,22 @@ export default function LoginPage() {
       if (session) {
         toast.success("Login successful!");
 
-        // Redirect based on user role
-        const role = (session.user as any).role;
-
-        if (
-          role === "SUPER_ADMIN" ||
-          role === "CLINIC_MANAGER" ||
-          role === "DOCTOR" ||
-          role === "RECEPTIONIST"
-        ) {
-          router.push("/admin");
+        // Redirect to callback URL if provided, otherwise based on user role
+        if (callbackUrl) {
+          router.push(callbackUrl);
         } else {
-          router.push("/dashboard");
+          const role = (session.user as any).role;
+
+          if (
+            role === "SUPER_ADMIN" ||
+            role === "CLINIC_MANAGER" ||
+            role === "DOCTOR" ||
+            role === "RECEPTIONIST"
+          ) {
+            router.push("/admin");
+          } else {
+            router.push("/dashboard");
+          }
         }
       }
     } catch (error) {
@@ -97,7 +103,7 @@ export default function LoginPage() {
   };
 
   const handleSocialLogin = (provider: "google" | "facebook") => {
-    signIn(provider, { callbackUrl: "/dashboard" });
+    signIn(provider, { callbackUrl: callbackUrl || "/dashboard" });
   };
 
   return (

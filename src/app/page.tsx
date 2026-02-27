@@ -33,10 +33,13 @@ import {
   X,
   MessageCircle,
   FileText,
+  User,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
+import { BookAppointmentButton } from "@/components/BookAppointmentButton";
 
 interface ClinicSettings {
   clinicName: string;
@@ -106,6 +109,7 @@ interface DynamicBlog {
 }
 
 export default function Home() {
+  const { data: session } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [clinicSettings, setClinicSettings] = useState<ClinicSettings | null>(
     null,
@@ -408,14 +412,30 @@ export default function Home() {
             </div>
 
             <div className="hidden md:flex items-center gap-2 lg:gap-4">
-              <Link href="/auth/login">
-                <Button variant="ghost" className="px-2 lg:px-4">
-                  Login
-                </Button>
-              </Link>
-              <Link href="/auth/register">
-                <Button className="px-3 lg:px-4">Book Appointment</Button>
-              </Link>
+              {session ? (
+                <>
+                  <Link
+                    href={
+                      session.user?.role === "PATIENT" ? "/dashboard" : "/admin"
+                    }
+                  >
+                    <Button variant="ghost" className="px-2 lg:px-4">
+                      <User className="mr-2 h-4 w-4" />
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <BookAppointmentButton className="px-3 lg:px-4" />
+                </>
+              ) : (
+                <>
+                  <Link href="/auth/login">
+                    <Button variant="ghost" className="px-2 lg:px-4">
+                      Login
+                    </Button>
+                  </Link>
+                  <BookAppointmentButton className="px-3 lg:px-4" />
+                </>
+              )}
             </div>
 
             {/* Mobile Menu Button */}
@@ -455,14 +475,32 @@ export default function Home() {
                 </Link>
               ))}
               <div className="flex flex-col gap-2 pt-4 border-t">
-                <Link href="/auth/login">
-                  <Button variant="outline" className="w-full">
-                    Login
-                  </Button>
-                </Link>
-                <Link href="/auth/register">
-                  <Button className="w-full">Book Appointment</Button>
-                </Link>
+                {session ? (
+                  <>
+                    <Link
+                      href={
+                        session.user?.role === "PATIENT"
+                          ? "/dashboard"
+                          : "/admin"
+                      }
+                    >
+                      <Button variant="outline" className="w-full">
+                        <User className="mr-2 h-4 w-4" />
+                        Dashboard
+                      </Button>
+                    </Link>
+                    <BookAppointmentButton className="w-full" />
+                  </>
+                ) : (
+                  <>
+                    <Link href="/auth/login">
+                      <Button variant="outline" className="w-full">
+                        Login
+                      </Button>
+                    </Link>
+                    <BookAppointmentButton className="w-full" />
+                  </>
+                )}
               </div>
             </div>
           </div>
