@@ -238,10 +238,12 @@ export default function AdminProfilePage() {
             <div className="flex flex-col items-center text-center">
               <div className="relative mb-4">
                 <Avatar className="h-24 w-24">
-                  <AvatarImage
-                    src={isEditing ? formData.image || "" : user.image || ""}
-                    alt={user.name}
-                  />
+                  {(isEditing ? formData.image : user.image) && (
+                    <AvatarImage
+                      src={(isEditing ? formData.image : user.image) as string}
+                      alt={user.name}
+                    />
+                  )}
                   <AvatarFallback className="text-2xl">
                     {user.name?.charAt(0).toUpperCase() || "U"}
                   </AvatarFallback>

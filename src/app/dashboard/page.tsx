@@ -469,10 +469,12 @@ export default function PatientDashboard() {
               </Button>
               <div className="flex items-center gap-2">
                 <Avatar className="h-8 w-8 bg-primary/10 text-primary">
-                  <AvatarImage
-                    src={formData.image || (session.user as any).image || ""}
-                    alt={session.user.name || ""}
-                  />
+                  {(formData.image || (session.user as any).image) && (
+                    <AvatarImage
+                      src={formData.image || (session.user as any).image}
+                      alt={session.user.name || ""}
+                    />
+                  )}
                   <AvatarFallback>
                     {session.user.name?.charAt(0) || "U"}
                   </AvatarFallback>
@@ -1408,10 +1410,12 @@ export default function PatientDashboard() {
                   </CardHeader>
                   <CardContent className="flex flex-col items-center">
                     <Avatar className="h-24 w-24 mb-4">
-                      <AvatarImage
-                        src={formData.image || ""}
-                        alt={session.user.name || ""}
-                      />
+                      {formData.image && (
+                        <AvatarImage
+                          src={formData.image}
+                          alt={session.user.name || ""}
+                        />
+                      )}
                       <AvatarFallback className="text-2xl">
                         {session.user.name?.charAt(0) || "U"}
                       </AvatarFallback>
