@@ -63,6 +63,8 @@ import { formatBDT } from "@/lib/utils";
 interface Appointment {
   id: string;
   appointmentDate: string;
+  startTime: string;
+  endTime: string;
   status: string;
   notes?: string;
   cancelReason?: string;
@@ -501,7 +503,12 @@ export default function AdminCalendarPage() {
                         `}
                       >
                         <div className="font-medium">
-                          {format(new Date(apt.appointmentDate), "h:mm a")}
+                          {apt.startTime
+                            ? format(
+                                new Date(`2000-01-01T${apt.startTime}`),
+                                "h:mm a",
+                              )
+                            : "--:--"}
                         </div>
                         <div className="truncate">{apt.user.name}</div>
                       </div>
@@ -546,7 +553,14 @@ export default function AdminCalendarPage() {
                       <div className="flex items-center gap-2 mb-2">
                         <Clock className="h-4 w-4" />
                         <span className="font-semibold">
-                          {format(new Date(apt.appointmentDate), "h:mm a")}
+                          {apt.startTime
+                            ? format(
+                                new Date(`2000-01-01T${apt.startTime}`),
+                                "h:mm a",
+                              )
+                            : "--:--"}
+                          {apt.endTime &&
+                            ` - ${format(new Date(`2000-01-01T${apt.endTime}`), "h:mm a")}`}
                         </span>
                         <Badge variant="outline">{apt.status}</Badge>
                       </div>
