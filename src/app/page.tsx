@@ -43,6 +43,7 @@ import { BookAppointmentButton } from "@/components/BookAppointmentButton";
 
 interface ClinicSettings {
   clinicName: string;
+  logo?: string;
   clinicImage?: string;
   heroImage?: string;
   teamImage?: string;
@@ -385,7 +386,17 @@ export default function Home() {
               }}
               className="flex items-center gap-2"
             >
-              <Activity className="w-8 h-8 text-primary" />
+              {settings.logo ? (
+                <Image
+                  src={settings.logo}
+                  alt={settings.clinicName}
+                  width={48}
+                  height={48}
+                  className="w-12 h-12 object-contain"
+                />
+              ) : (
+                <Activity className="w-8 h-8 text-primary" />
+              )}
               <span className="text-2xl font-bold">{settings.clinicName}</span>
             </Link>
 
@@ -1262,7 +1273,17 @@ export default function Home() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <Activity className="w-6 h-6 text-primary" />
+                {settings.logo ? (
+                  <Image
+                    src={settings.logo}
+                    alt={settings.clinicName}
+                    width={32}
+                    height={32}
+                    className="w-8 h-8 object-contain"
+                  />
+                ) : (
+                  <Activity className="w-6 h-6 text-primary" />
+                )}
                 <span className="text-xl font-bold">{settings.clinicName}</span>
               </div>
               <p className="text-sm text-muted-foreground">

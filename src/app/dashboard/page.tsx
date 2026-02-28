@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -114,6 +115,7 @@ interface PatientProfile {
 
 interface Settings {
   clinicName?: string;
+  logo?: string;
   email?: string;
   phone?: string;
   address?: string;
@@ -457,7 +459,17 @@ function PatientDashboardContent() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-3">
-              <Activity className="w-8 h-8 text-primary" />
+              {settings?.logo ? (
+                <Image
+                  src={settings.logo}
+                  alt={settings?.clinicName || "PhysioConnect"}
+                  width={40}
+                  height={40}
+                  className="w-10 h-10 object-contain"
+                />
+              ) : (
+                <Activity className="w-8 h-8 text-primary" />
+              )}
               <span className="text-xl font-bold">
                 {settings?.clinicName || "PhysioConnect"}
               </span>
