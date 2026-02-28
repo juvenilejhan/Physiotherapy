@@ -179,80 +179,77 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Check for conflicting appointments
-    const conflictingAppointment = await db.appointment.findFirst({
-      where: {
-        appointmentDate: new Date(appointmentDate),
-        status: { notIn: ["CANCELLED", "NO_SHOW"] },
-        OR: [
-          {
-            AND: [
-              { startTime: { lte: startTime } },
-              { endTime: { gt: startTime } },
-            ],
-          },
-          {
-            AND: [
-              { startTime: { lt: endTime } },
-              { endTime: { gte: endTime } },
-            ],
-          },
-          {
-            AND: [
-              { startTime: { gte: startTime } },
-              { endTime: { lte: endTime } },
-            ],
-          },
-        ],
-        ...(staffId ? { staffId } : {}),
-      },
-    });
-
-    if (conflictingAppointment) {
-      return NextResponse.json(
-        {
-          error:
-            "This time slot is no longer available. Please choose another time.",
+    // Use a transaction to prevent race conditions
+    const appointment = await db.$transaction(async (tx) => {
+      // Check for conflicting appointments
+      const conflictingAppointment = await tx.appointment.findFirst({
+        where: {
+          appointmentDate: new Date(appointmentDate),
+          status: { notIn: ["CANCELLED", "NO_SHOW"] },
+          OR: [
+            {
+              AND: [
+                { startTime: { lte: startTime } },
+                { endTime: { gt: startTime } },
+              ],
+            },
+            {
+              AND: [
+                { startTime: { lt: endTime } },
+                { endTime: { gte: endTime } },
+              ],
+            },
+            {
+              AND: [
+                { startTime: { gte: startTime } },
+                { endTime: { lte: endTime } },
+              ],
+            },
+          ],
+          ...(staffId ? { staffId } : {}),
         },
-        { status: 409 },
-      );
-    }
+      });
 
-    // Create the appointment
-    const appointment = await db.appointment.create({
-      data: {
-        userId,
-        staffId: staffId || null,
-        serviceId,
-        appointmentDate: new Date(appointmentDate),
-        startTime,
-        endTime,
-        type: type as AppointmentType,
-        notes,
-        reason,
-        status: AppointmentStatus.CONFIRMED,
-      },
-      include: {
-        service: {
-          select: {
-            id: true,
-            name: true,
-            duration: true,
-            price: true,
-          },
+      if (conflictingAppointment) {
+        throw new Error("CONFLICT");
+      }
+
+      // Create the appointment
+      return await tx.appointment.create({
+        data: {
+          userId,
+          staffId: staffId || null,
+          serviceId,
+          appointmentDate: new Date(appointmentDate),
+          startTime,
+          endTime,
+          type: type as AppointmentType,
+          notes,
+          reason,
+          status: AppointmentStatus.CONFIRMED,
         },
-        staff: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                image: true,
+        include: {
+          service: {
+            select: {
+              id: true,
+              name: true,
+              duration: true,
+              price: true,
+            },
+          },
+          staff: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                },
               },
             },
           },
         },
-      },
+      });
     });
 
     // TODO: Send confirmation email/SMS
@@ -264,8 +261,20 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 },
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating appointment:", error);
+
+    // Handle conflict error from transaction
+    if (error.message === "CONFLICT") {
+      return NextResponse.json(
+        {
+          error:
+            "This time slot is no longer available. Please choose another time.",
+        },
+        { status: 409 },
+      );
+    }
+
     return NextResponse.json(
       { error: "Failed to create appointment" },
       { status: 500 },

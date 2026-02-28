@@ -339,6 +339,7 @@ enum AppointmentStatus {
   COMPLETED
   CANCELLED
   NO_SHOW
+  RESCHEDULED
 }
 
 enum AppointmentType {

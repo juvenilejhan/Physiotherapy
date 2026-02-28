@@ -17,6 +17,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
+  UserPlus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,10 +55,13 @@ import {
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { getWhatsAppLink, formatBDPhone } from "@/lib/utils";
+import { formatTimeRange12h } from "@/lib/time-utils";
 
 interface Appointment {
   id: string;
   appointmentDate: string;
+  startTime: string;
+  endTime: string;
   status: string;
   notes?: string;
   cancelReason?: string;
@@ -73,10 +77,11 @@ interface Appointment {
     duration: number;
   };
   staff: {
+    id: string;
     user: {
       name: string;
     };
-  };
+  } | null;
 }
 
 interface AppointmentDetails extends Appointment {
@@ -110,6 +115,16 @@ export default function AdminAppointmentsPage() {
     totalPages: 0,
   });
   const ITEMS_PER_PAGE = 20;
+
+  // Assign staff dialog state
+  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+  const [appointmentToAssign, setAppointmentToAssign] =
+    useState<Appointment | null>(null);
+  const [staffList, setStaffList] = useState<
+    { id: string; user: { name: string } }[]
+  >([]);
+  const [selectedStaffId, setSelectedStaffId] = useState<string>("");
+  const [assignLoading, setAssignLoading] = useState(false);
 
   // Debounce search input
   useEffect(() => {
@@ -221,6 +236,59 @@ export default function AdminAppointmentsPage() {
     setCurrentPage(1); // Reset to page 1 on filter change
   };
 
+  const fetchStaffList = async () => {
+    try {
+      const response = await fetch("/api/admin/staff");
+      if (response.ok) {
+        const data = await response.json();
+        setStaffList(Array.isArray(data) ? data : []);
+      }
+    } catch (error) {
+      console.error("Error fetching staff list:", error);
+    }
+  };
+
+  const handleOpenAssignDialog = (appointment: Appointment) => {
+    setAppointmentToAssign(appointment);
+    setSelectedStaffId("");
+    fetchStaffList();
+    setAssignDialogOpen(true);
+  };
+
+  const handleAssignStaff = async () => {
+    if (!appointmentToAssign || !selectedStaffId) {
+      toast.error("Please select a staff member");
+      return;
+    }
+
+    setAssignLoading(true);
+    try {
+      const response = await fetch(
+        `/api/admin/appointments/${appointmentToAssign.id}/assign`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ staffId: selectedStaffId }),
+        },
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        toast.success(data.message || "Staff assigned successfully");
+        setAssignDialogOpen(false);
+        setAppointmentToAssign(null);
+        fetchAppointments();
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.error || "Failed to assign staff");
+      }
+    } catch (error) {
+      console.error("Error assigning staff:", error);
+      toast.error("An error occurred while assigning staff");
+    } finally {
+      setAssignLoading(false);
+    }
+  };
   const getStatusBadge = (status: string) => {
     const variants: Record<string, any> = {
       PENDING: "secondary",
@@ -387,9 +455,9 @@ export default function AdminAppointmentsPage() {
                           <div className="flex items-center gap-1">
                             <Clock className="h-4 w-4 text-muted-foreground" />
                             <span className="whitespace-nowrap">
-                              {format(
-                                new Date(appointment.appointmentDate),
-                                "h:mm a",
+                              {formatTimeRange12h(
+                                appointment.startTime,
+                                appointment.endTime,
                               )}
                             </span>
                           </div>
@@ -417,6 +485,18 @@ export default function AdminAppointmentsPage() {
                               <Eye className="mr-2 h-4 w-4" />
                               View Details
                             </DropdownMenuItem>
+                            {!appointment.staff &&
+                              appointment.status !== "CANCELLED" &&
+                              appointment.status !== "COMPLETED" && (
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    handleOpenAssignDialog(appointment)
+                                  }
+                                >
+                                  <UserPlus className="mr-2 h-4 w-4" />
+                                  Assign Doctor
+                                </DropdownMenuItem>
+                              )}
                             {appointment.status !== "CANCELLED" &&
                               appointment.status !== "COMPLETED" && (
                                 <DropdownMenuItem
@@ -574,7 +654,12 @@ export default function AdminAppointmentsPage() {
                 <p className="font-semibold">
                   {format(
                     new Date(selectedAppointment.appointmentDate),
-                    "MMMM dd, yyyy at h:mm a",
+                    "MMMM dd, yyyy",
+                  )}{" "}
+                  at{" "}
+                  {formatTimeRange12h(
+                    selectedAppointment.startTime,
+                    selectedAppointment.endTime,
                   )}
                 </p>
               </div>
@@ -616,6 +701,76 @@ export default function AdminAppointmentsPage() {
                     )}
                   </p>
                 </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Assign Staff Dialog */}
+      <Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Assign Doctor</DialogTitle>
+            <DialogDescription>
+              Select a doctor to assign to this appointment
+            </DialogDescription>
+          </DialogHeader>
+          {appointmentToAssign && (
+            <div className="space-y-4 py-4">
+              <div className="bg-muted p-3 rounded-lg text-sm">
+                <p>
+                  <strong>Patient:</strong> {appointmentToAssign.user.name}
+                </p>
+                <p>
+                  <strong>Service:</strong> {appointmentToAssign.service.name}
+                </p>
+                <p>
+                  <strong>Date:</strong>{" "}
+                  {format(
+                    new Date(appointmentToAssign.appointmentDate),
+                    "MMM dd, yyyy",
+                  )}
+                </p>
+                <p>
+                  <strong>Time:</strong>{" "}
+                  {formatTimeRange12h(
+                    appointmentToAssign.startTime,
+                    appointmentToAssign.endTime,
+                  )}
+                </p>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Select Doctor</label>
+                <Select
+                  value={selectedStaffId}
+                  onValueChange={setSelectedStaffId}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose a doctor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {staffList.map((staff) => (
+                      <SelectItem key={staff.id} value={staff.id}>
+                        {staff.user.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setAssignDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleAssignStaff}
+                  disabled={!selectedStaffId || assignLoading}
+                >
+                  {assignLoading ? "Assigning..." : "Assign"}
+                </Button>
               </div>
             </div>
           )}

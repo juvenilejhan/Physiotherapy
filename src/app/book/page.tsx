@@ -56,6 +56,14 @@ interface Settings {
   };
 }
 
+interface Holiday {
+  id: string;
+  name: string;
+  date: string;
+  isRecurring: boolean;
+  description?: string;
+}
+
 interface Service {
   id: string;
   name: string;
@@ -148,22 +156,18 @@ export default function BookingPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [specialists, setSpecialists] = useState<Specialist[]>([]);
   const [settings, setSettings] = useState<Settings | null>(null);
+  const [holidays, setHolidays] = useState<Holiday[]>([]);
+  const [holidayMessage, setHolidayMessage] = useState<string | null>(null);
 
   // Errors
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Redirect to login if not authenticated
+  // Fetch services and settings on mount (allow for both authenticated and guest users)
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/auth/login?callbackUrl=" + encodeURIComponent("/book"));
-    }
-  }, [status, router]);
-
-  // Fetch services on mount
-  useEffect(() => {
-    if (status === "authenticated") {
+    if (status !== "loading") {
       fetchServices();
       fetchSettings();
+      fetchHolidays();
     }
   }, [status]);
 
@@ -178,6 +182,8 @@ export default function BookingPage() {
   useEffect(() => {
     if (selectedDate && selectedService) {
       fetchAvailableSlots();
+      setSelectedTime(null); // Reset selected time when date changes
+      setHolidayMessage(null); // Reset holiday message
     }
   }, [selectedDate, selectedService, selectedSpecialist]);
 
@@ -205,6 +211,18 @@ export default function BookingPage() {
     }
   };
 
+  const fetchHolidays = async () => {
+    try {
+      const response = await fetch("/api/holidays");
+      if (response.ok) {
+        const data = await response.json();
+        setHolidays(data.holidays || []);
+      }
+    } catch (error) {
+      console.error("Failed to load holidays");
+    }
+  };
+
   const fetchSpecialists = async (serviceId: string) => {
     try {
       const response = await fetch(`/api/specialists?serviceId=${serviceId}`);
@@ -222,6 +240,7 @@ export default function BookingPage() {
     if (!selectedDate || !selectedService) return;
 
     setIsLoading(true);
+    setHolidayMessage(null);
     try {
       const params = new URLSearchParams({
         serviceId: selectedService.id,
@@ -234,6 +253,13 @@ export default function BookingPage() {
 
       if (response.ok) {
         setAvailableSlots(data.availableSlots);
+
+        // Check if it's a holiday or closed day
+        if (data.isHoliday && data.holidayName) {
+          setHolidayMessage(`Clinic is closed for ${data.holidayName}`);
+        } else if (data.isClosed) {
+          setHolidayMessage(data.message || "Clinic is closed on this day");
+        }
       } else {
         toast.error(data.error || "Failed to load available slots");
         setAvailableSlots([]);
@@ -387,14 +413,12 @@ export default function BookingPage() {
   };
 
   // Show loading while checking authentication
-  if (status === "loading" || status === "unauthenticated") {
+  if (status === "loading") {
     return (
       <div className="min-h-screen bg-muted/50 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-muted-foreground">
-            {status === "loading" ? "Loading..." : "Redirecting to login..."}
-          </p>
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
@@ -644,18 +668,48 @@ export default function BookingPage() {
                         const isPast =
                           date < new Date(new Date().setHours(0, 0, 0, 0));
 
+                        // Check if date is a holiday
+                        const dateStr = date.toISOString().split("T")[0];
+                        const holiday = holidays.find((h) => {
+                          const holidayDate = new Date(h.date);
+                          // For recurring holidays, match month and day
+                          if (h.isRecurring) {
+                            return (
+                              holidayDate.getMonth() === date.getMonth() &&
+                              holidayDate.getDate() === date.getDate()
+                            );
+                          }
+                          // For one-time holidays, match full date
+                          return (
+                            holidayDate.toISOString().split("T")[0] === dateStr
+                          );
+                        });
+                        const isHoliday = !!holiday;
+                        const isDisabled = isPast || isClosed || isHoliday;
+
                         return (
                           <button
                             key={date.toISOString()}
-                            disabled={isPast || isClosed}
-                            onClick={() =>
-                              !isPast && !isClosed && setSelectedDate(date)
+                            disabled={isDisabled}
+                            onClick={() => !isDisabled && setSelectedDate(date)}
+                            title={
+                              isHoliday
+                                ? `Holiday: ${holiday?.name}`
+                                : isClosed
+                                  ? "Clinic closed"
+                                  : undefined
                             }
-                            className={`p-3 text-center rounded-lg border transition-all
-                              ${isPast || isClosed ? "opacity-30 cursor-not-allowed" : "hover:border-primary"}
+                            className={`p-3 text-center rounded-lg border transition-all relative
+                              ${isDisabled ? "opacity-30 cursor-not-allowed" : "hover:border-primary"}
                               ${isSelected ? "bg-primary text-primary-foreground border-primary" : ""}
                             `}
                           >
+                            {isHoliday && (
+                              <div
+                                className="absolute top-0.5 right-0.5 w-2 h-2 bg-red-500 rounded-full"
+                                title={holiday?.name}
+                              />
+                            )}
                             <div className="text-xs uppercase text-muted-foreground">
                               {format(date, "EEE")}
                             </div>
@@ -711,7 +765,8 @@ export default function BookingPage() {
                           })
                         ) : (
                           <div className="col-span-full text-center py-8 text-muted-foreground">
-                            No available slots for this date
+                            {holidayMessage ||
+                              "No available slots for this date"}
                           </div>
                         )}
                       </div>

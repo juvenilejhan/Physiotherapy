@@ -110,7 +110,9 @@ export default function AdminCalendarPage() {
     useState(false);
   const [services, setServices] = useState<any[]>([]);
   const [newAppointmentForm, setNewAppointmentForm] = useState({
-    patientId: "",
+    guestName: "",
+    guestEmail: "",
+    guestPhone: "",
     serviceId: "",
     staffId: "",
     date: "",
@@ -197,11 +199,14 @@ export default function AdminCalendarPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          patientId: newAppointmentForm.patientId,
           serviceId: newAppointmentForm.serviceId,
-          staffId: newAppointmentForm.staffId,
-          appointmentDate: `${newAppointmentForm.date}T${newAppointmentForm.time}`,
-          notes: newAppointmentForm.notes,
+          staffId: newAppointmentForm.staffId || undefined,
+          appointmentDate: newAppointmentForm.date,
+          startTime: newAppointmentForm.time,
+          notes: newAppointmentForm.notes || undefined,
+          guestName: newAppointmentForm.guestName,
+          guestEmail: newAppointmentForm.guestEmail,
+          guestPhone: newAppointmentForm.guestPhone,
         }),
       });
 
@@ -221,7 +226,9 @@ export default function AdminCalendarPage() {
 
   const resetNewAppointmentForm = () => {
     setNewAppointmentForm({
-      patientId: "",
+      guestName: "",
+      guestEmail: "",
+      guestPhone: "",
       serviceId: "",
       staffId: "",
       date: "",
@@ -309,20 +316,54 @@ export default function AdminCalendarPage() {
               <form onSubmit={handleNewAppointment}>
                 <div className="grid gap-4 py-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="patient">Patient Email</Label>
+                    <Label htmlFor="guestName">Patient Name</Label>
                     <Input
-                      id="patient"
-                      type="email"
-                      value={newAppointmentForm.patientId}
+                      id="guestName"
+                      type="text"
+                      value={newAppointmentForm.guestName}
                       onChange={(e) =>
                         setNewAppointmentForm({
                           ...newAppointmentForm,
-                          patientId: e.target.value,
+                          guestName: e.target.value,
                         })
                       }
-                      placeholder="patient@example.com"
+                      placeholder="Patient full name"
                       required
                     />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="guestEmail">Patient Email</Label>
+                      <Input
+                        id="guestEmail"
+                        type="email"
+                        value={newAppointmentForm.guestEmail}
+                        onChange={(e) =>
+                          setNewAppointmentForm({
+                            ...newAppointmentForm,
+                            guestEmail: e.target.value,
+                          })
+                        }
+                        placeholder="patient@example.com"
+                        required
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="guestPhone">Patient Phone</Label>
+                      <Input
+                        id="guestPhone"
+                        type="tel"
+                        value={newAppointmentForm.guestPhone}
+                        onChange={(e) =>
+                          setNewAppointmentForm({
+                            ...newAppointmentForm,
+                            guestPhone: e.target.value,
+                          })
+                        }
+                        placeholder="+880 1XXX-XXXXXX"
+                        required
+                      />
+                    </div>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="service">Service</Label>

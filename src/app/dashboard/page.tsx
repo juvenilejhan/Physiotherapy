@@ -58,6 +58,7 @@ import {
 } from "date-fns";
 import { toast } from "sonner";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { formatTimeRange12h } from "@/lib/time-utils";
 
 interface Appointment {
   id: string;
@@ -795,7 +796,10 @@ function PatientDashboardContent() {
                                   </div>
                                   <div className="flex items-center gap-1 text-sm text-muted-foreground">
                                     <ClockIcon className="w-4 h-4" />
-                                    {apt.startTime} - {apt.endTime}
+                                    {formatTimeRange12h(
+                                      apt.startTime,
+                                      apt.endTime,
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -978,7 +982,10 @@ function PatientDashboardContent() {
                                 </div>
                                 <div className="flex items-center gap-1">
                                   <ClockIcon className="w-4 h-4" />
-                                  {apt.startTime} - {apt.endTime}
+                                  {formatTimeRange12h(
+                                    apt.startTime,
+                                    apt.endTime,
+                                  )}
                                 </div>
                                 {apt.staff && (
                                   <div className="flex items-center gap-1">
@@ -1104,7 +1111,7 @@ function PatientDashboardContent() {
                               </div>
                               <div className="flex items-center gap-1">
                                 <ClockIcon className="w-4 h-4" />
-                                {apt.startTime} - {apt.endTime}
+                                {formatTimeRange12h(apt.startTime, apt.endTime)}
                               </div>
                               {apt.staff && (
                                 <div className="flex items-center gap-1">

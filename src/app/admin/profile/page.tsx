@@ -37,6 +37,7 @@ import {
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { formatTimeRange12h } from "@/lib/time-utils";
 
 interface UserProfile {
   id: string;
@@ -651,7 +652,10 @@ export default function AdminProfilePage() {
                         {dayNames[schedule.dayOfWeek]}
                       </span>
                       <span className="text-sm text-muted-foreground">
-                        {schedule.startTime} - {schedule.endTime}
+                        {formatTimeRange12h(
+                          schedule.startTime,
+                          schedule.endTime,
+                        )}
                       </span>
                     </div>
                   ))}

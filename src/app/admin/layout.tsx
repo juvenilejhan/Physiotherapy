@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   Users,
   Calendar,
+  CalendarOff,
   FileText,
   DollarSign,
   Settings,
@@ -103,6 +104,12 @@ const navItems: NavItem[] = [
     href: "/admin/telehealth",
     icon: Video,
     roles: ["SUPER_ADMIN", "CLINIC_MANAGER", "DOCTOR"],
+  },
+  {
+    title: "Holidays",
+    href: "/admin/holidays",
+    icon: CalendarOff,
+    roles: ["SUPER_ADMIN", "CLINIC_MANAGER"],
   },
   {
     title: "Settings",

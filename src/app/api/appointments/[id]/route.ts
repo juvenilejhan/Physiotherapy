@@ -7,7 +7,17 @@ import { z } from "zod";
 
 // Validation schema for appointment update
 const updateAppointmentSchema = z.object({
-  status: z.enum(["CONFIRMED", "CANCELLED", "RESCHEDULED"]).optional(),
+  status: z
+    .enum([
+      "PENDING",
+      "CONFIRMED",
+      "IN_PROGRESS",
+      "COMPLETED",
+      "CANCELLED",
+      "NO_SHOW",
+      "RESCHEDULED",
+    ])
+    .optional(),
   cancelReason: z.string().optional(),
   newDate: z.string().optional(),
   newStartTime: z.string().optional(),
@@ -15,17 +25,14 @@ const updateAppointmentSchema = z.object({
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const appointment = await db.appointment.findUnique({
@@ -66,16 +73,13 @@ export async function GET(
     if (!appointment) {
       return NextResponse.json(
         { error: "Appointment not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     // Check if user has permission to view this appointment
     if (appointment.userId !== (session.user as any).id) {
-      return NextResponse.json(
-        { error: "Forbidden" },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     return NextResponse.json({ appointment }, { status: 200 });
@@ -83,24 +87,21 @@ export async function GET(
     console.error("Error fetching appointment:", error);
     return NextResponse.json(
       { error: "Failed to fetch appointment" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -110,7 +111,7 @@ export async function PATCH(
     if (!validationResult.success) {
       return NextResponse.json(
         { error: validationResult.error.issues[0].message },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -125,16 +126,13 @@ export async function PATCH(
     if (!appointment) {
       return NextResponse.json(
         { error: "Appointment not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     // Check if user has permission to update this appointment
     if (appointment.userId !== (session.user as any).id) {
-      return NextResponse.json(
-        { error: "Forbidden" },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     // Handle cancellation
@@ -154,7 +152,7 @@ export async function PATCH(
           message: "Appointment cancelled successfully",
           appointment: updatedAppointment,
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -207,7 +205,7 @@ export async function PATCH(
       if (conflictingAppointment) {
         return NextResponse.json(
           { error: "The requested time slot is not available" },
-          { status: 409 }
+          { status: 409 },
         );
       }
 
@@ -228,7 +226,7 @@ export async function PATCH(
           message: "Appointment rescheduled successfully",
           appointment: updatedAppointment,
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -246,36 +244,33 @@ export async function PATCH(
           message: "Appointment updated successfully",
           appointment: updatedAppointment,
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
     return NextResponse.json(
       { error: "No valid update provided" },
-      { status: 400 }
+      { status: 400 },
     );
   } catch (error) {
     console.error("Error updating appointment:", error);
     return NextResponse.json(
       { error: "Failed to update appointment" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get the appointment
@@ -286,16 +281,13 @@ export async function DELETE(
     if (!appointment) {
       return NextResponse.json(
         { error: "Appointment not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     // Check if user has permission to delete this appointment
     if (appointment.userId !== (session.user as any).id) {
-      return NextResponse.json(
-        { error: "Forbidden" },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     // Soft delete by marking as cancelled
@@ -312,13 +304,13 @@ export async function DELETE(
         message: "Appointment deleted successfully",
         appointment: deletedAppointment,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error deleting appointment:", error);
     return NextResponse.json(
       { error: "Failed to delete appointment" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
