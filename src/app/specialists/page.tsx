@@ -138,9 +138,9 @@ export default function SpecialistsPage() {
       {/* Search and Filter Section */}
       <section className="py-8 bg-background border-b sticky top-0 z-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row gap-4 items-center">
+          <div className="flex flex-col md:flex-row gap-4 md:items-center">
             {/* Search */}
-            <div className="relative flex-1">
+            <div className="relative w-full md:flex-1 md:w-auto">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input
                 type="text"
@@ -152,7 +152,7 @@ export default function SpecialistsPage() {
             </div>
 
             {/* Specialization Filter */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
+            <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0">
               <Filter className="w-5 h-5 text-muted-foreground shrink-0" />
               {specializations.map((spec) => (
                 <button
