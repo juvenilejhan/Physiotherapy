@@ -107,6 +107,17 @@ async function main() {
       bio: "Certified pediatric physical therapist creating fun and effective treatment plans for children of all ages.",
       qualifications: "Doctor of Physical Therapy, PCS",
     },
+    {
+      email: "dr.akm.rezwan@physioconnect.com",
+      name: "Dr. A. K. M. Rezwan",
+      role: UserRole.DOCTOR,
+      specialization: "Joint Pain Rehabilitation",
+      experience: 10,
+      fee: 150,
+      bio: "Distinguished clinician and academic with advanced expertise in musculoskeletal pain management, disability rehabilitation, and evidence-based physical therapy practice. His clinical strengths include patient assessment, manual therapy, therapeutic exercise, and functional rehabilitation techniques designed to restore movement and enhance quality of life.",
+      qualifications:
+        "PhD in Physical Therapy, Postdoctoral Scholar in Health Sciences",
+    },
   ];
 
   const staffUsers: Array<{ user: any; staff: any }> = [];
