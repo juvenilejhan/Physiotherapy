@@ -507,6 +507,8 @@ export default function ContactPage() {
                 src={settings?.teamImage || "/images/about-team.jpg"}
                 alt="Our Team"
                 fill
+                quality={100}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                 className="object-cover"
               />
             </div>
@@ -569,6 +571,7 @@ export default function ContactPage() {
                               alt={specialist.user.name || "Specialist"}
                               width={80}
                               height={80}
+                              quality={100}
                               className="object-cover w-full h-full"
                             />
                           ) : (
@@ -638,6 +641,8 @@ export default function ContactPage() {
                 src={settings?.clinicImage || "/images/clinic-exterior.jpg"}
                 alt="Our Clinic"
                 fill
+                quality={100}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                 className="object-cover"
               />
             </div>

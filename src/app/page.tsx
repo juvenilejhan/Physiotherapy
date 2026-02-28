@@ -595,7 +595,7 @@ export default function Home() {
                     height={600}
                     className="object-cover w-full h-full"
                     priority
-                    quality={95}
+                    quality={100}
                   />
                 </div>
               </div>
@@ -767,6 +767,7 @@ export default function Home() {
                 alt={`${settings.clinicName} Team`}
                 width={1200}
                 height={400}
+                quality={100}
                 className="object-cover w-full h-auto"
               />
             </div>
@@ -950,6 +951,7 @@ export default function Home() {
                   alt="Our Modern Clinic"
                   width={500}
                   height={400}
+                  quality={100}
                   className="object-cover w-full h-full"
                 />
               </div>
@@ -965,6 +967,8 @@ export default function Home() {
               src="/images/cta-energetic.jpg"
               alt="Recovery Journey"
               fill
+              quality={100}
+              sizes="100vw"
               className="object-cover object-top lg:object-[center_20%]"
               priority
             />
@@ -1073,6 +1077,8 @@ export default function Home() {
                                 src={blog.featuredImage}
                                 alt={blog.title}
                                 fill
+                                quality={100}
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
                                 className="object-cover"
                                 priority={i < 3}
                               />
@@ -1260,6 +1266,7 @@ export default function Home() {
                 alt={`${settings.clinicName} Clinic Exterior`}
                 width={600}
                 height={500}
+                quality={100}
                 className="object-cover w-full h-full"
               />
             </div>

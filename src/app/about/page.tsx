@@ -145,6 +145,8 @@ export default function AboutPage() {
               src={settings?.teamImage || "/images/about-team.jpg"}
               alt="Our Team"
               fill
+              quality={100}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
               className="object-cover"
             />
           </div>
@@ -206,6 +208,7 @@ export default function AboutPage() {
                               alt={specialist.user.name || "Specialist"}
                               width={80}
                               height={80}
+                              quality={100}
                               className="object-cover w-full h-full"
                             />
                           ) : (
@@ -276,6 +279,8 @@ export default function AboutPage() {
                 src="/images/clinic-exterior.jpg"
                 alt="Our Clinic"
                 fill
+                quality={100}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                 className="object-cover"
               />
             </div>

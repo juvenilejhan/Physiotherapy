@@ -109,6 +109,8 @@ export default function BlogPage() {
                           src={blog.featuredImage}
                           alt={blog.title}
                           fill
+                          quality={100}
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
                           className="object-cover"
                         />
                       ) : (
