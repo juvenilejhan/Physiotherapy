@@ -48,7 +48,6 @@ export async function GET() {
     // Return only public information
     return NextResponse.json({
       clinicName: settings.name,
-      logo: settings.logo || null,
       clinicImage: settings.clinicImage || "/images/clinic-exterior.jpg",
       heroImage: settings.heroImage || "/images/hero-banner.jpg",
       teamImage: settings.teamImage || "/images/about-team.jpg",
