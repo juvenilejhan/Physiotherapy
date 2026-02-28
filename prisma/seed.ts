@@ -414,6 +414,21 @@ async function main() {
       image: "",
       isActive: true,
     },
+    {
+      name: "Joint Pain Rehabilitation",
+      slug: "joint-pain-rehabilitation",
+      description:
+        "Comprehensive treatment programs to relieve joint pain, restore mobility, and improve quality of life. Our expert physiotherapists address the root causes of joint discomfort including arthritis, inflammation, overuse injuries, and post-surgical recovery using evidence-based approaches.",
+      conditions:
+        "Osteoarthritis, Rheumatoid Arthritis, Knee Pain, Hip Bursitis, Frozen Shoulder, Tennis Elbow, Ankle Sprains, Post Joint Replacement",
+      benefits:
+        "Pain reduction, Improved mobility, Strengthened muscles, Better balance, Reduced medication dependency, Prevention of joint deterioration",
+      duration: 50,
+      price: 105,
+      category: "ORTHOPEDIC",
+      image: "",
+      isActive: true,
+    },
   ];
 
   const createdServices: any[] = [];
