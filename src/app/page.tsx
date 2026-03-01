@@ -521,11 +521,25 @@ export default function Home() {
       {/* Main Content */}
       <main className="flex-1">
         {/* Hero Section */}
-        <section
-          id="home"
-          className="relative py-20 md:py-32 bg-linear-to-br from-primary/5 via-background to-primary/5"
-        >
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <section id="home" className="relative py-20 md:py-32 overflow-hidden">
+          {/* Background Image - Mobile & Tablet Only */}
+          <div className="absolute inset-0 lg:hidden">
+            <Image
+              src={settings.heroImage || "/images/hero-banner.jpg"}
+              alt=""
+              fill
+              className="object-cover"
+              priority
+              quality={80}
+              unoptimized={settings.heroImage?.startsWith("/uploads/")}
+            />
+            <div className="absolute inset-0 bg-linear-to-r from-background/80 via-background/50 to-background/30" />
+          </div>
+
+          {/* Desktop Background Gradient */}
+          <div className="absolute inset-0 hidden lg:block bg-linear-to-br from-primary/5 via-background to-primary/5" />
+
+          <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
                 <Badge className="w-fit">Trusted by 10,000+ Patients</Badge>
