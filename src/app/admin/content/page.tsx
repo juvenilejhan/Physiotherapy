@@ -764,34 +764,34 @@ export default function AdminContentPage() {
                   {filteredVideos.map((video) => (
                     <div
                       key={video.id}
-                      className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
+                      className="flex flex-col sm:flex-row sm:items-start sm:justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors gap-3"
                     >
-                      <div className="flex gap-4 flex-1">
+                      <div className="flex flex-col sm:flex-row gap-4 flex-1">
                         {video.thumbnail && (
                           <div className="flex-shrink-0">
-                            <div className="relative w-24 h-24 rounded-lg overflow-hidden bg-muted">
+                            <div className="relative w-full sm:w-24 h-40 sm:h-24 rounded-lg overflow-hidden bg-muted">
                               <img
                                 src={video.thumbnail}
                                 alt={video.title}
                                 className="w-full h-full object-cover"
                               />
                               <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                                <Play className="h-6 w-6 text-white" />
+                                <Play className="h-8 w-8 sm:h-6 sm:w-6 text-white" />
                               </div>
                             </div>
                           </div>
                         )}
-                        <div className="flex-1">
-                          <div className="flex items-start gap-2 mb-1">
-                            <h3 className="font-semibold">{video.title}</h3>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-start gap-2 mb-1">
+                            <h3 className="font-semibold break-words">{video.title}</h3>
                             {video.featured && (
                               <Badge variant="default">Featured</Badge>
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground mb-2">
+                          <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
                             {video.description}
                           </p>
-                          <div className="flex gap-2 mb-2">
+                          <div className="flex flex-wrap gap-2 mb-2">
                             <Badge
                               variant="outline"
                               className={DIFFICULTY_COLORS[video.difficulty]}
@@ -800,17 +800,17 @@ export default function AdminContentPage() {
                             </Badge>
                             <Badge variant="secondary">{video.category}</Badge>
                           </div>
-                          <div className="flex gap-4 text-sm text-muted-foreground">
+                          <div className="flex flex-wrap gap-2 sm:gap-4 text-sm text-muted-foreground">
                             <span>{video.duration}</span>
                             {video.bodyParts.length > 0 && (
-                              <span>{video.bodyParts.join(", ")}</span>
+                              <span className="truncate">{video.bodyParts.join(", ")}</span>
                             )}
                           </div>
                         </div>
                       </div>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
+                          <Button variant="ghost" size="icon" className="self-end sm:self-start">
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>

@@ -510,7 +510,9 @@ export default function AdminCalendarPage() {
                 className="text-center font-medium text-xs md:text-sm text-muted-foreground py-1 md:py-2"
               >
                 <span className="md:hidden">{day}</span>
-                <span className="hidden md:inline">{["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][index]}</span>
+                <span className="hidden md:inline">
+                  {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][index]}
+                </span>
               </div>
             ))}
             {calendarDays.map((date) => {
@@ -545,7 +547,9 @@ export default function AdminCalendarPage() {
                           <div className="bg-primary text-primary-foreground text-xs font-semibold rounded-full w-6 h-6 flex items-center justify-center">
                             {dayAppointments.length}
                           </div>
-                          <span className="text-[10px] text-muted-foreground mt-1">View</span>
+                          <span className="text-[10px] text-muted-foreground mt-1">
+                            View
+                          </span>
                         </div>
                       )
                     ) : (
