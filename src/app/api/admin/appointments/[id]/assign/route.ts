@@ -28,7 +28,7 @@ export async function PATCH(
     if (
       !user ||
       !user.role ||
-      !hasPermission(user.role, "appointments:manage")
+      !hasPermission(user.role, "appointments:manage_all")
     ) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }

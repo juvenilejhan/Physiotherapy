@@ -811,21 +811,24 @@ export default function BookingPage() {
                         </Label>
                       </div>
                       <div
-                        className={`flex items-center p-4 border rounded-lg cursor-pointer hover:bg-accent flex-1
-                        ${appointmentType === "TELEHEALTH" ? "bg-accent border-primary" : ""}
+                        className={`flex items-center p-4 border rounded-lg flex-1 opacity-60 cursor-not-allowed relative
                       `}
                       >
                         <RadioGroupItem
                           value="TELEHEALTH"
                           id="telehealth"
                           className="mr-3"
+                          disabled
                         />
                         <Label
                           htmlFor="telehealth"
-                          className="cursor-pointer flex-1"
+                          className="flex-1 cursor-not-allowed"
                         >
-                          <div className="font-semibold">
+                          <div className="font-semibold flex items-center gap-2">
                             Video Consultation
+                            <Badge variant="secondary" className="text-xs">
+                              Coming Soon
+                            </Badge>
                           </div>
                           <div className="text-sm text-muted-foreground">
                             Online video call with your therapist

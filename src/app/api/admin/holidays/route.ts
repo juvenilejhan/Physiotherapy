@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
       where: { email: session.user.email },
     });
 
-    if (!user || !user.role || !hasPermission(user.role, "settings:manage")) {
+    if (!user || !user.role || !hasPermission(user.role, "settings:update")) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

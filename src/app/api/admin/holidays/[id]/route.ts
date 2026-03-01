@@ -68,7 +68,7 @@ export async function PATCH(
       where: { email: session.user.email },
     });
 
-    if (!user || !user.role || !hasPermission(user.role, "settings:manage")) {
+    if (!user || !user.role || !hasPermission(user.role, "settings:update")) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -141,7 +141,7 @@ export async function DELETE(
       where: { email: session.user.email },
     });
 
-    if (!user || !user.role || !hasPermission(user.role, "settings:manage")) {
+    if (!user || !user.role || !hasPermission(user.role, "settings:update")) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

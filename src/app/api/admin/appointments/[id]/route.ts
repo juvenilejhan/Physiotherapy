@@ -112,7 +112,11 @@ export async function PATCH(
       where: { email: session.user.email },
     });
 
-    if (!user || !user.role || !hasPermission(user.role, "appointments:edit")) {
+    if (
+      !user ||
+      !user.role ||
+      !hasPermission(user.role, "appointments:update")
+    ) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

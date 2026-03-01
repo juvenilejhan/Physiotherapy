@@ -58,6 +58,14 @@ import {
 } from "date-fns";
 import { toast } from "sonner";
 import { ImageUpload } from "@/components/ui/image-upload";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { formatTimeRange12h } from "@/lib/time-utils";
 
 interface Appointment {
@@ -507,18 +515,45 @@ function PatientDashboardContent() {
                   {session.user.name || "Patient"}
                 </span>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => {
-                  setActiveTab("profile");
-                  router.push("/dashboard?tab=profile");
-                }}
-                className={activeTab === "profile" ? "bg-accent" : ""}
-                title="Settings"
-              >
-                <Settings className="h-5 w-5" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={activeTab === "profile" ? "bg-accent" : ""}
+                    title="Settings"
+                  >
+                    <Settings className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>Settings</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setActiveTab("profile");
+                      router.push("/dashboard?tab=profile");
+                    }}
+                  >
+                    <User className="mr-2 h-4 w-4" />
+                    Edit Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setActiveTab("profile");
+                      router.push("/dashboard?tab=profile");
+                    }}
+                  >
+                    <Activity className="mr-2 h-4 w-4" />
+                    Medical Info
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => router.push("/contact")}>
+                    <Mail className="mr-2 h-4 w-4" />
+                    Contact Support
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Button
                 variant="ghost"
                 size="icon"
@@ -1570,7 +1605,7 @@ function PatientDashboardContent() {
                       <Button
                         variant="outline"
                         className="w-full justify-start"
-                        onClick={() => setActiveTab("profile")}
+                        onClick={() => router.push("/contact")}
                       >
                         Contact Support
                       </Button>
