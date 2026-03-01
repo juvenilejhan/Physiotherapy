@@ -591,11 +591,12 @@ export default function Home() {
                   <Image
                     src={settings.heroImage || "/images/hero-banner.jpg"}
                     alt="Modern Physiotherapy Clinic"
-                    width={600}
-                    height={600}
+                    width={1200}
+                    height={1200}
                     className="object-cover w-full h-full"
                     priority
                     quality={100}
+                    unoptimized={settings.heroImage?.startsWith("/uploads/")}
                   />
                 </div>
               </div>
