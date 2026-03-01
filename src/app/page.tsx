@@ -988,7 +988,7 @@ export default function Home() {
               priority
             />
             {/* Gradient Overlay for readability */}
-            <div className="absolute inset-0 bg-linear-to-r from-primary/85 via-primary/70 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-r from-primary/40 via-primary/25 to-transparent" />
           </div>
 
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
