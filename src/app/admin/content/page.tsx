@@ -783,7 +783,9 @@ export default function AdminContentPage() {
                         )}
                         <div className="flex-1 min-w-0">
                           <div className="flex flex-wrap items-start gap-2 mb-1">
-                            <h3 className="font-semibold break-words">{video.title}</h3>
+                            <h3 className="font-semibold break-words">
+                              {video.title}
+                            </h3>
                             {video.featured && (
                               <Badge variant="default">Featured</Badge>
                             )}
@@ -803,14 +805,20 @@ export default function AdminContentPage() {
                           <div className="flex flex-wrap gap-2 sm:gap-4 text-sm text-muted-foreground">
                             <span>{video.duration}</span>
                             {video.bodyParts.length > 0 && (
-                              <span className="truncate">{video.bodyParts.join(", ")}</span>
+                              <span className="truncate">
+                                {video.bodyParts.join(", ")}
+                              </span>
                             )}
                           </div>
                         </div>
                       </div>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="self-end sm:self-start">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="self-end sm:self-start"
+                          >
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
