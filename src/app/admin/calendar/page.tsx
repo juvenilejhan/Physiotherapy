@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   ChevronLeft,
   ChevronRight,
@@ -96,6 +97,7 @@ interface StaffMember {
 export default function AdminCalendarPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const isMobile = useIsMobile();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [staff, setStaff] = useState<StaffMember[]>([]);
@@ -501,13 +503,14 @@ export default function AdminCalendarPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-7 gap-2">
-            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+          <div className="grid grid-cols-7 gap-1 md:gap-2">
+            {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
               <div
-                key={day}
-                className="text-center font-medium text-sm text-muted-foreground py-2"
+                key={`${day}-${index}`}
+                className="text-center font-medium text-xs md:text-sm text-muted-foreground py-1 md:py-2"
               >
-                {day}
+                <span className="md:hidden">{day}</span>
+                <span className="hidden md:inline">{["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][index]}</span>
               </div>
             ))}
             {calendarDays.map((date) => {
@@ -520,7 +523,7 @@ export default function AdminCalendarPage() {
                   key={date.toISOString()}
                   onClick={() => handleDateClick(date)}
                   className={`
-                    min-h-25 border rounded-lg p-2 cursor-pointer transition-colors
+                    min-h-16 md:min-h-25 border rounded-lg p-1 md:p-2 cursor-pointer transition-colors
                     ${isCurrentMonth ? "bg-background" : "bg-muted/30"}
                     ${isDayToday ? "border-primary" : "border-border"}
                     hover:bg-accent/50
@@ -528,36 +531,51 @@ export default function AdminCalendarPage() {
                 >
                   <div
                     className={`
-                    text-sm font-medium mb-1
-                    ${isDayToday ? "bg-primary text-primary-foreground w-7 h-7 rounded-full flex items-center justify-center" : ""}
+                    text-xs md:text-sm font-medium mb-1
+                    ${isDayToday ? "bg-primary text-primary-foreground w-5 h-5 md:w-7 md:h-7 rounded-full flex items-center justify-center" : ""}
                   `}
                   >
                     {format(date, "d")}
                   </div>
                   <div className="space-y-1">
-                    {dayAppointments.slice(0, 3).map((apt) => (
-                      <div
-                        key={apt.id}
-                        className={`
-                          text-xs p-1 rounded border truncate
-                          ${getStatusColor(apt.status)}
-                        `}
-                      >
-                        <div className="font-medium">
-                          {apt.startTime
-                            ? format(
-                                new Date(`2000-01-01T${apt.startTime}`),
-                                "h:mm a",
-                              )
-                            : "--:--"}
+                    {isMobile ? (
+                      // Mobile view: Show only appointment count
+                      dayAppointments.length > 0 && (
+                        <div className="flex flex-col items-center justify-center">
+                          <div className="bg-primary text-primary-foreground text-xs font-semibold rounded-full w-6 h-6 flex items-center justify-center">
+                            {dayAppointments.length}
+                          </div>
+                          <span className="text-[10px] text-muted-foreground mt-1">View</span>
                         </div>
-                        <div className="truncate">{apt.user.name}</div>
-                      </div>
-                    ))}
-                    {dayAppointments.length > 3 && (
-                      <div className="text-xs text-muted-foreground">
-                        +{dayAppointments.length - 3} more
-                      </div>
+                      )
+                    ) : (
+                      // Desktop view: Show appointment details
+                      <>
+                        {dayAppointments.slice(0, 3).map((apt) => (
+                          <div
+                            key={apt.id}
+                            className={`
+                              text-xs p-1 rounded border truncate
+                              ${getStatusColor(apt.status)}
+                            `}
+                          >
+                            <div className="font-medium">
+                              {apt.startTime
+                                ? format(
+                                    new Date(`2000-01-01T${apt.startTime}`),
+                                    "h:mm a",
+                                  )
+                                : "--:--"}
+                            </div>
+                            <div className="truncate">{apt.user.name}</div>
+                          </div>
+                        ))}
+                        {dayAppointments.length > 3 && (
+                          <div className="text-xs text-muted-foreground">
+                            +{dayAppointments.length - 3} more
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
