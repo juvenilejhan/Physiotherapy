@@ -981,14 +981,20 @@ export default function BookingPage() {
                   />
                   <Label
                     htmlFor="terms"
-                    className="text-sm leading-tight cursor-pointer"
+                    className="text-sm leading-relaxed cursor-pointer"
                   >
                     I agree to the{" "}
-                    <Link href="#" className="text-primary hover:underline">
+                    <Link
+                      href="#"
+                      className="text-primary hover:underline whitespace-nowrap"
+                    >
                       Terms of Service
                     </Link>{" "}
                     and{" "}
-                    <Link href="#" className="text-primary hover:underline">
+                    <Link
+                      href="#"
+                      className="text-primary hover:underline whitespace-nowrap"
+                    >
                       Privacy Policy
                     </Link>{" "}
                     *

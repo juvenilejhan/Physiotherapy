@@ -570,58 +570,63 @@ export default function AdminSettingsPage() {
                   const isClosed = formData[startKey] === "Closed";
 
                   return (
-                    <div key={day} className="flex items-center gap-3">
+                    <div
+                      key={day}
+                      className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3"
+                    >
                       <Label className="capitalize w-24 font-medium">
                         {day}
                       </Label>
-                      <Select
-                        value={formData[startKey] || ""}
-                        onValueChange={(value) => {
-                          if (value === "Closed") {
-                            setFormData({
-                              ...formData,
-                              [startKey]: "Closed",
-                              [endKey]: "",
-                            });
-                          } else {
-                            setFormData({ ...formData, [startKey]: value });
-                          }
-                        }}
-                      >
-                        <SelectTrigger className="w-36">
-                          <SelectValue placeholder="Opens" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Closed">Closed</SelectItem>
-                          {timeOptions.map((time) => (
-                            <SelectItem key={time} value={time}>
-                              {time}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {!isClosed && (
-                        <>
-                          <span className="text-muted-foreground">to</span>
-                          <Select
-                            value={formData[endKey] || ""}
-                            onValueChange={(value) =>
-                              setFormData({ ...formData, [endKey]: value })
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <Select
+                          value={formData[startKey] || ""}
+                          onValueChange={(value) => {
+                            if (value === "Closed") {
+                              setFormData({
+                                ...formData,
+                                [startKey]: "Closed",
+                                [endKey]: "",
+                              });
+                            } else {
+                              setFormData({ ...formData, [startKey]: value });
                             }
-                          >
-                            <SelectTrigger className="w-36">
-                              <SelectValue placeholder="Closes" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {timeOptions.map((time) => (
-                                <SelectItem key={time} value={time}>
-                                  {time}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </>
-                      )}
+                          }}
+                        >
+                          <SelectTrigger className="w-28 sm:w-36">
+                            <SelectValue placeholder="Opens" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Closed">Closed</SelectItem>
+                            {timeOptions.map((time) => (
+                              <SelectItem key={time} value={time}>
+                                {time}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {!isClosed && (
+                          <>
+                            <span className="text-muted-foreground">to</span>
+                            <Select
+                              value={formData[endKey] || ""}
+                              onValueChange={(value) =>
+                                setFormData({ ...formData, [endKey]: value })
+                              }
+                            >
+                              <SelectTrigger className="w-28 sm:w-36">
+                                <SelectValue placeholder="Closes" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {timeOptions.map((time) => (
+                                  <SelectItem key={time} value={time}>
+                                    {time}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </>
+                        )}
+                      </div>
                     </div>
                   );
                 })}

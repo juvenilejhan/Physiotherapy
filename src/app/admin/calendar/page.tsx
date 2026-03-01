@@ -273,14 +273,14 @@ export default function AdminCalendarPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Calendar</h2>
           <p className="text-muted-foreground">View and manage appointments</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
           <Select value={selectedStaff} onValueChange={setSelectedStaff}>
-            <SelectTrigger className="w-50">
+            <SelectTrigger className="w-full sm:w-50">
               <Filter className="mr-2 h-4 w-4" />
               <SelectValue placeholder="Filter by staff" />
             </SelectTrigger>

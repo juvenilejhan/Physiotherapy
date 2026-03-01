@@ -1614,13 +1614,6 @@ function PatientDashboardContent() {
                           Book Another Appointment
                         </Button>
                       </Link>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start"
-                        onClick={() => setActiveTab("profile")}
-                      >
-                        Update Profile
-                      </Button>
                     </div>
                   </CardContent>
                 </Card>

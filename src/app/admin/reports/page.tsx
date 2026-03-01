@@ -371,7 +371,7 @@ export default function AdminReportsPage() {
             <div className="space-y-2">
               <Label>Quick Select</Label>
               <Select onValueChange={setDatePreset}>
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-full sm:w-40">
                   <SelectValue placeholder="Select period" />
                 </SelectTrigger>
                 <SelectContent>
@@ -390,7 +390,7 @@ export default function AdminReportsPage() {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-40"
+                className="w-full sm:w-40"
               />
             </div>
             <div className="space-y-2">
@@ -399,7 +399,7 @@ export default function AdminReportsPage() {
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-40"
+                className="w-full sm:w-40"
               />
             </div>
             <Button variant="outline" onClick={fetchReportData}>

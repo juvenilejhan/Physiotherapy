@@ -236,7 +236,7 @@ export default function AdminServicesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Services</h2>
           <p className="text-muted-foreground">
@@ -443,10 +443,10 @@ export default function AdminServicesPage() {
               filteredServices.map((service) => (
                 <div
                   key={service.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
+                  className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
                 >
                   <div className="flex-1">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <h3 className="font-semibold">{service.name}</h3>
                       <Badge
                         variant={service.isActive ? "default" : "secondary"}

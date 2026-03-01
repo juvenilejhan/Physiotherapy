@@ -514,7 +514,7 @@ export default function AdminContentPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">
             Content Management
@@ -536,7 +536,7 @@ export default function AdminContentPage() {
         <TabsContent value="videos" className="space-y-4">
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <CardTitle>Exercise Videos</CardTitle>
                   <CardDescription>
@@ -844,7 +844,7 @@ export default function AdminContentPage() {
         <TabsContent value="blogs" className="space-y-4">
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <CardTitle>Blog Posts</CardTitle>
                   <CardDescription>
@@ -1083,7 +1083,7 @@ export default function AdminContentPage() {
         <TabsContent value="gallery" className="space-y-4">
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <CardTitle>Gallery</CardTitle>
                   <CardDescription>
