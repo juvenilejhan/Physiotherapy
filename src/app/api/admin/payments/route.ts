@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
       where: { email: session.user.email },
     });
 
-    if (!user || !user.role || !hasPermission(user.role, 'payments:view')) {
+    if (!user || !user.role || !hasPermission(user.role, 'billing:view')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
