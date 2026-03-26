@@ -72,8 +72,15 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(formattedBlogs);
   } catch (error) {
     console.error("Error fetching blog posts:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Internal server error";
     return NextResponse.json(
-      { error: "Internal server error" },
+      {
+        error:
+          process.env.NODE_ENV === "development"
+            ? errorMessage
+            : "Internal server error",
+      },
       { status: 500 },
     );
   }
@@ -144,8 +151,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(formattedBlog, { status: 201 });
   } catch (error) {
     console.error("Error creating blog post:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Internal server error";
     return NextResponse.json(
-      { error: "Internal server error" },
+      {
+        error:
+          process.env.NODE_ENV === "development"
+            ? errorMessage
+            : "Internal server error",
+      },
       { status: 500 },
     );
   }

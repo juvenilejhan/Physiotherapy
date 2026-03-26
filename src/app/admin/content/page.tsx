@@ -182,22 +182,40 @@ export default function AdminContentPage() {
       if (videosRes.ok) {
         setVideos(await videosRes.json());
       } else {
-        const error = await videosRes.json();
-        console.error("Error fetching videos:", error);
+        let errorMessage = `Request failed with status ${videosRes.status}`;
+        try {
+          const error = await videosRes.json();
+          errorMessage = error?.error || errorMessage;
+        } catch {
+          // Keep default status-based message when response is not JSON.
+        }
+        console.error("Error fetching videos:", errorMessage);
       }
 
       if (blogsRes.ok) {
         setBlogs(await blogsRes.json());
       } else {
-        const error = await blogsRes.json();
-        console.error("Error fetching blogs:", error);
+        let errorMessage = `Request failed with status ${blogsRes.status}`;
+        try {
+          const error = await blogsRes.json();
+          errorMessage = error?.error || errorMessage;
+        } catch {
+          // Keep default status-based message when response is not JSON.
+        }
+        console.error("Error fetching blogs:", errorMessage);
       }
 
       if (galleryRes.ok) {
         setGallery(await galleryRes.json());
       } else {
-        const error = await galleryRes.json();
-        console.error("Error fetching gallery:", error);
+        let errorMessage = `Request failed with status ${galleryRes.status}`;
+        try {
+          const error = await galleryRes.json();
+          errorMessage = error?.error || errorMessage;
+        } catch {
+          // Keep default status-based message when response is not JSON.
+        }
+        console.error("Error fetching gallery:", errorMessage);
       }
     } catch (error) {
       console.error("Error fetching content:", error);
