@@ -66,7 +66,7 @@ export async function PATCH(
 
     // Get service details if serviceId is provided (for doctors)
     let consultationFee = undefined;
-    let selectedService = null;
+    let selectedService: any = null;
     if (serviceId && (role === "DOCTOR" || targetUser.role === "DOCTOR")) {
       selectedService = await db.service.findUnique({
         where: { id: serviceId },

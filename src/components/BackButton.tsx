@@ -17,12 +17,13 @@ export function BackButton({
 }: BackButtonProps) {
   const router = useRouter();
   const { status } = useSession();
-  const [canGoBack, setCanGoBack] = useState(false);
-
-  useEffect(() => {
-    // Check if there's a previous page in browser history
-    setCanGoBack(window.history.length > 1);
-  }, []);
+  const [canGoBack] = useState(() => {
+    // Check if there's a previous page in browser history (only evaluates once on mount)
+    if (typeof window !== "undefined") {
+      return window.history.length > 1;
+    }
+    return false;
+  });
 
   const handleBack = () => {
     // If href is specified, always navigate to that URL
